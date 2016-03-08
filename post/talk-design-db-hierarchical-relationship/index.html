@@ -1,0 +1,226 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="alternative" href="/atom.xml" title="幾文山" type="application/atom+xml"><link rel="icon" href="/favicon.png"><title>漫談設計 數據庫 層級關係 - 幾文山</title><link rel="stylesheet" href="/css/main.css"><!--[if lt IE 9]><script>(function(a,b){a="abbr article aside audio bdi canvas data datalist details dialog figcaption figure footer header hgroup main mark meter nav output progress section summary template time video".split(" ");for(b=a.length-1;b>=0;b--)document.createElement(a[b])})()</script><![endif]--></head><body><header class="head"><h1 class="head-title u-fl"><a href="/">幾文山</a></h1><nav class="head-nav u-fr"><ul class="head-nav__list"><li class="head-nav__item"><a href="/" class="head-nav__link">Home</a></li><li class="head-nav__item"><a href="/archives" class="head-nav__link">Archives</a></li><li class="head-nav__item"><a href="http://old.3u3.me" class="head-nav__link">Old</a></li></ul></nav></header><main class="main"><article class="post"><header class="post__head"><time datetime="2016-03-08T15:14:40.000Z" class="post__time">March 8, 2016</time><h1 class="post__title"><a href="/post/talk-design-db-hierarchical-relationship/">漫談設計 數據庫 層級關係</a></h1></header><div class="post__main echo"><blockquote>
+<p>系列文章第一文<br>數據庫設計中層級關係數據設計</p>
+</blockquote>
+<h2 id="常規型"><a href="#常規型" class="headerlink" title="常規型"></a>常規型</h2><p>層級關係會出現在絕大部分系統中, 通常的做法 (也可以說是標準做法) 如下:</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>pid</th>
+<th>name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>home</td>
+</tr>
+<tr>
+<td>2</td>
+<td>1</td>
+<td>linux</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2</td>
+<td>ubuntu</td>
+</tr>
+<tr>
+<td>4</td>
+<td>1</td>
+<td>develop</td>
+</tr>
+</tbody>
+</table>
+<p>上述表中所要描述的是如下關係</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">home</span><br><span class="line">├── develop</span><br><span class="line">└── linux</span><br><span class="line">    └── ubuntu</span><br></pre></td></tr></table></figure>
+<p>使用 pid 字段來達到描述層級關係的目的, 但是這種設計方案所帶來的問題:</p>
+<p><strong>優點</strong></p>
+<ul>
+<li>層級關係維護簡單</li>
+<li>擴展性強</li>
+</ul>
+<p><strong>缺點</strong></p>
+<ul>
+<li>數據不直觀<blockquote>
+<p>如果出現相同名稱 (在設計系統節點時, 不同控制器下可能會出現相同的路由名, 例如: save delete 等), 不容易判斷出當前記錄輸入某個父模塊; 另就算不重名, 也很難根據某一條數據顯示出此條記錄的層級信息.</p>
+</blockquote>
+</li>
+<li>數據結構構造複雜<blockquote>
+<p>通常需要使用遞歸來實現數據結構分析 (代碼中或者數據庫遞歸).</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="不要命型"><a href="#不要命型" class="headerlink" title="不要命型"></a>不要命型</h2><p>就算死也要死的華麗.<br>這是一種簡單暴力的方式實現層級關係</p>
+<p>一個簡單的數據結構如下, 數據可以美麗成這樣:</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>path</th>
+<th>name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>總部</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0-1</td>
+<td>天朝分部</td>
+</tr>
+<tr>
+<td>3</td>
+<td>0-1</td>
+<td>美利堅分部</td>
+</tr>
+<tr>
+<td>4</td>
+<td>0-1-2</td>
+<td>河北</td>
+</tr>
+<tr>
+<td>5</td>
+<td>0-1-2</td>
+<td>河南</td>
+</tr>
+<tr>
+<td>6</td>
+<td>0-1-3</td>
+<td>華盛頓</td>
+</tr>
+</tbody>
+</table>
+<p>美麗到一眼就能看出來想要表達什麼意思.</p>
+<p>總部的自標為 0<br>然後下一級, 天朝分部和美利堅分部, 則繼承總部的 0 為表忠誠, 把上級大旗拿來標榜, 遂變成 0-1<br>接下來到在下面, 河北 河南 華盛頓 把上級的稱謂拿出來, 為表忠誠, 把上級大旗拿來標榜, 遂變成 0-1-2 與 0-1-3</p>
+<p><strong>呵!呵!呵!</strong></p>
+<p>好, 現在總部想看看到底有多少手下, 哪些手下.</p>
+<p>那麼 就可以這樣<br>例如在 SqlServer 中就可以使用此種方式進行查詢, 並比較結果</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span></span><br><span class="line"><span class="keyword">id</span>, <span class="keyword">path</span> + <span class="string">'-'</span> + <span class="keyword">convert</span>(<span class="built_in">varchar</span>(<span class="number">30</span>), <span class="keyword">id</span>) <span class="keyword">as</span> relpath, <span class="keyword">name</span></span><br><span class="line"><span class="keyword">from</span> <span class="keyword">table</span></span><br><span class="line"><span class="keyword">order</span> <span class="keyword">by</span> realpath</span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>relpath</th>
+<th>name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>0-1</td>
+<td>總部</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0-1-2</td>
+<td>天朝分部</td>
+</tr>
+<tr>
+<td>3</td>
+<td>0-1-2-3</td>
+<td>河北</td>
+</tr>
+<tr>
+<td>4</td>
+<td>0-1-2-4</td>
+<td>河南</td>
+</tr>
+<tr>
+<td>5</td>
+<td>0-1-5</td>
+<td>美利堅分部</td>
+</tr>
+<tr>
+<td>6</td>
+<td>0-1-5-6</td>
+<td>華盛頓</td>
+</tr>
+</tbody>
+</table>
+<p>也就是把每個人自己的旗幟放到自己的等級上, 然後就能按照這個等級來排個序.</p>
+<p>perfect!</p>
+<p>好 嚴肅</p>
+<p>雖然簡簡單單的就實現了層級關係, 但是這有個非常嚴重的問題!<br>公司發展的越來越好, 總部一直在想著要換一個更顯地位的地方, 但是原來的地還留著, 處理一些閒雜事, 那這個時候總部搬遷, 新增了個標識是 93204 的總部, 等級仍然是最高 (0) , 這就面臨著所有分部都得將總部的標識給改掉, 然而, 這並不好改.</p>
+<p>問:<br>如何將<br><code>0-1</code> <code>0-1-2</code> <code>0-1-2</code> <code>0-1-3</code><br> 改為<br><code>0-93204</code> <code>0-93204-2</code> <code>0-93204-3</code></p>
+<p>所以, 這並不是一個很好的方案.</p>
+<p><strong>優點</strong></p>
+<ul>
+<li>數據直觀</li>
+<li>數據結構構造簡單</li>
+</ul>
+<p><strong>缺點</strong></p>
+<ul>
+<li>不易於調整</li>
+<li>擴展性差</li>
+</ul>
+<h2 id="中和型"><a href="#中和型" class="headerlink" title="中和型"></a>中和型</h2><p>其實就是 <a href="#不要命型">不要命型</a> 的翻版, 換湯不換藥</p>
+<p>在說這之前, 先看一段數據</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">110000  　北京市</span><br><span class="line">110100  　　市辖区</span><br><span class="line">110101  　　　东城区</span><br><span class="line">110102  　　　西城区</span><br><span class="line">110105  　　　朝阳区</span><br><span class="line">110106  　　　丰台区</span><br></pre></td></tr></table></figure>
+<p>這看起來是不是就很像了, 此處的一串數字是地區以及下轄地區的獨立編碼<br>下轄的編碼從上級的編碼從末尾開始按順序排, 這樣就實現了多層級關係.</p>
+<p>然而, 一個大的問題是, 例如北京市轄區 <code>110100</code> 從現有的數據看, 市轄區最做只能容納 100 個區域, 多了就沒法放 (前提是真有 100+ 個區)</p>
+<p>在特殊場景的應用效果很好 (例如地區編碼)</p>
+<p><strong>優點</strong></p>
+<ul>
+<li>數據直觀, 簡單明瞭, 可讀性高</li>
+<li>數據結構構造簡單</li>
+<li>便於維護， 方便查找以及記憶</li>
+</ul>
+<p><strong>缺點</strong></p>
+<ul>
+<li>擴展性差</li>
+<li>不易於調整</li>
+</ul>
+<h2 id="總結"><a href="#總結" class="headerlink" title="總結"></a>總結</h2><table>
+<thead>
+<tr>
+<th></th>
+<th>常規型</th>
+<th>不要命型</th>
+<th>中和型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>可擴展</td>
+<td>Y</td>
+<td>N</td>
+<td>N</td>
+</tr>
+<tr>
+<td>易構造</td>
+<td>N</td>
+<td>Y</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>易讀</td>
+<td>N</td>
+<td>Y</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>易改</td>
+<td>Y</td>
+<td>N</td>
+<td>N</td>
+</tr>
+<tr>
+<td>效率 (開發)</td>
+<td>↓</td>
+<td>-</td>
+<td>↑</td>
+</tr>
+<tr>
+<td>場景</td>
+<td>所有場景</td>
+<td>所有場景 (前提是不怕死)</td>
+<td>特殊</td>
+</tr>
+</tbody>
+</table>
+</div><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a href="/tags/design/" class="post__tag__link">design</a></li><li class="post__tag__item"><a href="/tags/database/" class="post__tag__link">database</a></li><li class="post__tag__item"><a href="/tags/level/" class="post__tag__link">level</a></li></ul><a href="/post/talk-design-db-hierarchical-relationship/#disqus_thread" class="post__foot-link u-fr">0 COMMENTS</a></footer></article></main><footer class="foot"><div class="foot-copy u-fl">&copy; 2016 iaceob</div><menu class="page-menu u-fr"><li class="page-menu__item"><span title="Previous" class="page-menu__link icon-arrow-left page-menu__link--disabled"></span></li><li class="page-menu__item"><a title="Next" href="/post/excerpt-river-town-chinese-new-year/" class="page-menu__link icon-arrow-right"></a></li></menu></footer></body></html>
