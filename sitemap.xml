@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://blog.3u3.me/post/oracle-not-lonely/</loc>
+    
+    <lastmod>2016-10-11T12:05:32.856Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://blog.3u3.me/post/nginx-proxy-part-1/</loc>
     
     <lastmod>2016-09-03T18:32:02.117Z</lastmod>
