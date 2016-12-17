@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://blog.3u3.me/post/final-ng-II-part-2/</loc>
+    
+    <lastmod>2016-12-17T16:34:40.591Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://blog.3u3.me/post/letsencrypt-auto-shell/</loc>
     
     <lastmod>2016-12-04T09:32:47.200Z</lastmod>
