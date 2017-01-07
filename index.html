@@ -1,4 +1,29 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="alternative" href="/atom.xml" title="幾文山" type="application/atom+xml"><link rel="icon" href="/favicon.png"><title>幾文山</title><link rel="stylesheet" href="/css/main.css"><!--[if lt IE 9]><script>(function(a,b){a="abbr article aside audio bdi canvas data datalist details dialog figcaption figure footer header hgroup main mark meter nav output progress section summary template time video".split(" ");for(b=a.length-1;b>=0;b--)document.createElement(a[b])})()</script><![endif]--></head><body><header class="head"><h1 class="head-title u-fl"><a href="/">幾文山</a></h1><nav class="head-nav u-fr"><ul class="head-nav__list"><li class="head-nav__item"><a href="/" class="head-nav__link">Home</a></li><li class="head-nav__item"><a href="/archives" class="head-nav__link">Archives</a></li><li class="head-nav__item"><a href="http://old.3u3.me" class="head-nav__link">Old</a></li></ul></nav></header><main class="main"><article class="post"><header class="post__head"><time datetime="2016-12-31T13:50:44.000Z" class="post__time">December 31, 2016</time><h1 class="post__title"><a href="/post/moan-part-2/">繼續呻吟</a></h1></header><div class="post__main echo"><p>嗯 …<br>這裡沒有年終總結, 也從來都沒年終總結, 這個年也還沒完, 對.</p>
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="alternative" href="/atom.xml" title="幾文山" type="application/atom+xml"><link rel="icon" href="/favicon.png"><title>幾文山</title><link rel="stylesheet" href="/css/main.css"><!--[if lt IE 9]><script>(function(a,b){a="abbr article aside audio bdi canvas data datalist details dialog figcaption figure footer header hgroup main mark meter nav output progress section summary template time video".split(" ");for(b=a.length-1;b>=0;b--)document.createElement(a[b])})()</script><![endif]--></head><body><header class="head"><h1 class="head-title u-fl"><a href="/">幾文山</a></h1><nav class="head-nav u-fr"><ul class="head-nav__list"><li class="head-nav__item"><a href="/" class="head-nav__link">Home</a></li><li class="head-nav__item"><a href="/archives" class="head-nav__link">Archives</a></li><li class="head-nav__item"><a href="http://old.3u3.me" class="head-nav__link">Old</a></li></ul></nav></header><main class="main"><article class="post"><header class="post__head"><time datetime="2017-01-07T15:49:40.000Z" class="post__time">January 7, 2017</time><h1 class="post__title"><a href="/post/nginx-strange-403-forbidden-bug/">Nginx 奇怪的 403 Forbidden 問題</a></h1></header><div class="post__main echo"><p>說是要將原博客內容靜態化的嘛, 為了在解析原博的文章時能夠快速的獲取, 用 <code>wget</code> 將原博客的所有內容都下載到本地了, 但是本地之前從沒安裝過 web 服務, 因此就現安裝了個 nginx, 安裝過程都很順利, 但是在配置訪問路徑卻遇到了 <code>403 Forbidden</code> 的錯誤, 能出現這個錯誤, 無非就是在 nginx 的網站配置中未指定 <code>index</code> (或者配置的路徑沒有 index 文件), 再有就是配置的路徑權限問題.</p>
+<p>然而, 我測試了很多次, <code>index</code> 是有設置的, 且配置的路徑中也就 index 文件, 那就不應該是這個問題.</p>
+<p>那很有可能是路徑權限的問題, 我看了下 nginx 安裝後默認生成的 web 目錄下的權限, 和我的 web 目錄權限, 發現都是一樣的, 差別就是 nginx 的 web 目錄所屬人和組是 <code>root</code> 而我的 web 目錄是當前賬戶的.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">~$ ls -la /usr/share/nginx/html</span><br><span class="line">drwxr-xr-x 2 root root 4096 11月 19 04:14 .</span><br><span class="line">drwxr-xr-x 3 root root 4096 11月 19 04:14 ..</span><br><span class="line">-rw-r--r-- 1 root root  537 11月 19 04:14 50x.html</span><br><span class="line">-rw-r--r-- 1 root root  612 11月 19 04:14 index.html</span><br><span class="line"></span><br><span class="line">~$ ls -la dev/wwwroot/</span><br><span class="line">drwxr-xr-x 4 iaceob iaceob 4096  1月  7 23:46 .</span><br><span class="line">drwxr-xr-x 3 iaceob iaceob 4096  1月  7 23:44 ..</span><br><span class="line">-rw-r--r-- 1 iaceob iaceob    7  1月  7 23:18 index.html</span><br><span class="line">drwxr-xr-x 6 iaceob iaceob 4096  6月 25  2016 store</span><br></pre></td></tr></table></figure>
+<p>然後就測試將這個 web 目錄所屬改成 root, 但是仍然是 403.</p>
+<p>去搜索 nginx 403 錯誤出來的結果, 解決方案, 大致幾種</p>
+<ul>
+<li>給 web 目錄 www-data(nginx) 賬戶權限<br>在安裝 nginx 後, 壓根就沒給我建立這個賬戶</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">~$ id www-data</span><br><span class="line">id: ‘www-data’: no such user</span><br><span class="line">~$ id nginx</span><br><span class="line">id: ‘nginx’: no such user</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>給 web 目錄 775 權限<br>測試後發現仍然不行, 甚至設置 777 權限也不行 = =</p>
+</li>
+<li><p>修改 nginx 啟動賬戶</p>
+</li>
+</ul>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#user html;</span></span><br><span class="line"><span class="attribute">worker_processes</span>  <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">#error_log  logs/error.log;</span></span><br><span class="line"><span class="comment">#error_log  logs/error.log  notice;</span></span><br><span class="line"><span class="comment">#error_log  logs/error.log  info;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#pid        logs/nginx.pid;</span></span><br></pre></td></tr></table></figure>
+<p>上面這個是安裝後的默認配置, <code>user</code> 這個配置是直接被註釋的, 那也就是不可能是啟動賬戶的問題, 拿 <code>systemctl</code> 啟動的 nginx 那默認賬戶應該就是 root.</p>
+<p>那看似也不是目錄權限的問題了…</p>
+<p>最後, 在測試了次, 把目錄建立在非當前賬戶目錄下, 平時為了方便, 所有工程都是放在自己賬戶根目錄下的, 測試時在 /opt 下建立了一個 web 目錄, 將 nginx 配置指向到該目錄, 竟然就可以了 (╯°Д°)╯ ┻━┻<br>在 opt 建立目錄需要用 root 賬戶才行, 為了測試是不是自己賬戶的所屬目錄不能作為 web 目錄, 將該目錄屬主和屬組都改成自己賬戶, 發現仍然可以 (╯°Д°)╯ ┻━┻</p>
+<p>之所以優先設置自己賬戶目錄, 一是方便, 在一個另外一台線上的服務器就是這麼配置的都沒有發生問題, 不知道是不是新版本問題還是怎樣.<br>現在我能想到的問題有可能是跨硬盤的問題, 機器上有兩塊硬盤, 一個是 ssd 掛載的是 /home 也就是平時用的, 另一塊是機械硬盤, 掛了好幾個節點(純屬瞎猜).</p>
+<p>問題算是解決了 = =</p>
+<p>之後就將 opt 的 web 目錄, 放了一個軟鏈接到 home 來, 後面又測試了下, 將 nginx 的配置路徑改成 home 的軟鏈接也不行, 但是其他位置的就可以 (還放了一個 <code>/data/www -&gt; /opt/www</code> 的軟鏈接), <code>/opt/www</code> 和 <code>/data/www</code> 都可以, 就是軟鏈接到 home 的又變成 403 了.</p>
+<p>奇怪 = =</p>
+<p>該怎麼解釋這個問題了 .</p>
+</div><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a href="/tags/nginx/" class="post__tag__link">nginx</a></li><li class="post__tag__item"><a href="/tags/403/" class="post__tag__link">403</a></li></ul><a href="/post/nginx-strange-403-forbidden-bug/#disqus_thread" class="post__foot-link u-fr">0 COMMENTS</a></footer></article><article class="post"><header class="post__head"><time datetime="2016-12-31T13:50:44.000Z" class="post__time">December 31, 2016</time><h1 class="post__title"><a href="/post/moan-part-2/">繼續呻吟</a></h1></header><div class="post__main echo"><p>嗯 …<br>這裡沒有年終總結, 也從來都沒年終總結, 這個年也還沒完, 對.</p>
 <p>不知道怎的, 一下子想到了某年前的今天 <a href="http://old.3u3.me/js-parse-lyric/" title="至少在我沒將原文章恢復前, 是無法反問的" target="_blank" rel="external">js 解析歌词</a>, 就是在大半夜寫的這篇文章, 其實寫的是什麼都忘記了, 只記得當時寫了好久, 已經第二天了.</p>
 <p>沒多大變化, 又這樣度過這一年, 做了不少決定, 跑了半個天朝, 但是了 ╮(╯_╰)╭ , 仍然是一切如初, 甚至連一件值得提起的事情都沒有.</p>
 <p>老早老早以前, 就說過, 不浮躁, 可是現在看回去, 不僅是沒做到, 而是真的浮躁起來了, 而且還養成了諸多自己都覺得是不好的習慣, 說起來, 也是自己太高估自己的自制力. 努力想要改變, 執行力又不夠, 想得總是很好, 但是就是沒法或者說拖延不想去做.</p>
@@ -373,32 +398,4 @@
 <h2 id="本地無法登入"><a href="#本地無法登入" class="headerlink" title="本地無法登入"></a>本地無法登入</h2><p>同樣修改 <code>pg_hba.conf</code> 配置文件, 找到 local 行配置</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">local all all peer</span><br></pre></td></tr></table></figure>
 <p>將 peer 改成 md5</p>
-</div><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a href="/tags/deploy/" class="post__tag__link">deploy</a></li><li class="post__tag__item"><a href="/tags/postgresql/" class="post__tag__link">postgresql</a></li></ul><a href="/post/pg-setup-centos/#disqus_thread" class="post__foot-link u-fr">0 COMMENTS</a></footer></article><article class="post"><header class="post__head"><time datetime="2016-07-14T13:42:58.000Z" class="post__time">July 14, 2016</time><h1 class="post__title"><a href="/post/lose-ability/">能力的丧失</a></h1></header><div class="post__main echo"><p>今天来说一说能力的丧失</p>
-<p>在这之前先说几则可能很多人都听说过的故事</p>
-<ol>
-<li><p>烧饼 OR 西瓜 </p>
-<blockquote>
-<p>妻子对正要上班出门程序员丈夫说: “晚上回来时买两个烧饼,如果看到卖西瓜的,买一个.”<br>转眼到了下午下班,丈夫回到家把一个烧饼放到桌上,妻子怒问: “为什么就买一个烧饼?!”<br>丈夫答曰: “因为我看到了卖西瓜的.”</p>
-</blockquote>
-</li>
-<li><p>摧毁</p>
-<blockquote>
-<p>一个合格的程序员是不会写出诸如“摧毁地球”这样的程序的,他们会写一个函数叫”摧毁行星”,而把地球当一个参数传进去.</p>
-</blockquote>
-</li>
-<li><p>1024</p>
-<blockquote>
-<p>店主: 1050, 不还价.<br>码农: 便宜点, 凑个整吧.<br>店主: 1000?<br>码农: 1024. </p>
-</blockquote>
-</li>
-</ol>
-<p>故事到这, 想必应该知道要说的是什么了.</p>
-<p>那么再说一个我的故事</p>
-<p>店主: 共 22.5<br>我: 掏出 23<br>我: 再拿一个 x<br>店主: 共 38.5<br>我: 一脸茫然<br>我: 掏出 15<br>我: 一脸茫然<br>我: 再掏出 5<br>店主: 打包<br>店主: 找 4.5<br>我: 一脸茫然<br>我: 开门走人</p>
-<p>好, 到这里, 可能看我说完, 应该是会觉得一脸茫然是因为数学没学好 (不否认).<br>然而我的一脸茫然却是因为, 我是把这当作两件事情看待, 因为长期的工作中, 思维方式潜移默化的会将复杂的事情分开做, 每件事情都应该独立完成, 而并非是交叉的方式.<br>人脑其实和 Javscript 的解析器很相似, 都是单线程运行的, 无法同时运作多件事情.<br>如果店主的处理方式是</p>
-<p>店主: 共 22.5<br>我: 掏出 23<br>我: 再拿一个 x<br>店主: 找 0.5<br>店主: 打包<br>我: 掏出 20<br>店主: 找 4<br>我: 开门走人</p>
-<p>这应该才是最简单直接以及便于理解的方案.</p>
-<p>这时<br>店主: 错!</p>
-<p>没错, 对于商铺来说, 这效率是非常低下的, 这期间会浪费掉很多的时间, 因此也就造成了各个店铺收银员强大的点钞技能, 能够在很短的时间内就可以合并多次计算的结果.</p>
-<p>最后, 题目所说的能力的丧失(或者说其实压根就没有获得过该能力), 就是 1024 凑整的事情真的有可能发生的身边.</p>
-</div><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a href="/tags/lose/" class="post__tag__link">lose</a></li></ul><a href="/post/lose-ability/#disqus_thread" class="post__foot-link u-fr">0 COMMENTS</a></footer></article></main><footer class="foot"><div class="foot-copy u-fl">&copy; 2017 iaceob</div><menu class="page-menu u-fr"><li class="page-menu__item"><span title="Previous" class="page-menu__link icon-arrow-left page-menu__link--disabled"></span></li><li class="page-menu__item"><a title="Next" href="/page/2/" class="page-menu__link icon-arrow-right"></a></li></menu></footer></body></html>
+</div><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a href="/tags/deploy/" class="post__tag__link">deploy</a></li><li class="post__tag__item"><a href="/tags/postgresql/" class="post__tag__link">postgresql</a></li></ul><a href="/post/pg-setup-centos/#disqus_thread" class="post__foot-link u-fr">0 COMMENTS</a></footer></article></main><footer class="foot"><div class="foot-copy u-fl">&copy; 2017 iaceob</div><menu class="page-menu u-fr"><li class="page-menu__item"><span title="Previous" class="page-menu__link icon-arrow-left page-menu__link--disabled"></span></li><li class="page-menu__item"><a title="Next" href="/page/2/" class="page-menu__link icon-arrow-right"></a></li></menu></footer></body></html>
