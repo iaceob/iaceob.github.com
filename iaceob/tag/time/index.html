@@ -1,0 +1,30 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>time - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2015-11-25T21:00:25.000Z">November 25, 2015</time> <h1><a href="/post/this-time-to-talk-about-the-experience-of-doing-performance-optimization/">谈谈这段时间做的效能优化经历以及千奇百怪的时间提取方案</a></h1> </header> <section class="post-main"><p>如前些天的<a title="日常" href="/post/daily-part-1/">日常</a>说的那样, 要解决各式各样的时间解析问题, 最终在原有的提取方式上又加入了一层提取方式.</p> <p>说性能之前先谈谈网页具体时间获取的方式, 使用了四种途径获取.</p> <p>1. 首先会从各搜索引擎的结果页中提取时间</p> <img src="/img/this-time-to-talk-about-the-experience-of-doing-performance-optimization/1.png"> <p>这个时间有着非常高的不确定性, 并非所有都存在时间, 而且时间格式还不固定, 在有这个时间也并非就一定是内页的发布时间.</p> <p>2. 使用 url 来获取时间, 类似如下的 url</p> <p>http://example.com/2015/1125/test.html</p> <p>依此来获取时间就能得到很准确的具体发布时间了, 通常格式也就那么几种, 做提取也很容易.</p> <p>同样这也会存在问题, 譬如下面俩个链接</p> <p>http://example.com/2015/11/29812.html</p> <p>http://example.com/2015/11/75632.html</p> <p>若是不能分析好的话, 可能会造成第一个链接获取时间错误得到了 2015-11-29, 这并不是正确的.</p> <p>但是并非所有的站点链接都会有发布的时间, 而且不能精确到具体的时间, 只能够到某天.</p> <p>3. 使用大批量的正则在网页中来匹配时间格式.</p> <p>通常这种方式能够获取带很准确的时间信息, 只要是有存在时间, 并且有对应的正则匹配, 就能获取到详细的时间, 不过带来的问题是严重的性能消耗, 这也是下面将要提到的问题.</p> <p>4. 不靠谱的时间提取器</p> <p>这个了其实也是依赖正则匹配来提取, 实质上也和方案 3 类似, 不过类似与这种提取器所提取的时间, 错误率非常高, 通常会返回很多时间给你, 其中或许确实存在正确的时间, 但是无从判断哪个才是正确的, 与买彩票形式差不多.</p> <p>最终权衡, 这四种方式都作为时间提取的方案一并考虑, 优先的原则是, 2&gt;3&gt;4&gt;1 , 将从 url 中获取的时间作为最优先选择, 在而使用定向规则匹配, 在考虑提取器 最后考虑搜索结果页中的时间, 若都不能获取, 那只能说 byebye.</p> <p>按照上述的方式获取基本山是能够提取出千奇百怪的时间了</p> <p> </p> <p>接下来说说性能这事</p> <p>如上方说的第二种方案, 利用大批量正则匹配时间, 正则是非常消耗性能的, 拿具体的代码来演示性能这事吧.</p> <pre>List&lt;String&gt; regexList; // 假设这里面存在 n 多个正则表达式
+</pre> <p> </p> <pre>public String extraTime(String content, String regex){
+    Pattern p = Pattern.compile(regex);
+    Matcher m = p.matcher(content);
+    if (!m.find()) return null;
+    return m.group("name");
+}
+
+public void extra(){
+    String content = ""; // 假设这就是要提取的文本
+    for (Integer i=0; i&lt;regexList.size(); i++) {
+        this.extraTime(content, regexList.get(i));
+    }
+}
+</pre> <p>另一种方式</p> <pre>public String mergeRegex(){
+    StringBuilder sb = new StringBuilder();
+    for (Integer i=0; i&lt;regexList.size(); i++) {
+        sb.append("(").append(regesList.get(i))
+             .append(i+1==regexList.size() ? ")" : ")|");
+    }
+    return sb.toString();
+}
+public void extra(){
+    String content = "";
+    Pattern p = Pattern.compile(this.mergeRegex());
+    Matcher m = p.matcher(content);
+    if (!m.find()) return;
+    m.group("name");
+}
+</pre> <p>优化方式只是把每个正则分别提取改为了把所有正则合并为一个正则用或的关系放在一次, 减少了多次创建 Pattern 类, 从而提高匹配的效率, 这个结果是非常明显的.</p> <p>其实道理大家都懂= = 也听说过正则很慢, 可是从第一反映仍然是使用逐个遍历的方案, 也有不想思考的原因, 只有到问题出现了才会去想办法解决....<br/> 正则真的很慢, 而且性能开销非常大, 能不用就不用.</p> <p>(文中代码并不具有实际作用, 只是实现逻辑而已)</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/extra">extra</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/pattern">pattern</a></li> <li><a href="/tag/time">time</a></li> </ul> </footer> </article> <menu class="page"> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

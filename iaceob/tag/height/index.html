@@ -1,0 +1,15 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>height - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2014-12-09T22:23:37.000Z">December 9, 2014</time> <h1><a href="/post/iframe-auto-height/">iframe 自适应高度</a></h1> </header> <section class="post-main"><p>很久以前就在网络的某处找到过一个iframe自适应高度的文章, 并且测试过还非常好用, 可惜当时这个方案被取消了, 而是使用了frameset代替了iframe来实现页面搭建了, 当时就直接修改了, 也没有在意. 直到今天突然有人在问iframe怎么自适应高度... 原文件已经找不到了, 又是一番查找, 果然找到的都不是想要的, 然后就自己重写了个. 虽然还有瑕疵.</p> <p>初级方案:</p> <p>使用onload在iframe加载完毕后触发一个函数获取iframe页面的高度, 然后修改父页面iframe标签的height值, 达到高度自适应的目的.</p> <p>在被iframe的页面中添加如下代码</p> <pre>&lt;script&gt;
+function resetSize(){
+    var height = document.body.scrollHeight;
+    parent.document.getElementById('frameid').style.height = height+'px';
+};
+window.onload=resetSize;
+&lt;/script&gt;</pre> <p>这样iframe在加载完毕后就会同步父页面的高度与iframe页面的高度一样, 虽然实现起来很简单, 但是有些不足, onload 在加载后就会在工作了, iframe的页面如果有其他操作父页面的高度是不会更改的onload只会在页面加载完毕后执行.</p> <p> </p> <p>终极方案:</p> <p>利用 DOMNodeInserted 和 DOMNodeRemoved 事件来监听节点的改变, 调用重置函数来同步高度.</p> <p>给被iframe的页面body添加 DOMNodeInserted DOMNodeRemoved 这俩个事件来监听页面内容的增加或删除, 同步父页面iframe标签的高度.</p> <p>在被iframe的页面中添加如下代码</p> <pre>&lt;script&gt;
+function resetSize(){
+    var height = document.body.scrollHeight;
+    parent.document.getElementById('frameid').style.height = height+'px';
+};
+window.onload=resetSize;
+document.body.addEventListener('DOMNodeInserted', resetSize, false);
+document.body.addEventListener('DOMNodeRemoved', resetSize, false);
+&lt;/script&gt;</pre> <p>这样就能够实现实时内容同步了, 不过至少我没测试过兼容性= =, firefox dev 是可以正常运行的.</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/auto">auto</a></li> <li><a href="/tag/height">height</a></li> <li><a href="/tag/html">html</a></li> <li><a href="/tag/iframe">iframe</a></li> <li><a href="/tag/javascript">javascript</a></li> </ul> </footer> </article> <menu class="page"> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

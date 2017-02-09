@@ -37,7 +37,5 @@ Disallow: /
 User-agent: YodaoBot
 Disallow: /
 
-User-agent: *
-Disallow: /iaceob/
+Sitemap: https://iaceob.3u3.me/sitemap.xml
 
-Sitemap: http://blog.3u3.me/sitemap.xml

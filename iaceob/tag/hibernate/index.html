@@ -1,0 +1,161 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>hibernate - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2015-04-23T13:48:29.000Z">April 23, 2015</time> <h1><a href="/post/come-to-talk-about-orm/">再来谈谈 ORM</a></h1> </header> <section class="post-main"><p>关于 ORM 的解释见 <a title="对象关系映射" href="http://zh.wikipedia.org/wiki/%E5%AF%B9%E8%B1%A1%E5%85%B3%E7%B3%BB%E6%98%A0%E5%B0%84" target="_blank">对象关系映射</a> .</p> <p>简单的来说就是对于每个项目上应用最广泛的数据库中每张表所对应的实体类, 实体类中每个变量对应这数据表中的每个字段. 并且有封装着简单的对数据库的访问, 也就是 CURD (create update read delete).</p> <p>这样确实是有很多好处的, 比如在实体类中对进行数据库操作的数据进行校验以及数据的正确性确认, 避免了插入一些危险的语句, Thinkphp 在这方面就做了有 自动验证 自动完成 等功能, 详见 Thinkphp 文档中说明.</p> <p>ORM 的一些比较出名的产品, 比如 java 中的 hibernate 框架. 实现了 ORM 的所有操作. 并且被用于众多大型项目中.</p> <p>但是真的需要用 ORM 方式来实现数据库操作吗 .</p> <p>就拿 hibernate 来说(已经很久没用了), 比如如下环境</p> <p>db 一个简单的用户表</p> <pre>create table person(
+ uid varchar(30) not null,
+ name nvarchar(50) not null,
+ password varchar(50) not null,
+ email nvarchar(50) not null,
+ gender tinyint,
+ ctime datetime,
+ primary key(uid)
+);</pre> <p>entity hibernate 中相应的实体类</p> <pre>public class Person(){
+ private String uid;
+ private String name;
+ private String password;
+ private String email;
+ private Short gender;
+ private Timestamp ctime;
+
+ public Person(){};
+
+ public String getUid(){ return this.uid; }
+ public String getName(){ return this.name; }
+ // .....
+ public void setUid(String uid){ this.uid=uid; }
+ public void setName(String name){ this.name=name; }
+
+ public String toString(){ return ''; };
+
+}</pre> <p>这个实体类就是用来描述数据表 person 的.</p> <p>比如现在有个需求要修改用户名, 那么实现肯定是通过语句</p> <pre>update person set name=? where uid=?</pre> <p>这样来实现的, hibernate 是怎么做的了, 首先先将这句 SQL 翻译成 HQL(hibernate 定义的一种数据库操作语句), 然后这里需要俩个字段相应的也就是实体类中 uid 和 name 变量, 因此 实体类中就需要有相应的构造器</p> <pre>public Person(String uid, String name){
+ this.uid = uid;
+ this.name = name;
+}</pre> <p>之后执行 HQL(已经不知道这个HQL该怎么写) 和实例化这个构造器就能够自动修改名称了.</p> <p>需求是完成了, 不过命名就只是一句 SQL 就能解决的事情却要搞得这么麻烦? 明明可以封装一个数据库操作类, 直接执行 SQL, 返回影响行数很简单的几句代码就能完成操作.</p> <p>好, 要说 java 本来就很繁琐, 那再来看看 php.</p> <p>当然 也就是前文提到的 thinkphp</p> <p>thinphp 提供了 D 和 M 函数来使用 Model 操作数据库.</p> <p>关于 M 和 D 的区别可以去观看 thinkphp 的文档.</p> <p>那么还是之前的这个表</p> <p>现有需求添加一个用户, 那么</p> <p>Model 添加 person 的 model 类</p> <pre>&lt;?php
+ class PersonModel extends Model{
+  protected $pk = 'uid';
+  protected $tableName = 'person';
+  protected $map = array(
+   'id' =&gt; 'uid',
+   'name' =&gt; 'name',
+   ...
+  );
+  protected $_validate = array(
+   array('id', 'require', 'id not null', 1);
+   // ...
+  );
+  protected $_auto = array(
+   array('ctime', 'getTime', 3, 'callback')
+  );
+
+  function getTime(){
+   return time();
+  }
+ }
+?&gt;</pre> <p>然后就是在具体的控制器中使用了</p> <pre>$model = D('Person');
+if (!$model-&gt;create()) echo $model-&gt;getError();die;
+echo $model-&gt;save() ? 'success' : $model-&gt;getError();</pre> <p>这样就完成了整个流程了, 也实现了需求.</p> <p>同时了 thinkphp 还提供了另外一种方式, 同样是这个需求, 来试试怎么完成.</p> <pre>$model = new Model();
+$sql = "insert into person(id, name, email, password, gender, ctime) values ('%s', '%s', '%s', '%s', %d, now())";
+$res = $model-&gt;execute($sql, array('1', 'test', 'test@example.com', md5('password'), 1));
+echo $res ? 'success' : $model-&gt;getError();</pre> <p>同样实现了这个需求, 这俩中方式到底是说着简便的 active record 模式还是这种原生的 sql 执行方式了?</p> <p>一目了然, 肯定是后者. 或许 ORM 这种方式确实存在着某些优势, 不过这些优势并不是选择这种方式的理由, 因为这种方式有个最大的弊端, 就是做不了复杂的多表业务逻辑操作.</p> <p>没错, 比如像 thinkphp 的 model 是提供 <code>-&gt;join();</code> 这种方式来进行关联的.像下面:<br/> 比如还有另外一张关联表, 存储这 用户所对应的城市 person_city | uid city<br/> 和一张城市的表 city | id name<br/> 现在想要查出用户所在的城市</p> <pre>$model = new Model();
+$arr = $model-&gt;table(C('DB_PREFIX') . 'person as p')
+             -&gt;field('p.name as person_name, c.name as city_id')
+             -&gt;join('left join ' . C('DB_PREFIX') . 'person_city as pc on p.uid=pc.uid')
+             -&gt;join('left join ' . C('DB_PREFIX') . 'city as c on pc.city=c.id')
+             -&gt;where(array('p.uid'=&gt;'1'))
+             -&gt;select();
+var_dump($arr);</pre> <p>这个查询出来的结果确实是我们想要的, 而且灵活的运用了 thinkphp model 的 active record 方式.</p> <p>那么再用原始的 sql 方式实现试试</p> <pre>$model = new Model();
+$sql = "select
+p.name as person_name, c.name as city_id
+from person as p
+left join person_city as pc on p.uid=pc.uid
+left join city as c on pc.city=c.id
+where p.uid='%s'";
+$arr = $model-&gt;query($sql, array('1'));
+var_dump($arr);die;</pre> <p>这是不是同样是需求所要的结果? 而且是不是相对于更加容易理解? 分析下来这段代码的意思就是先实例化一个 Model 对象, 然后定义一个 SQL 语句, 在执行这个 SQL 语句, 将返回的结果答应, 就是这么简单易解的方式. 而上面那个沉长的语句是什么意思了, 来一句一句分析下.</p> <p>首先实例化一个 Model 对象.</p> <pre>$model-&gt;table('xx') // 告诉 model 这是主表
+-&gt;field('xx') // 要查询这些字段
+-&gt;join('left join person_city') // 关联person_city这张表
+-&gt;join('left join city') // 关联 city 这张表
+-&gt;where('p.uid'=&gt;'1') // 查询的 条件
+-&gt;select() //   执行查询
+</pre> <p>这对于已经熟练使用的人来说是非常便于理解的, 不过如果是未接触过这种方式的人来说表达的意思很含糊, 不直观, 而且很多都是不必要的代码, 我相信基本上程序员都接触过 SQL, 而不可能所有人都接触过 active record 这种方式.</p> <p>另外这个简单的多表关联是可以实现, 如果是复杂的了? 比如之前写过的一篇文章 <a title="sql 中 full join 于 union" href="/post/sql-full-join-and-union/" target="_blank">sql 中 full join 于 union</a> 分别将 full join 和 union 实现的查询结果以 active model 的方式查询出来试试(thinkphp 还有另一种关联的方式, 不是通过 -&gt;join 而是使用关联模型)? 有理由相信就是这么简单的一句 sql 采用 关联模型 方式来实现, 这个模型会非常复杂, 而且还不容易理解.</p> <p>要知道, 包括 tinkphp 的 $model-&gt;table(‘xx’) 和 hibernate 的 hql , 数据库是不明白的, 所以说, thinkphp 和 hibernate 在提交数据库的时候还是会将这些翻译成数据库认识的 SQL 语句, 才能够正确的查询, 所以这不是在脱裤子放屁?<br/> 特别是 hibernate 的 hql 无中生有的造出了一种新的用法, 和 sql 完全不同, 而且 hibernate 还不能够建立 视图 的模型, 要知道数据库视图在实际项目中会频繁的用到.</p> <p>在比如, 你是一个开发人员用了 thinkphp 的关联模型或者是 java 的 hibernate 来实现操作数据的, 这个时候你有一个需求是非常复杂的数据库查询, 你并不会写, 所以你去问了 DBA 这个怎么写, DBA 花了 2 个小时终于把这个查询语句写出来了, 交给你, 这个时候你傻了, DBA 给你的是 SQL 语句, DBA 不一定会你所用的关联模型或者 HQL, 那么你还得用 2 个小时来把这句 SQL 翻译成 关联模型或者 HQL, 之后项目完成了, 上线了, 程序又会将 关联模型 或者 HQL 翻译成 SQL 传给数据库执行...</p> <p>所以这到底是简化了开发流程还是复杂了开发流程了.</p> <p>另一个想吐槽的是 thinkphp 的 C(‘DB_PREFIX’) , 就上文代码中使用过. 这个值获取数据库的表前缀, 配置在 config.php 中; 完全就是个鸡肋的设计, 你想啊, 项目上线后数据库表名怎么会该啊, 要到改数据的地步那相信就是数据库底层设计又问题了啊, 基础都又问题还怎么写代码? 另外万一一个库又俩种表前缀又怎么办?在定义一个 DB_PREFIX2 ? 别折腾了吧.... 又不实用 写的时候又麻烦 还得用连字符连起来, 给个特殊符号自动替换表前缀也比连字符强吧, 写起来多烦?</p> <p>--</p> <p>写这篇文章了, 其实最近有在看 nodejs , 查询了一些文章, 关于数据库操作, 数据库操作也是实用类似 Thinkphp 这种实现方式. 完全没明白, nodejs 是新世纪的语言为什么还存在着旧世纪的思维方式(或许是我没能明白这种方式的好处), 甚至还见到过 nodejs 封装一个实体存储数据, 哥哥....这不是java, java因为数据类型不能够直观的表达数据表才会有实体类封装, 一看实体就基本上能理解表(个人认为), 但是有看过 nodejs 的各种数据库驱动 包括 nosql 和 关系型数据库查询出来的数据返回都是标准的 js 对象啊... 已经可以直接调用的拉, 没必要在封装成实体了啊..</p> <p>大概就这些了, 反正关联模型这东西, 不要轻易去碰, 至少如果你的团队不大, 就几个人, 不要用这种方式, 会累死你还不一定能完成想要的结果.</p> <p>都说要精益求精, 化繁为简, sql 执行多么简单明了, 多去学习下 sql 语句吧. 那些各种 orm 框架说了支持多数据库, 不要被忽悠了, 除非是那种大型的商业级的项目可能会考虑到多数据库, 中小型项目一个数据库基本上就满足了, 因此你的代码更不就不需要去考虑对多数据库的支持, 再说 sql 语句大部分也是通用的, 只是个中有些语法上的区别, 总体都差不多.</p> <p>sql 语句能做很多事情, 并不比某种程序语言弱, 不要因为各种所谓的兼容等而忘却了根本, 还是那句 数据库是不认识任何 ORM 框架所提供的各种代码, 都是翻译成 SQL 语句提交给数据库的.</p> <p>本文代码并不一定完全正确, 只做演示说明.</p> <p>文末附上些连接:<br/> <a href="http://www.cnblogs.com/kuber/archive/2008/05/09/1188463.html" target="_blank">回复:什么是ActiveRecord</a><br/> <a href="https://github.com/amoa400/aa-mysql" target="_blank">aa-mysql</a></p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/activerecord">activerecord</a></li> <li><a href="/tag/hibernate">hibernate</a></li> <li><a href="/tag/hql">hql</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/model">model</a></li> <li><a href="/tag/orm">orm</a></li> <li><a href="/tag/php">php</a></li> <li><a href="/tag/sql">sql</a></li> <li><a href="/tag/thinkphp">thinkphp</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-12-10T11:07:20.000Z">December 10, 2013</time> <h1><a href="/post/hibernate3-case-by-java-lang-nosuchmethoderror-javax-persistence-onetoone-orphanremovalz/">hibernate3 – case by: java.lang.NoSuchMethodError: javax.persistence.OneToOne.orphanRemoval()Z</a></h1> </header> <section class="post-main"><p>从 hibernate3.3 升级到 hibernate3.5</p> <p>项目中使用hibernate版本是 3.3 (。。。)</p> <p>但是由于项目需求 需要使用 <code>@Subselect</code> 注解来完成复杂的数据查询</p> <p>但是 3.3 不支持 <code>@Subselect</code> 。。。</p> <p>然后 就各种蛋疼。。。。</p> <p>那么就升级吧</p> <p>下载了个 4.0 。。完全跑不起来</p> <p>折磨了好长时间</p> <p>然后找最接近的版本 配置应该差不多</p> <p>下载了 3.5</p> <p>spring 的 <code>applicationContext.xml</code> 文件中也没有改什么配置</p> <p>只是要注意 hibernate 的 jar 包</p> <p>项目中使用 hibernate annoation 来进行配置的</p> <p>hibernate 3.3 的 annotation 是独立的包 也就是需要导入几个包</p> <pre>hibernate3.jar
+hibernate-annotations.jar
+hibernate-commons-annotations.jar</pre> <p>但是 hibernate3.5 的 annotation 已经集合到了 hibernate3.jar 中</p> <p>心惊肉调 。。。这不坑爹吗。。。</p> <p>果然 删除了 hibernate3.3 的jar包 把 hibernate3.5 的 jar包拷贝进去配置没改 直接报错了 。。。。</p> <p>一番查找</p> <p>结果：</p> <p>hibernate3.5 需要导入 <code>hibernate-jpa-2.0-api-1.0.0.Final.jar </code>hibernate3.5 使用jpa标准注解。</p> <p>然后又报错了。。。</p> <p>错误内容如标题</p> <p>又一番查找</p> <p>hibernate-jpa-2.0-api-1.0.0.Final和ejb3-persistence有冲突，如果升级到 Hibernate3.5<br/> 那么可以把ejb3-persistence干掉</p> <p>然后 我泪奔了 终于特么好了。。。。</p> <p>===================</p> <p>表示不仅仅就这里说的几个错误。。。。</p> <p>还有好多没记录</p> <p>反正好蛋疼的说</p> <p>真被折腾的我 。。。</p> <p>hibernate 操作数据是方便 但是抛弃了sql的灵活性。。</p> <p>太高深</p> <p> </p> <ul> <li>http://www.cnblogs.com/hqr9313/archive/2012/08/14/2638168.html</li> </ul></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/hibernate">hibernate</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/nosuchmethoderror">NoSuchMethodError</a></li> <li><a href="/tag/spring">spring</a></li> <li><a href="/tag/subselect">subselect</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-11-08T15:37:24.000Z">November 8, 2013</time> <h1><a href="/post/not-free-to-use-lazy-loading/">不要随意使用懒加载！！</a></h1> </header> <section class="post-main"><p>记得之前看过说 hibernate 的懒加载使用 是在需要的地方就使用不需要的地方就不要使用。。。。</p> <p>很蛋疼的一句话 谁都知道啊 。。。。</p> <p>---</p> <p>虽然很蛋疼 不过还真就体会了一次 懒加载严重影响了系统的运行 代码如下</p> <p>分别有A实体类和B实体类 并且是多对多关系</p> <p>最终生成的表有3张 a b c 其中c表存储的是a表的id和b表的id</p> <pre>        Set&lt;A&gt; as = new HashSet&lt;A&gt;();
+        A a = new A();
+        String[] split = module.split(",");
+        int aId;
+        for (int i=0; i&lt;split.length; i++) {
+            try {
+                aId = Integer.parseInt(split[i]);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "类型错误";
+            }
+            a = this.moduleDao.getAById(aId);
+            modules.add(a);
+        }
+        B b = new B();
+        b.setBID(bID);
+        b.setBName(bName);
+        b.setAs(as);
+        b.setCreateUserID(uid);
+        b.setCreateTime(new Date());
+        String saveBID = this.bDao.saveB(b);</pre> <p>保存的代码就如上面 感觉很但疼 hibernate 这操作 。。。。。 还需要循环去查询数据库。。。</p> <p>然后就去跑了一遍，惊呆了，花了40多秒才执行完。。。。</p> <p>很是不解 非常不解 。。。</p> <p>试了好多次 下面这些是记录下来的 耗时 (根据测试数据不同隔开)</p> <pre>用时36539毫秒；36.539秒
+用时27813毫秒；27.813秒
+用时26473毫秒；26.473秒
+用时30016毫秒；30.016秒
+------------
+用时29684毫秒；29.684秒
+用时44141毫秒；44.141秒
+用时28434毫秒；28.434秒
+用时31013毫秒；31.013秒
+------------
+用时26366毫秒；26.366秒
+用时28442毫秒；28.442秒
+用时36296毫秒；36.296秒
+用时31299毫秒；31.299秒
+------------
+用时42439毫秒；42.439秒
+用时44764毫秒；44.764秒
+------------
+用时6260毫秒；6.26秒
+用时3809毫秒；3.809秒
+用时4187毫秒；4.187秒
+用时3640毫秒；3.64秒
+---------
+用时23520毫秒；23.52秒
+---------
+用时65622毫秒；65.622秒
+
+</pre> <p>只有几条数据的时候 就比较快 数据一多 耗时都是30-40左右。。。</p> <p>这特么还是本地测试。。。。</p> <p>之后看了下 hibernate 生成的 sql 发现查询b的时候把a也给查了而且只要是有数据的全部都给查了 这特么怎么能不慢 。。。。</p> <p>检查后发现b实体类中关联a类采用了懒加载</p> <p>把懒加载去掉后 再次去执行</p> <p>有了质的提高 不过 数据多了 还是有点慢 但是 比懒加载快很多！！！！</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/hibernate">hibernate</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/lazy">lazy</a></li> <li><a href="/tag/load">load</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-11-04T13:53:17.000Z">November 4, 2013</time> <h1><a href="/post/hibernate-errror-a-different-object-with-the-same-identifier-value-was-already-associated-with-the-session/">a different object with the same identifier value was already associated with the session</a></h1> </header> <section class="post-main"><p>hibernatre 出现如下错误： a different object with the same identifier value was already associated with the session</p> <p>--</p> <p>找了很多资料都说这是一个hibernate经典的错误。</p> <p>错误的原因是因为hibernate在执行操作数据库的时候在session 中发现了同一个实体类有着多个不同的下表 那么hibernate就不知道该去找那个来进行提交了。</p> <p>下面是我代码运行的错误报告</p> <pre>DEBUG - Collection found: [name.iaceob.entity.Aent.bents#61], Was:[name.iaceob.Aent.bents#61](initialized)
+DEBUG - Collection found: [name.iaceob.entity.Bent.aents#1], Was:[name.iaceob.Bent.aents#6](initialized)
+DEBUG - Collection found: [name.iaceob.entity.Bent.aents#1], Was:[name.iaceob.Bent.aents#6](initialized)
+DEBUG - Flushed: 0 insertions, 0 updates, 0 deletions to 3 objects</pre> <p>在执行操作的时候 出现了3个object 其他的文章中也说过出现这种错误大多是在 一对多 或者 多对多 的关系中</p> <p>因为在这中关系中 hibernate 在操作数据库的时候会将这些数据都查出来赋值给对象 最终操作数据库的时候 session 中将会出现很多个这个对象 那么就会报出这样的错误。</p> <p>关于这个错误 解释的文章也很多 也提出了很多的解决办法</p> <blockquote> <p>使用session.clean()，如果在clean操作后面又进行了saveOrUpdate(object)等改变数据状态的操作，有可能会报出"Found two representations of same collection"异常。</p> <p>使用session.refresh(object)，当object不是数据库中已有数据的对象的时候，不能使用session.refresh(object)因为该方法是从hibernate的session中去重新取object，如果session中没有这个对象，则会报错所以当你使用saveOrUpdate(object)之前还需要判断一下。</p> <p>session.merge(object)，Hibernate里面自带的方法，推荐使用。</p> </blockquote> <p>不错 貌似是得这么解决，不过都没有什么实例。</p> <p>因为我项目中用的数据操作是 HibernateTemplate 所以这里提出的解决方法是针对这种进行的 如果不是使用的 HibernateTemplate 而是直接使用的 hibernate session 进行操作的 那么应该更加方便，直接如上面引入的方法进行操作即可</p> <pre>    public void updateLevel(final Aent aent) {
+        // TODO Auto-generated method stub
+        // this.hibernateTemplate.update(aent);
+        this.hibernateTemplate.executeFind(new HibernateCallback() {
+
+            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+                // TODO Auto-generated method stub
+                Aent aent2 =  (Aent) session.merge(aent);
+                session.update(aent2);
+                return null;
+            }
+
+        });
+    }</pre> <p>上面注释的 this.hibernateTemplate.update(aent); 便是直接操作数据的方式</p> <p>因为session中会出现很多的同样的对象 报错了使用的解决方式就是上面引入内容中的 session.merge() 这个方法，merge这个方法的主要作用就是合并对象的意思 把多个对象合并成为一个对象。</p> <p>合并 aent 后赋给一个新的对象，在进行修改或者添加，这样session 中只有一个对象了 就不会出现这个错误</p> <p>如果不是使用HibernateTemplate的话 我想应该比这解决要简单的多 直接 session.merge(entity) 就解决了</p> <p>HibernateTemplate 的 executeFind 这个方法里面的返回方法 要使用传递过来的参数 必须是 final 的才可以使用 final 的变量是不可以修改的，因此在返回方法中需要重新实例化一个对象 这个对象保存的就是合并后的对象 在进行操作数据。</p> <p> </p> <p>貌似 HibernateTemplate 也有 merge clean 等方法 但是在这里也试过了 也同样会报错。不能解决问题。</p> <p> </p> <p>======</p> <p>等等 HibernateTemplate 解决办法有了 而且还更加简单方便 。。</p> <pre>public void saveNews(News news){
+      this.hibernateTemplate.merge(news);
+}</pre> <p>这样就能直接提交到数据库了 不用在save了</p> <p>这样写过</p> <pre>public void saveNews(News news) {
+     News nwes2 = this.hibernateTemplate.merge(news);
+     this.hibernateTemplate.save(news2);
+}</pre> <p>报错了 但是数据添加了 报错信息是因为 主键重复</p> <p>这里直接 merge 就提交到数据库了 返回的 merge 返回的是 提交的对象</p> <pre>News nwes2 = this.hibernateTemplate.merge(news);
+news2.getNewsId(); // 获得提交到数据库的id</pre> <p> </p> <p>这个可以有 前面的解决方式 就无视了吧 虽然也能解决。</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/executefind">executeFind</a></li> <li><a href="/tag/hibernate">hibernate</a></li> <li><a href="/tag/hibernatetemplate">hibernatetemplate</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/merge">merge</a></li> <li><a href="/tag/update">update</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-10-25T20:02:44.000Z">October 25, 2013</time> <h1><a href="/post/hql-variable-order-problem/">hql 中变量顺序问题</a></h1> </header> <section class="post-main"><p>hibernate 的查询并没有直接使用sql语句，而是封装成了hql</p> <p>hql在每次查询的时候需要各个字段的值只需要写入对应对象中的变量即可</p> <p>hql中使用的变量需要在改对象中有相应的构造方法才可以</p> <p>今天写了一个hql报错了，很诧异报错信息如下</p> <pre>cause=org.hibernate.PropertyNotFoundException: no appropriate constructor</pre> <p>告诉我没有相应的构造方法。。。当然是有的。。。</p> <p> </p> <pre>String hql = "select new Test(test.a, test.b,test.c, test.d) from Test as test";</pre> <p>Test.java</p> <pre>public Test(String a, int b, String d, String c) {
+	this.a = a;
+	this.b = b;
+	this.d = d;
+	this.c = c;
+}</pre> <p>构造方法明明是有的 而且四个变量也都是相同的。。可还是报错。。</p> <p>因为之前也用过这个对象 还有其他的构造方法 试了其他的变量 尽然可以跑通 那就不是代码的问题了 而是 hql或者这个对象的问题了。</p> <p>试了几次 发现俩个都是没问题的。。。。。</p> <p>也拿去搜了搜 不过答案都是没有构造方法 。。可这明明是有的。。</p> <p> </p> <p>又看了看 发现 hql 中使用的变量的顺序和构造方法中的顺序不一样</p> <p>hql中</p> <p>test.a, test.b, test.c, test.d</p> <p>构造方法中</p> <p>String a, int b, String d, String c</p> <p>本着试试看的心态。。。把构造函数中的顺序改成和hql中一样，一跑 卧槽 通了。。。。。。。。。。。。</p> <p>这。。。。。</p> <p>原来不仅仅要有构造方法 构造方法中变量的顺序还必须要和hql中的一样，，否则hql就找不到这个方法。。。</p> <p>构造方法 我都是用自动生成的 没有手打 。。。。。。</p> <p>还特地试了其他的hql改变顺序 然后跑不通了 。。。(卧槽运气这么好 这么多次顺序都正确)</p> <p>好吧 当初没认真学 真不知道这是什么原因。。。</p> <p>看来得好好补补了。。。</p> <p> </p> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/constructors">constructors</a></li> <li><a href="/tag/hibernate">hibernate</a></li> <li><a href="/tag/hql">hql</a></li> <li><a href="/tag/java">java</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-06-11T02:55:42.000Z">June 11, 2013</time> <h1><a href="/post/hibernate-database-query-efficiency/">hibernate数据库查询效率</a></h1> </header> <section class="post-main"><p> 不知道使用hibernate的人有没有听说过hibernate的效率很低。 </p> <p> 可能标题使用查询效率的话有点大了，也许hibernate可能在使用的时候效率会比jdbc的方式低吧毕竟jdbc是直接操作数据库的，而hibernate则将sql封装，这样即增加了编码的复杂性也相应的对效率有影响。 </p> <p> 不过这里是使用hibernate，深处的问题暂且不论，谈谈使用的时候如何来加快hibernate的效率： </p> <p> 在hibernate中，用hql语句查询实体类，采用list方法的返回结果为一个List，这中hql只需要from [实体类]，hibernate就知道你要查询的是哪个数据库，然后查出相应的数据，使用很方便，但是hibernate默认是查询全部数据的也就是select * from xxx; 这种方式就是查询某个表下的所有的数据，事实上是没有必要的，比如一个新闻的展示页面，并不需要查询新闻的内容，但是使用默认的方式新闻的内容等一些展示页面的信息并不需要查询，但是hibernate给查询出来了，用不上，而且通常一个新闻的内容很长，那么hibernate废了这么长的时间查询出了你不需要的内容，这样就会感觉hibernate的效率很低，查询的速度慢。 </p> <p> 既然只需要查部分字段，那么就在hibernate查询之前告诉它即可，在写hql的时候指定需要查询的字段，书写方式如下 </p> <pre>
+	String hql = "select new Entity(Field1,Field2,Field3) from Entity";
+</pre> <p> 写hql的时候new了一个实体类并且给出需要查询的字段，那么这个实体类中就需要有相应的构造方法。 </p> <pre>
+	public Entity(int Field1,String Field2,String Field3){
+	     this.Field1 = Field1;
+	     this.Field2 = Field2;
+	     this.Field3 = Field3;
+	}
+</pre> <p> </p> <p> 这样hibernate查询的时候就会按照指定的字段进行查询，大大的节约了查询的时候，而且查询出来的字段都是需要使用的。 </p> <p> 奉上道听途说的一句，也不知道是不是真的：hibernate作者说那些认为hibernate效率低的人是因为他没有学会用hibernate。 </p> <p> </p> <p> 未添加字段前项目启动时间 </p> <p> <img src="/img/about-hibernate-database-connection-problem/1.png"></p> <p> </p> <p>测试的结果是可以连接的，那么数据库就没有问题，又仔细看了spring中的配置，也没有问题。。。</p> <p> </p> <p><img src="/img/about-hibernate-database-connection-problem/2.gif"></p> <p> </p> <p>之后搜了下，出现这个问题是因为hibernate的配置文件的原因</p> <p>创建hibernate的配置文件当中会有一个 catalog 的配置项</p> <p>只要删除此配置项即可，至于原因吗。。。</p> <p>谷歌去</p> <p> </p> <p>修改的地方如下</p> <p>&lt;class catalog="ssh" name="name.iaceob.entity.User" table="ssh_user"&gt;</p> <p> </p> <p>将catalog配置项删除</p> <p>&lt;class name="name.iaceob.entity.User" table="ssh_user"&gt;</p> <p>就不会报错了。</p> <p> </p> <p> </p> <p>我只说，，，，奇葩。</p> <p> </p> <p>后面如果更新的话，这里会有修改的，所以现在需要修改的话手动吧。</p> <p> </p> <p> </p> <p>不早了，睡觉，晚安。</p> <p>===============================14-08-08<br/> 奇耙....</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/connection">connection</a></li> <li><a href="/tag/frame-database">frame.database</a></li> <li><a href="/tag/hibernate">hibernate</a></li> <li><a href="/tag/java">java</a></li> </ul> </footer> </article> <menu class="page"> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

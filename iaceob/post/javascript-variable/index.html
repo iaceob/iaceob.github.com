@@ -1,0 +1,84 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>javascript 变量 - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2014-06-20T22:14:22.000Z">June 20, 2014</time> <h1>javascript 变量</h1> </header> <section class="post-main"><p>在js中变量的作用和其他语言的定义是相同的.</p> <p>只不过在使用方面是有着区别的</p> <p>js的变量定义 使用 <code>var</code> 关键字.</p> <p>并且 js 的变量是不需要指定类型的.</p> <p>虽然说不需要指定类型, 在使用的时候还是需要区分的, 字符串是需要 双引号或者单引号的, 而数字类型则不需要.</p> <pre>var x=2; 
+var y=3;
+alert(x+y); // 5</pre> <p>在js中 int 和 string 是可以相加的 意思是连接符, 首先会将数字当作字符串来看待, 然后把俩个字符串连接起来</p> <pre>var x=2;
+var y=' test'
+alert(x+y); // '2 test'</pre> <p> </p> <p> </p> <p>多个变量可以连续定义 使用 , 进行区分</p> <pre>var x=2, y=2, z=x+y;
+alert(x); // 2
+alert(y); // 2
+alert(z); // 4</pre> <p> </p> <p> </p> <p>当同一个变量被声明了俩次, 如果第二次声明没有给变量赋值的话, 该变量还会保留第一次赋的值</p> <pre>var x=2;
+var x;
+alert(x); //2
+var x=4;
+alert(x); // 4
+</pre> <p> </p> <p> </p> <p>js 对大小写是比较敏感的, 大写和小写表示不同的变量</p> <pre>var x=2, X=3;
+alert(x); // 2
+alert(X); // 3</pre> <p> </p> <p> </p> <p>js中表示 "空" 的类型</p> <p>有多种表现方式</p> <pre>'' 
+null 
+undefined</pre> <p>这个该怎么去解释了... " 和 null 在大多数语言中都是有这种表达方式的, 而 undefined则不是, undefined 这种类型的出现, 比如说 定义了 一个变量x却没有给x赋值,或者就没有定义x这个变量,使用x的时候返回的就是这个.</p> <p> </p> <p> </p> <p>在来说说变量的作用域</p> <p>简单的区分的话 也就是局部变量和全局变量的概念(当然是废话)</p> <pre>var a=2; // 全局
+function test1(){
+    var a=3; // test1 局部变量
+    function test1_1(){
+        var a=4; // test1_1 局部变量
+        return a;
+    }
+  return test1_1();
+}
+
+test1(); // 4</pre> <p>定义了全局变量a和test1函数,test1函数定义了变量a和test1_1函数并且返回test1_1函数, test1_1定义了变量a返回a<br/> 执行test1函数 最终返回的是4, 也就是说最终返回的是test1_1函数中的a变量<br/> 如果说 test1_1 函数中的 不定义a变量那么返回的就是 test1 中定义的a变量, 同样 test1中如果没有定义a变量就到外面找全局定义的a变量 如果都没有 那么就会返回变量未定义错误</p> <pre>var a=2; // 全局
+function test1(){
+    var a=3; // test1 局部变量
+    function test1_1(){
+        // var a=4; // test1_1 局部变量
+        return a;
+    }
+  return test1_1();
+}
+test1(); // 3
+
+
+function test1(){
+    // var a=3; // test1 局部变量
+    function test1_1(){
+        // var a=4; // test1_1 局部变量
+        return a;
+    }
+  return test1_1();
+}
+test1(); // a is not defined
+
+</pre> <p>js 查找变量会由内部一直到外部进行查找到最近一个变量并返回,如果没有定义那么返回的就是undefined</p> <p> </p> <p> </p> <p>js没有代码块内作用域的概念<br/> 例如</p> <pre>var a=2;
+for(var b=3; (b--)&gt;0;){
+  if(b==a) {
+    var c=3;
+    var d=c+a;
+  }
+  console.log(b); // 2 1 0 
+}
+console.log(a); // 2
+console.log(c); // 3
+console.log(d); // 5</pre> <p>也就是说在for if中定义的变量外部都是可以获取的,这一点区别于强类型的语言.</p> <p> </p> <p> </p> <p>外部定义的变量在所有的函数中都是有定义的</p> <pre>var x=1;
+function test(){
+console.log(x); // undefined 在函数外部定义了x变量, 函数中就会产生x这个隐藏的变量,这里打印出来的x是undefined也就是说函数内部未对x进行赋值
+x=2;
+console.log(x); // 2 上方对x进行了赋值
+}
+
+// ==== 或者如下
+function test(){
+    var x=1;
+    function test_1(){
+       console.log(x); // undefined
+       x = 2; 
+       console.log(x); // 2
+    }
+}
+</pre> <p>上述代码等同于</p> <pre>function test(){
+    var x;
+    console.log(x);
+    x=2;
+    console.log(x);
+}
+</pre> <p> </p> <p> </p> <p>全局变量都是属于 window 对象的.</p> <pre>var x=2;
+console.log(x);
+console.log(window.x);
+</pre> <p>不仅仅包括自己定义的变量, 所有的直接使用的变量都是属于window对象的.<br/> 比如 window.docuemnt 等.</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/var">var</a></li> <li><a href="/tag/variable">variable</a></li> </ul> </footer> </article> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

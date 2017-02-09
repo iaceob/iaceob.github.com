@@ -1,0 +1,173 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>生物烯丙菊 - 达文西手电筒 - 第 2 頁</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2015-07-01T01:08:17.000Z">July 1, 2015</time> <h1><a href="/post/re-coding-jquery-jskit/">重造轮(和谐)子之 jQuery [base]</a></h1> </header> <section class="post-main"><p>因为最近在做一些重造轮子的事情, 所以了, 索性把 jQuery 重新造一遍, 当然, 不可能全部都重造出来...</p> <p>重造 jQuery 主要是因为想要一个 js 的工具包, 然而了 jQuery 实在太大了, 而那些现成的做好的精简包, 比如 <a title="Zepto.js: the aerogel-weight jQuery-compatible JavaScript library" href="http://zeptojs.com/" target="_blank">zepto</a> , 又有些东西是不需要的, 所以就重造一个.</p> <p>好吧, 这里主要说说实现的方法.</p> <p>首先定义一个类, 也就是闭包的函数, 作为主方法, 并提供 prototype 供外部扩展函数, 并且主方法作为入口, 做出类似于 jQuery 的选择器入口.</p> <p>所以有如下代码</p> <pre>!(function(window, undefined){
+    'use strict';
+    function kit(select){
+        try {
+            return self.selector(select);
+        } catch (e) {
+            return null;
+        }
+    };
+    var self = kit.fn = kit.prototype = Object.create(Array.prototype);
+    window.jsKit = kit;
+})(window);
+</pre> <p>那么来分析下这段主方法的代码.</p> <p>首先是建一个闭包, 这里面有个 kit 的函数, 为入口函数, 并且将 kit 赋于 window 的 jsKit 变量上.</p> <p>先来看原型赋值这</p> <pre>    var self = kit.fn = kit.prototype = Object.create(Array.prototype);</pre> <p>这段的意思了, 就是将 kit 的原型设置为 类数组对象 然后将 kit 的原型赋予 kit.fn 接着继续赋给 self;</p> <p>关于类数组对象, 这个是 让 kit 的 prototype 带有数组的特性, 也就是 js 中的 Array like Object, 详细的这个分析这里就不描述了, 看以后在能不能写点这, 详细来分析.</p> <p>这个原型分配好了之后了, 其中 self 只是在当前闭包中使用 kit.fn 是外部使用的.</p> <p>再来看 kit 函数, 这里面只做了一件事</p> <pre> return self.selector(select);</pre> <p>self.selector 也就是选择器了.</p> <p>所以就在新建一个类(闭包)专门做选择器的实现, 然后作为扩展添加到这个主方法中.</p> <p>selector 实现就如下</p> <pre>!(function(window, kit, undefined){
+    'use strict';
+    var document = window.document;
+    var self = kit.fn;
+    function selector(select){
+        self.splice(0, self.length);
+        var allDom = document.querySelectorAll(select);
+        for(var i=allDom.length; i--&gt;0;)
+            self.push(allDom[i]);
+        return self;
+    };
+    self.selector = selector;
+})(window, jsKit);</pre> <p>一个非常简单的实现方式, 首先引入 jsKit , 使用 jsKit.fn 注册一个 selector 的函数, 函数的实现就是当前这个闭包中的 selector 函数.</p> <p>当然这个选择器偷懒直接使用了 document.querySelectorAll 方法了, 不够这个方法也基本上能满足大多数的需求了.</p> <p>query 出来的结果是一个 NodeList 的数据类型, 是不能够直接操作的, 因此就需要将这个 NodeList 数据转化为这里的 jsKit 类, 前面也说了 jsKit 的原型被设置未 类数组的对象, 所以能够使用数组的相关特性,因此这里直接对 NodeList 遍历, 并且 push 到 jsKit 中. 然后 return self; 也就是返回 jsKit 类, 这样做的目的就是为了实现原型链, 能够进行链式调用.</p> <p>需要注意的是 这里加了一行</p> <pre>self.splice(0, self.length);</pre> <p>这个的作用是清空数组, 这里也就是清空 jsKit, 因为 jsKit 在 push 后不释放的话, 在执行一次, 第二次会累加, 这也是 Array 的特性.</p> <p>所以一个简单的类似于 jQuery 的选择器就实现了.</p> <p>接下来可以进行 jQuery 和 jsKit 的简单测试了.</p> <p>比如</p> <pre>jQuery('li'); // Object[li, li, li]
+jsKit('li'); // Object[li, li, li]</pre> <p>返回的结果都是一样的.</p> <p>所以前提条件都有了, 接下来只要对 jsKit.fn 进行扩充就行了.</p> <p>像是 addClass</p> <pre>jsKit.fn.addClass = function(){
+  this.forEach(function(target){
+    console.log(target);
+  });
+};</pre> <p>调用的使用通过和 jQuery 一样的原型链方式</p> <pre>jsKit('li').addClass('test');</pre> <p> </p> <p>话就到这</p> <p>当然这只是一个非常简单的模拟啦, jQuery 很强大了, 代码写的很高深, 只是阅读就很复杂了, 比如这里的选择器实现只是简单的 querySelectAll , 而 jQuery 则提供了更多实用的功能, 而且 jQuery() 还支持对象等作为选择器, 因此这个还是需要完善的.</p> <p>jQuery 是很好使, 但是就是臃肿了点, 现在很多用 jQuery 的地方其实根本可以不需要, 只是用了 jQuery 的很少几个功能.</p> <p> </p> <p>所以 jsKit 继续优化吧.</p> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/harmony">harmony</a></li> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/jquery">jquery</a></li> <li><a href="/tag/js">js</a></li> <li><a href="/tag/recoding">recoding</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2015-06-26T23:24:19.000Z">June 26, 2015</time> <h1><a href="/post/ingrained/">根深蒂固</a></h1> </header> <section class="post-main"><p>前段时间进行了轰轰烈烈的高考, 这几天高考<strong>分数</strong>出来了. 本来这事和我已经没任何关系了的, 不过今天刚好和今年孩子高考的家长在一起(孩子也在).</p> <p>今天主要是去搬家(陪读住处). 事实上考的并不是很理想, 他是想直接上大学的, 而他的父母的想法则是还继续复读一年, 待来年在考一次, 而且还斥责他不要选那么远的学校去上学.</p> <p>最终去咨询了这里的一所所谓名校, 进行复读的事项.</p> <p>在当下的环境下, 相信这也许不是个例, 读书在这片大地从以前到现在似乎潜意识中都是底层人名出人头地的绝佳方式.</p> <p>父母总是在呵护这孩子, 替孩子安排着未来, 孩子只需要按照父母所开辟的道路前进即可, 这也许就是父母口中所述的听话的孩子.</p> <p>在教育上, 也并不是采取引导的方式, 而是直接将自己的经验以及知识强加与孩子身上, 随不说一定是错亦或对.</p> <p>要知道, 这一切的后果是</p> <p>父母总有一天不能呵护在孩子的身边, 总有一天不能够用自己的经验和知识来去教导孩子.</p> <p>这样孩子就会缺乏思考自己人生的想法, 还有一种不被认同感, 以及思维的固化.</p> <p>在离去呵护的时候, 自己就不知道怎么做了.</p> <p>自己的想法被父母拒绝, 不能获得认同.</p> <p>不能够以自己的方式学习.</p> <p> </p> <p>无可厚非, 父母的这种心态是非常可以理解的, 都是为了孩子, 再说因为那个什么很好的政策, 导致现在的家庭大多都是独生子女, 父母更是百般的呵护.</p> <p>不过这种爱, 也许对孩子来说也许是一种伤害, 高考的孩子已经完全能够自己独立思考了, 请试着相信他们, 长辈应该去引导孩子而不是为孩子开路, 不要阻碍他们的视线, 应该让他们看到更多.</p> <p> </p> <p> </p> <p>当然, 这也只是我的看法而已.(一个正处于这个时期的孩子)</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/ingrained">ingrained</a></li> <li><a href="/tag/undefined">undefined</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2015-06-11T18:05:29.000Z">June 11, 2015</time> <h1><a href="/post/tomcat-multi-domain-binding/">tomcat 多域名綁定</a></h1> </header> <section class="post-main"><p>之前在说 nginx 反向代理时有说到 tomcat 的域名绑定操作, 详见 <a title="Nginx 反向代理" href="/post/nginx-proxy/" target="_blank">Nginx反向代理</a> 这里绑定域名是通过如下方式实现的.</p> <pre>&lt;Host name="local.host.com" appBase="webapps"
+          unpackWARs="true" autoDeploy="true"
+          xmlValidation="false" xmlNamespaceAware="false"&gt;
+       &lt;Context path="" docBase="/tomcat/webapps/text" debug="0"
+                 reloadable="true" crossContext="true"/&gt;
+&lt;/Host&gt;</pre> <p>意思就是 Host 标签中指定需要绑定的域名, 在其内部的 Context 标识改域名所绑定的项目.</p> <p>这么做虽然是可以实现目的, 但是当所绑定的域名和项目越多, tomcat 就会变得非常慢, 数据库连接也有可能会发生超出最大连接数 和 易发生<a title="tomcat路徑混淆" href="/post/tomcat-path-confusion/" target="_blank">混淆</a>; 原因就是 Host 标签中指定的 appBase 属性值是 webapps 目录.</p> <p>appBase 属性, 就是应用的基本目录.</p> <p>也就是说在绑定域名的时候 appBase 不改的话, 那么比如有如下的配置</p> <pre>&lt;Host name="tt1.host.com" appBase="webapps"
+          unpackWARs="true" autoDeploy="true"
+          xmlValidation="false" xmlNamespaceAware="false"&gt;
+       &lt;Context path="" docBase="/tomcat/webapps/tt1" debug="0"
+                 reloadable="true" crossContext="true"/&gt;
+&lt;/Host&gt;
+
+&lt;Host name="tt2.host.com" appBase="webapps"
+          unpackWARs="true" autoDeploy="true"
+          xmlValidation="false" xmlNamespaceAware="false"&gt;
+       &lt;Context path="" docBase="/tomcat/webapps/tt2" debug="0"
+                 reloadable="true" crossContext="true"/&gt;
+&lt;/Host&gt;
+
+&lt;Host name="tt3.host.com" appBase="webapps"
+          unpackWARs="true" autoDeploy="true"
+          xmlValidation="false" xmlNamespaceAware="false"&gt;
+       &lt;Context path="" docBase="/tomcat/webapps/tt3" debug="0"
+                 reloadable="true" crossContext="true"/&gt;
+&lt;/Host&gt;</pre> <p>结果是 tt1 tt2 tt3 都分别能够相互访问对方, 就如之前所说的混淆, 并且都是被启动多次的(不确定是不是都三次, 要验证可以在启动之前将 tomcat/logs 日志清空 然后启动 tomcat 查看日志便可以发现), 再说超出数据库的最大连接, 想想每个项目启动多次, 也就是说每个项目每启动一次就新开了数据库连接, 而且是成几何数增长的(当超出数据库连接后, 数据库便不能够在连上, 同样的数据库不能连接, 那项目也启动不成功), 同时还占用这非常高的系统资源.</p> <p>那么就需要修改下, appBase 默认加载的是是属性值中的目录下的 ROOT 目录, 也就是说 appBase="webapps" 就相当于 appBase="webapps/ROOT" .</p> <p>那么就可以这么来</p> <p>在 tomcat 根目录建立 app 目录, 以及这三个项目的子目录, 如下:</p> <pre>tomcat /
+| ---------- app /
+|               ------ tt1 /
+|                        ----- ROOT
+|               ------- tt2 /
+|                         ----- ROOT
+|               ------- tt3 /
+|                         ----- ROOT
+                      
+</pre> <p>然后在 server.xml 配置改成这样</p> <pre>&lt;Host name="tt1.host.com" appBase="app/tt1" unpackWARs="true" autoDeploy="true"&gt;&lt;/Host&gt;
+&lt;Host name="tt2.host.com" appBase="app/tt2" unpackWARs="true" autoDeploy="true"&gt;&lt;/Host&gt;
+&lt;Host name="tt3.host.com" appBase="app/tt3" unpackWARs="true" autoDeploy="true"&gt;&lt;/Host&gt;
+</pre> <p>然后分别将项目放入到相应的 ROOT 目录去.</p> <p>这样也实现了多域名, 并且还解决了之前的所有问题.</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/domain">domain</a></li> <li><a href="/tag/optimization">optimization</a></li> <li><a href="/tag/server">server</a></li> <li><a href="/tag/tomcat">tomcat</a></li> <li><a href="/tag/xml">xml</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2015-05-16T18:27:05.000Z">May 16, 2015</time> <h1><a href="/post/unchanged/">不变初心</a></h1> </header> <section class="post-main"><p>这段时间在为驾照补刀，距上次考挂已过两年了，事实上我并不觉得那次考挂了。。。那会真特么应该下车看看到底是不是压线。。。<br/> 不过了也幸亏那次的失误才能有现在的自己，这两年也算是给自己打了个扎实的根基，也遇到可能会是一生追求之人，总之学到很多，遇到很多。<br/> 话说了在同一车练的有这么俩个人。<br/> 第一个是个五十左右的(中年+)人，这么大岁数了还跑过来考驾照，有和他交谈过，他有这么说:"人老了要有个爱好(兴趣)，要不然老了不做事就会老年痴呆，我就喜欢摄影，还专门买了个单反，虽然不是专业的摄影师，只是当一个爱好来做，爬到山上早晨看那云海拍下来回家在处理，发布到网上，很有感觉，而且还能锻炼身体，不像那些天天打牌打麻将，虽然也是个爱好，但是不能够每天都这样，做时间长了对身体也不好，不如出去锻炼锻炼，我真的大了现在来考驾照就是为了以后能到更远更高的山上去摄影。"，另外了，人大了嘛，身体总会有些不灵活，而汽车这玩意了又需要人有快速的身体反映才能很好的控制，他在控制车的时候有时就不能快速反映导致出现各种错误，被教练劈头盖脸的说了好多(这个大家都知道，只要你去学车我不相信没有人被教练骂过)，他也表现出很受教的样子，并没有因为这些就放弃了，很乐观的看待这些。<br/> 第二个是一个比我年龄要小点的小伙子，相同的是这个小伙子年龄刚好是我那年第一次来考驾照的年龄，不同的是那货体材比我丰满(无论是之前还是现在的我比，相对来说我还是很苗条的，哈哈)，倒是没有过深的交谈过，简单说过几句知道他还在上学，不过刚结业，是在省城一体校上学的(我开玩笑说，你体校读书的身材还这么丰满)。<br/> 这俩人给我的感受较深，人确实因该要有自己的爱好，并为之追求，另外自己已并不年轻，后面的人已经追上来了。<br/> 当有自己的爱好的时候，自己就乐意做这么一件事情，甚者会全身心的投入到做这件事上，让自己的身心愉悦。<br/> 不在年轻了是这样，相对来说我的过去按照程序的方式来说都是进入了 cath 的，早早就从离开了学校，都并没有进入到一所高校继续深造(当然现在我会说深造，如果这篇文字是在那会来写，绝壁不会用深造这个词，应该会用浪费)，而同期的同学大部分都还在 try，而现在的天朝了又很注重学历，理所当然又是进入了各种 cath 。就这样一晃到现在，同期人已经出来了，而自己却并没有特别值得称赞之处。</p> <p>不变初心，继续向前。</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/undefined">undefined</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2015-05-03T12:35:30.000Z">May 3, 2015</time> <h1><a href="/post/blacklist-in-gfw/">入住功夫網</a></h1> </header> <section class="post-main"><p>早晨起来, 拿起抓鸡, 打开 shadowsocks , 打开 g+ , 一片空白. 打开博客,一片空白.<br/> ????<br/> 然后... 这不对劲呐!!接合前几天 ssh 端口经常失效, 一想 这次已经不是针对 ssh 了, 而是直接把ip给墙了..<br/> 打开电脑, 各种连接测试. 果然是被加入到黑名单了.<br/> 无解... 你说我是一个有着身份证的人, 怎么我就中招了?<br/> 啊..... 还是给换了个 ip 现在才能访问的.<br/> 也就是在这被墙的时间中想到了一个新东西. 准备准备做去.</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/blacklist">blacklist</a></li> <li><a href="/tag/gfw">gfw</a></li> <li><a href="/tag/shadowsocks">shadowsocks</a></li> <li><a href="/tag/undefined">undefined</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2015-04-23T13:48:29.000Z">April 23, 2015</time> <h1><a href="/post/come-to-talk-about-orm/">再来谈谈 ORM</a></h1> </header> <section class="post-main"><p>关于 ORM 的解释见 <a title="对象关系映射" href="http://zh.wikipedia.org/wiki/%E5%AF%B9%E8%B1%A1%E5%85%B3%E7%B3%BB%E6%98%A0%E5%B0%84" target="_blank">对象关系映射</a> .</p> <p>简单的来说就是对于每个项目上应用最广泛的数据库中每张表所对应的实体类, 实体类中每个变量对应这数据表中的每个字段. 并且有封装着简单的对数据库的访问, 也就是 CURD (create update read delete).</p> <p>这样确实是有很多好处的, 比如在实体类中对进行数据库操作的数据进行校验以及数据的正确性确认, 避免了插入一些危险的语句, Thinkphp 在这方面就做了有 自动验证 自动完成 等功能, 详见 Thinkphp 文档中说明.</p> <p>ORM 的一些比较出名的产品, 比如 java 中的 hibernate 框架. 实现了 ORM 的所有操作. 并且被用于众多大型项目中.</p> <p>但是真的需要用 ORM 方式来实现数据库操作吗 .</p> <p>就拿 hibernate 来说(已经很久没用了), 比如如下环境</p> <p>db 一个简单的用户表</p> <pre>create table person(
+ uid varchar(30) not null,
+ name nvarchar(50) not null,
+ password varchar(50) not null,
+ email nvarchar(50) not null,
+ gender tinyint,
+ ctime datetime,
+ primary key(uid)
+);</pre> <p>entity hibernate 中相应的实体类</p> <pre>public class Person(){
+ private String uid;
+ private String name;
+ private String password;
+ private String email;
+ private Short gender;
+ private Timestamp ctime;
+
+ public Person(){};
+
+ public String getUid(){ return this.uid; }
+ public String getName(){ return this.name; }
+ // .....
+ public void setUid(String uid){ this.uid=uid; }
+ public void setName(String name){ this.name=name; }
+
+ public String toString(){ return ''; };
+
+}</pre> <p>这个实体类就是用来描述数据表 person 的.</p> <p>比如现在有个需求要修改用户名, 那么实现肯定是通过语句</p> <pre>update person set name=? where uid=?</pre> <p>这样来实现的, hibernate 是怎么做的了, 首先先将这句 SQL 翻译成 HQL(hibernate 定义的一种数据库操作语句), 然后这里需要俩个字段相应的也就是实体类中 uid 和 name 变量, 因此 实体类中就需要有相应的构造器</p> <pre>public Person(String uid, String name){
+ this.uid = uid;
+ this.name = name;
+}</pre> <p>之后执行 HQL(已经不知道这个HQL该怎么写) 和实例化这个构造器就能够自动修改名称了.</p> <p>需求是完成了, 不过命名就只是一句 SQL 就能解决的事情却要搞得这么麻烦? 明明可以封装一个数据库操作类, 直接执行 SQL, 返回影响行数很简单的几句代码就能完成操作.</p> <p>好, 要说 java 本来就很繁琐, 那再来看看 php.</p> <p>当然 也就是前文提到的 thinkphp</p> <p>thinphp 提供了 D 和 M 函数来使用 Model 操作数据库.</p> <p>关于 M 和 D 的区别可以去观看 thinkphp 的文档.</p> <p>那么还是之前的这个表</p> <p>现有需求添加一个用户, 那么</p> <p>Model 添加 person 的 model 类</p> <pre>&lt;?php
+ class PersonModel extends Model{
+  protected $pk = 'uid';
+  protected $tableName = 'person';
+  protected $map = array(
+   'id' =&gt; 'uid',
+   'name' =&gt; 'name',
+   ...
+  );
+  protected $_validate = array(
+   array('id', 'require', 'id not null', 1);
+   // ...
+  );
+  protected $_auto = array(
+   array('ctime', 'getTime', 3, 'callback')
+  );
+
+  function getTime(){
+   return time();
+  }
+ }
+?&gt;</pre> <p>然后就是在具体的控制器中使用了</p> <pre>$model = D('Person');
+if (!$model-&gt;create()) echo $model-&gt;getError();die;
+echo $model-&gt;save() ? 'success' : $model-&gt;getError();</pre> <p>这样就完成了整个流程了, 也实现了需求.</p> <p>同时了 thinkphp 还提供了另外一种方式, 同样是这个需求, 来试试怎么完成.</p> <pre>$model = new Model();
+$sql = "insert into person(id, name, email, password, gender, ctime) values ('%s', '%s', '%s', '%s', %d, now())";
+$res = $model-&gt;execute($sql, array('1', 'test', 'test@example.com', md5('password'), 1));
+echo $res ? 'success' : $model-&gt;getError();</pre> <p>同样实现了这个需求, 这俩中方式到底是说着简便的 active record 模式还是这种原生的 sql 执行方式了?</p> <p>一目了然, 肯定是后者. 或许 ORM 这种方式确实存在着某些优势, 不过这些优势并不是选择这种方式的理由, 因为这种方式有个最大的弊端, 就是做不了复杂的多表业务逻辑操作.</p> <p>没错, 比如像 thinkphp 的 model 是提供 <code>-&gt;join();</code> 这种方式来进行关联的.像下面:<br/> 比如还有另外一张关联表, 存储这 用户所对应的城市 person_city | uid city<br/> 和一张城市的表 city | id name<br/> 现在想要查出用户所在的城市</p> <pre>$model = new Model();
+$arr = $model-&gt;table(C('DB_PREFIX') . 'person as p')
+             -&gt;field('p.name as person_name, c.name as city_id')
+             -&gt;join('left join ' . C('DB_PREFIX') . 'person_city as pc on p.uid=pc.uid')
+             -&gt;join('left join ' . C('DB_PREFIX') . 'city as c on pc.city=c.id')
+             -&gt;where(array('p.uid'=&gt;'1'))
+             -&gt;select();
+var_dump($arr);</pre> <p>这个查询出来的结果确实是我们想要的, 而且灵活的运用了 thinkphp model 的 active record 方式.</p> <p>那么再用原始的 sql 方式实现试试</p> <pre>$model = new Model();
+$sql = "select
+p.name as person_name, c.name as city_id
+from person as p
+left join person_city as pc on p.uid=pc.uid
+left join city as c on pc.city=c.id
+where p.uid='%s'";
+$arr = $model-&gt;query($sql, array('1'));
+var_dump($arr);die;</pre> <p>这是不是同样是需求所要的结果? 而且是不是相对于更加容易理解? 分析下来这段代码的意思就是先实例化一个 Model 对象, 然后定义一个 SQL 语句, 在执行这个 SQL 语句, 将返回的结果答应, 就是这么简单易解的方式. 而上面那个沉长的语句是什么意思了, 来一句一句分析下.</p> <p>首先实例化一个 Model 对象.</p> <pre>$model-&gt;table('xx') // 告诉 model 这是主表
+-&gt;field('xx') // 要查询这些字段
+-&gt;join('left join person_city') // 关联person_city这张表
+-&gt;join('left join city') // 关联 city 这张表
+-&gt;where('p.uid'=&gt;'1') // 查询的 条件
+-&gt;select() //   执行查询
+</pre> <p>这对于已经熟练使用的人来说是非常便于理解的, 不过如果是未接触过这种方式的人来说表达的意思很含糊, 不直观, 而且很多都是不必要的代码, 我相信基本上程序员都接触过 SQL, 而不可能所有人都接触过 active record 这种方式.</p> <p>另外这个简单的多表关联是可以实现, 如果是复杂的了? 比如之前写过的一篇文章 <a title="sql 中 full join 于 union" href="/post/sql-full-join-and-union/" target="_blank">sql 中 full join 于 union</a> 分别将 full join 和 union 实现的查询结果以 active model 的方式查询出来试试(thinkphp 还有另一种关联的方式, 不是通过 -&gt;join 而是使用关联模型)? 有理由相信就是这么简单的一句 sql 采用 关联模型 方式来实现, 这个模型会非常复杂, 而且还不容易理解.</p> <p>要知道, 包括 tinkphp 的 $model-&gt;table(‘xx’) 和 hibernate 的 hql , 数据库是不明白的, 所以说, thinkphp 和 hibernate 在提交数据库的时候还是会将这些翻译成数据库认识的 SQL 语句, 才能够正确的查询, 所以这不是在脱裤子放屁?<br/> 特别是 hibernate 的 hql 无中生有的造出了一种新的用法, 和 sql 完全不同, 而且 hibernate 还不能够建立 视图 的模型, 要知道数据库视图在实际项目中会频繁的用到.</p> <p>在比如, 你是一个开发人员用了 thinkphp 的关联模型或者是 java 的 hibernate 来实现操作数据的, 这个时候你有一个需求是非常复杂的数据库查询, 你并不会写, 所以你去问了 DBA 这个怎么写, DBA 花了 2 个小时终于把这个查询语句写出来了, 交给你, 这个时候你傻了, DBA 给你的是 SQL 语句, DBA 不一定会你所用的关联模型或者 HQL, 那么你还得用 2 个小时来把这句 SQL 翻译成 关联模型或者 HQL, 之后项目完成了, 上线了, 程序又会将 关联模型 或者 HQL 翻译成 SQL 传给数据库执行...</p> <p>所以这到底是简化了开发流程还是复杂了开发流程了.</p> <p>另一个想吐槽的是 thinkphp 的 C(‘DB_PREFIX’) , 就上文代码中使用过. 这个值获取数据库的表前缀, 配置在 config.php 中; 完全就是个鸡肋的设计, 你想啊, 项目上线后数据库表名怎么会该啊, 要到改数据的地步那相信就是数据库底层设计又问题了啊, 基础都又问题还怎么写代码? 另外万一一个库又俩种表前缀又怎么办?在定义一个 DB_PREFIX2 ? 别折腾了吧.... 又不实用 写的时候又麻烦 还得用连字符连起来, 给个特殊符号自动替换表前缀也比连字符强吧, 写起来多烦?</p> <p>--</p> <p>写这篇文章了, 其实最近有在看 nodejs , 查询了一些文章, 关于数据库操作, 数据库操作也是实用类似 Thinkphp 这种实现方式. 完全没明白, nodejs 是新世纪的语言为什么还存在着旧世纪的思维方式(或许是我没能明白这种方式的好处), 甚至还见到过 nodejs 封装一个实体存储数据, 哥哥....这不是java, java因为数据类型不能够直观的表达数据表才会有实体类封装, 一看实体就基本上能理解表(个人认为), 但是有看过 nodejs 的各种数据库驱动 包括 nosql 和 关系型数据库查询出来的数据返回都是标准的 js 对象啊... 已经可以直接调用的拉, 没必要在封装成实体了啊..</p> <p>大概就这些了, 反正关联模型这东西, 不要轻易去碰, 至少如果你的团队不大, 就几个人, 不要用这种方式, 会累死你还不一定能完成想要的结果.</p> <p>都说要精益求精, 化繁为简, sql 执行多么简单明了, 多去学习下 sql 语句吧. 那些各种 orm 框架说了支持多数据库, 不要被忽悠了, 除非是那种大型的商业级的项目可能会考虑到多数据库, 中小型项目一个数据库基本上就满足了, 因此你的代码更不就不需要去考虑对多数据库的支持, 再说 sql 语句大部分也是通用的, 只是个中有些语法上的区别, 总体都差不多.</p> <p>sql 语句能做很多事情, 并不比某种程序语言弱, 不要因为各种所谓的兼容等而忘却了根本, 还是那句 数据库是不认识任何 ORM 框架所提供的各种代码, 都是翻译成 SQL 语句提交给数据库的.</p> <p>本文代码并不一定完全正确, 只做演示说明.</p> <p>文末附上些连接:<br/> <a href="http://www.cnblogs.com/kuber/archive/2008/05/09/1188463.html" target="_blank">回复:什么是ActiveRecord</a><br/> <a href="https://github.com/amoa400/aa-mysql" target="_blank">aa-mysql</a></p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/activerecord">activerecord</a></li> <li><a href="/tag/hibernate">hibernate</a></li> <li><a href="/tag/hql">hql</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/model">model</a></li> <li><a href="/tag/orm">orm</a></li> <li><a href="/tag/php">php</a></li> <li><a href="/tag/sql">sql</a></li> <li><a href="/tag/thinkphp">thinkphp</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2015-04-15T15:25:41.000Z">April 15, 2015</time> <h1><a href="/post/javascript-call-apply/">javascript call apply</a></h1> </header> <section class="post-main"><p>javascript 中 call 于 apply 都作用都是去调用某个函数, 区别在于 call 在调用的时候参数是需要一一带入, 而 apply 只需要传递一个参数数组即可, 同时 apply 也可以将 arguments 作为参数传递给将调用的方法</p> <pre>fun1.call(fun2, 'a', 'b', 'c')
+fun1.apply(func2, ['a', 'b', 'c'])</pre> <p>例如如下用法</p> <pre>(function(){
+
+  function test(){};
+  
+  function a(){
+    // 当执行 a 的时候, 调用 a2 函数并将当前函数的 arguments 传递于 a2 
+    a2.apply(this, arguments);
+  };
+  
+  function a2(){
+    console.log(arguments);
+  };
+
+  kit.prototype = {
+    a: a,
+    a2: a2
+  }
+  window.k = new test();
+})();
+
+k.a(1111, 3,22)</pre> <p>如果是使用 call 调用</p> <pre>a2.call(this, arguments[0], arguments[1], ..);</pre> <p>apply 可以以数组的方式传参, 因此也可以继续对 arguments 进行封装, 供 a2 使用.</p> <pre>function a(){
+ var para = [];
+ for(var i=0; i&lt;arguments.length; i++) para.push(arguments[i]);
+ para.push(1);
+ para.push(true);
+ //...
+ a2.apply(this, para);
+};</pre> <p>a2 就可以根据这些不同的参数进行不同的逻辑处理.</p> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/apply">apply</a></li> <li><a href="/tag/arguments">arguments</a></li> <li><a href="/tag/call">call</a></li> <li><a href="/tag/javascript">javascript</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2015-04-12T23:30:51.000Z">April 12, 2015</time> <h1><a href="/post/tomcat-path-confusion/">tomcat路徑混淆</a></h1> </header> <section class="post-main"><p>事情是这样的. 因为之前说要整合公用的项目, 省的每次做重复的工作.</p> <p>然后做了个前期测试版本, 放入到 tomcat 中, 然后启动.</p> <p>首先这个 tomcat 里面是放了多个项目的, 因为之前没有独立的公共项目, 因此每个项目里面都会又账户模块, 并且账户所取的 URI 基本上都是 /account 然后这次的独立项目中账户也使用的是 /account 路径, 启动后 tomcat 傻掉了, 打开管理后台看到每个项目确实都是启动了的, 不过就是不能够访问, 页面一片空白.</p> <p>尝试之前的几个项目登陆发现错误的显示了这次的这个公共项目的页面, 因为路径是相同的.</p> <p>发现这个问题后将这次上传的代码重新修改了下, 将路径全部改掉, 再次尝试便能够正常启动了, 不会出现空白现象.</p> <p>目前仅仅只是初级版本, 继续完善中.</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/path">path</a></li> <li><a href="/tag/tomcat">tomcat</a></li> <li><a href="/tag/webserver">webserver</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2015-04-09T10:16:09.000Z">April 9, 2015</time> <h1><a href="/post/mdb-to-csv/">MDB 文件转 CSV</a></h1> </header> <section class="post-main"><p>mdb 文件是 access 数据库导出的数据文件, 让其转成通用的 csv 文件, 获取其中的数据.</p> <p>如果使用的是 Debian/Ubuntu 系统, 首先安装 mdbtools 工具.</p> <pre>sudo apt-get install mdbtools</pre> <p>之后执行如下脚本</p> <pre>#!/bin/sh
+ for TT in $(mdb-tables *.mdb); do
+ mdb-export -D '%%Y-%%m-%%d %%H:%%M:%%S' *.mdb "$TT" &gt; "${TT}.csv"
+ done</pre> <p>就可以将 mdb 文件转换为 csv 文件, 之后就可以对其他任何数据库进行数据的转化了.</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/csv">csv</a></li> <li><a href="/tag/mdb">mdb</a></li> <li><a href="/tag/mdbtools">mdbtools</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2015-04-05T13:14:39.000Z">April 5, 2015</time> <h1><a href="/post/mysql-allow-remote-connect/">Mysql 允许远程连接.</a></h1> </header> <section class="post-main"><p>之前写过这样一篇文章: <a title="mysql 用户管理" href="/post/mysql-user-management/">mysql 用户管理</a> 有介绍过添加账户以及账户赋权, 另外也说了添加远程账户的内容.</p> <p>那里所说的添加远程账户仅仅是添加一个任何 ip 允许访问的账户, 想要做到远程登陆, 这样是不够的.</p> <p>因为 mysql 默认绑定的地址是 127.0.0.1 也就是本机, 是不允许所有外部 ip 访问的, 因此就算开出了远程连接的账户, 也不能够进行远程连接登陆.</p> <p>因此想要进行远程登陆, 就需要将 my.cnf 这个绑定地址注释或者将地址修改为 0.0.0.0 这样就能够进行远程登陆了.</p> <p>my.cnf 文件位置 通常是在 /etc/my.cnf 或者 /etc/mysql/my.cnf</p> <pre>bind-address = 0.0.0.0</pre> <p>同时也需要配合开出的远程账户才可登陆, 账户绑定的是本地的远程是无法登陆的.</p> <p>如果没有必须也无须开启远程登陆, 只要本地能访问就成, 毕竟也许有人盯着.</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/conf">conf</a></li> <li><a href="/tag/connect">connect</a></li> <li><a href="/tag/mysql">mysql</a></li> <li><a href="/tag/remote">remote</a></li> </ul> </footer> </article> <menu class="page"> <li class="page-prev"> <a href="/" title="Previous">Prev</a> </li> <li class="page-next"> <a href="/page/3" title="Next">Next</a> </li> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

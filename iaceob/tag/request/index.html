@@ -1,0 +1,322 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>request - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2013-12-12T01:55:54.000Z">December 12, 2013</time> <h1><a href="/post/user-form-input-filter/">用户文本输入过滤器</a></h1> </header> <section class="post-main"><p>用户文本输入过滤器</p> <p>有句话好像这么说 "永远不要相信用户的输入"</p> <p>。。。。。。</p> <p>很简单 如果没有对用户的输入进行过滤的话</p> <p>站点是非常不安全的，且用户可能会输入一些敏(和谐)感(和谐)字</p> <p>比如前台一个表单文本输入框中 输入 <code>&lt;script&gt;alert("hello")&lt;/script&gt;</code></p> <p>然后就这么直接提交到了数据库中 当页面中查询了这条数据 那么页面就会弹出一个框。。。当然能做的事情很多，这是很危险的。</p> <p>js也可用在提交之前就对文本过滤 然后传递到后台去的值都是被过滤后的值，这样就不会出现这样的问题。但是！。。。。js是防不住人的。</p> <p>前台也许不用对用户输入的数据过滤 但是后台必须要有过滤</p> <p>这里是 java 版的 这段时间也没用 php 了 等到时侯用了 在来补充这文章</p> <ol> <li>j2ee 用户文本输入过滤器</li> </ol> <p>index.jsp</p> <pre>&lt;%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta charset="UTF-8"&gt;
+        &lt;title&gt;Insert title here&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;form action="ht2ms.action" method="post"&gt;
+            &lt;textarea name="html" rows="10" cols="25"&gt;&lt;/textarea&gt;
+            &lt;textarea name="html2" rows="10" cols="25"&gt;&lt;/textarea&gt;
+            &lt;input type="submit" value="提交"/&gt;
+        &lt;/form&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</pre> <p>ht2ms.jsp</p> <pre>&lt;%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%&gt;
+&lt;!DOCTYPE&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta charset="utf-8"&gt;
+        &lt;title&gt;Insert title here&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;form action="&lt;%=basePath %&gt;index.jsp" method="get"&gt;
+            &lt;input type="submit" value="返回"/&gt;
+        &lt;/form&gt;
+        &lt;strong&gt;结果:&lt;/strong&gt;
+        &lt;p&gt;${aaa }
+        &lt;p&gt;${bbb }
+        &lt;p&gt;-------------------------------
+        &lt;p&gt;&lt;%out.print(request.getAttribute("aaa")); %&gt;
+        &lt;p&gt;&lt;%out.print(request.getAttribute("bbb")); %&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</pre> <p>HtmlTag2MetacharactersServlet.java</p> <pre>package com.demo.filter;
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * Servlet implementation class HtmlTag2MetacharactersServlet
+ */
+public class HtmlTag2MetacharactersServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public HtmlTag2MetacharactersServlet() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+    /**
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doPost(request, response);
+    }
+
+    /**
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        request.setCharacterEncoding("utf-8");
+
+        String html = request.getParameter("html");
+        String html2 = request.getParameter("html2");
+
+        System.out.println("servlet====" + html);
+        System.out.println("servlet====" + html2);
+        request.setAttribute("aaa", html);
+        request.setAttribute("bbb", html2);
+
+        response.setContentType("text/html");
+        response.setCharacterEncoding("UTF-8");
+        request.getRequestDispatcher("/ht2ms.jsp").include(request,response);
+    }
+
+}</pre> <p>HtmlTag2MetacharactersFilter.java</p> <pre>package com.demo.filter;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+/**
+ * Servlet Filter implementation class htmlTag2Metacharacters
+ */
+//@WebFilter("/htmlTag2Metacharacters")
+public class HtmlTag2MetacharactersFilter implements Filter {
+
+    /**
+     * Default constructor. 
+     */
+    public HtmlTag2MetacharactersFilter() {
+        // TODO Auto-generated constructor stub
+    }
+
+    /**
+     * @see Filter#destroy()
+     */
+    public void destroy() {
+        // TODO Auto-generated method stub
+    }
+
+    /**
+     * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
+     */
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest filterRequest = (HttpServletRequest)request;
+        HttpSession session = filterRequest.getSession();
+        request.setCharacterEncoding("utf-8");
+
+//        Map map = request.getParameterMap();
+//        Set&lt;String&gt; key = map.keySet();
+//        for (Iterator it = key.iterator(); it.hasNext();) {
+//            String s = (String) it.next();
+//            request.removeAttribute(s);
+//            request.setAttribute(s, htmlTag2Metacharacters(request.getParameter(s)));
+//            System.out.println(htmlTag2Metacharacters(request.getParameter(s)));
+//            System.out.println(request.getParameter(s));
+//        }
+
+        Map&lt;String,String[]&gt; m = new HashMap&lt;String,String[]&gt;(request.getParameterMap());
+        Set&lt;String&gt; key = m.keySet();
+        for (Iterator it = key.iterator(); it.hasNext();) {
+            String s = (String) it.next();  
+            m.put(s, new String[]{ htmlTag2Metacharacters(request.getParameter(s)) });
+        }
+        request = new ParameterRequestWrapper((HttpServletRequest)request, m);  
+        System.out.println(request.getParameter("html"));  
+        System.out.println(request.getParameter("html2"));
+
+        chain.doFilter(request, response);
+    }
+
+    /**
+     * @see Filter#init(FilterConfig)
+     */
+    public void init(FilterConfig fConfig) throws ServletException {
+        // TODO Auto-generated method stub
+    }
+
+   public String htmlTag2Metacharacters(String html) { 
+        if (html == null) { 
+            return ""; 
+        } 
+        StringBuffer escapedText = new StringBuffer(); 
+        for (int i=0; i&lt;html.length(); i++) { 
+            char ch = html.charAt(i); 
+            switch (ch) {
+            case ''':
+                escapedText.append("&amp;#39;");
+                break;
+            case '"':
+                escapedText.append("&amp;quot;");
+                break;
+            case '&lt;':
+                escapedText.append("&amp;lt;"); 
+                break;
+            case '&gt;':
+                escapedText.append("&amp;gt;"); 
+                break;
+            case '&amp;':
+                escapedText.append("&amp;amp;"); 
+                break;
+            case 'n':
+                escapedText.append("&lt;br&gt;n"); 
+                break;
+            case ' ':
+                escapedText.append("&amp;nbsp;"); 
+                break;
+            case 't':
+                escapedText.append("&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;"); 
+                break;
+            default:
+                escapedText.append(ch); 
+            }
+        } 
+        return escapedText.toString(); 
+    } 
+
+}</pre> <p>ParameterRequestWrapper.java</p> <pre>package com.demo.filter;
+
+import java.util.Enumeration;
+import java.util.Map;
+import java.util.Vector;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+
+public class ParameterRequestWrapper extends HttpServletRequestWrapper {  
+
+    private Map&lt;String, String[]&gt; params;  
+
+    public ParameterRequestWrapper(HttpServletRequest request,  
+            Map&lt;String, String[]&gt; newParams) {  
+        super(request);  
+
+        this.params = newParams;  
+
+        // RequestDispatcher.forward parameter  
+        renewParameterMap(request);  
+    }  
+
+    @Override  
+    public String getParameter(String name) {  
+        String result = "";  
+
+        Object v = params.get(name);  
+        if (v == null) {  
+            result = null;  
+        } else if (v instanceof String[]) {  
+            String[] strArr = (String[]) v;  
+            if (strArr.length &gt; 0) {  
+                result =  strArr[0];  
+            } else {  
+                result = null;  
+            }  
+        } else if (v instanceof String) {  
+            result = (String) v;  
+        } else {  
+            result =  v.toString();  
+        }  
+
+        return result;  
+    }  
+
+    @Override  
+    public Map getParameterMap() {  
+        return params;  
+    }  
+
+    @Override  
+    public Enumeration getParameterNames() {  
+        return new Vector(params.keySet()).elements();  
+    }  
+
+    @Override  
+    public String[] getParameterValues(String name) {  
+        String[] result = null;  
+
+        Object v = params.get(name);  
+        if (v == null) {  
+            result =  null;  
+        } else if (v instanceof String[]) {  
+            result =  (String[]) v;  
+        } else if (v instanceof String) {  
+            result =  new String[] { (String) v };  
+        } else {  
+            result =  new String[] { v.toString() };  
+        }  
+
+        return result;  
+    }  
+
+    private void renewParameterMap(HttpServletRequest req) {  
+
+        String queryString = req.getQueryString();  
+
+        if (queryString != null &amp;&amp; queryString.trim().length() &gt; 0) {  
+            String[] params = queryString.split("&amp;");  
+
+            for (int i = 0; i &lt; params.length; i++) {  
+                int splitIndex = params[i].indexOf("=");  
+                if (splitIndex == -1) {  
+                    continue;  
+                }  
+
+                String key = params[i].substring(0, splitIndex);  
+
+                if (!this.params.containsKey(key)) {  
+                    if (splitIndex &lt; params[i].length()) {  
+                        String value = params[i].substring(splitIndex + 1);  
+                        this.params.put(key, new String[] { value });  
+                    }  
+                }  
+            }  
+        }  
+    }  
+
+}</pre> <p>web.xml</p> <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5"&gt;
+  &lt;display-name&gt;&lt;/display-name&gt;
+  &lt;welcome-file-list&gt;
+    &lt;welcome-file&gt;index.jsp&lt;/welcome-file&gt;
+  &lt;/welcome-file-list&gt;
+  &lt;servlet&gt;
+    &lt;servlet-name&gt;ht2ms&lt;/servlet-name&gt;
+    &lt;servlet-class&gt;com.demo.filter.HtmlTag2MetacharactersServlet&lt;/servlet-class&gt;
+    &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+  &lt;/servlet&gt;
+  &lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;ht2ms&lt;/servlet-name&gt;
+    &lt;url-pattern&gt;/ht2ms.action&lt;/url-pattern&gt;
+  &lt;/servlet-mapping&gt;
+
+  &lt;filter&gt;
+      &lt;filter-name&gt;HtmlTag2Metacharacters&lt;/filter-name&gt;
+      &lt;filter-class&gt;com.demo.filter.HtmlTag2MetacharactersFilter&lt;/filter-class&gt;
+  &lt;/filter&gt;
+  &lt;filter-mapping&gt;
+      &lt;filter-name&gt;HtmlTag2Metacharacters&lt;/filter-name&gt;
+      &lt;url-pattern&gt;*.action&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;*.do&lt;/url-pattern&gt;
+  &lt;/filter-mapping&gt;
+&lt;/web-app&gt;</pre> <p> </p> <p>做完这些 用户输入的html标签都会被转换成通用字符，这样就会原型输出标签，不会被解释</p> <p>之前也试着在网路上找一些实例，可是都没有一个较为完整的代码 都不能实现功能，然后就各种蛋疼。。。</p> <p>真的很讨厌那种自己开了博客 然后文章都是从这从那拷贝出来的。。。。。。。</p> <p>(虽然我有时也会copy，但是！我copy过来的样式还是很好的好不 ！也留了原文链接的！)</p> <p>。。。。。。。。。。</p> <p>说说流程吧</p> <p>index 里面的表单数据提交到 servlet 去</p> <p>到servlet之前会在filter中对html标签进行过滤成转意字符，servlet在去从request获取的数据已经是被转码后的内容了</p> <p>然后在发送到request跳转到 ht2ms.jsp 显示</p> <p> </p> <p>关于filter里面的过滤</p> <p>filter 的流程大概为</p> <p>获取 request 里的所有内容 放到 map 中</p> <p>然后对这个map遍历 获取每个key和value</p> <p>然后对value转换</p> <p>将转换后的value再次发送到相应的key中</p> <p>完成了继续向下执行</p> <p>其中有段注释代码 那段代码是之前写的 既然是替换 遍历map的时候request.setAttrxxxxx相应的key和转换后的value就成了，但是实时上这样是行不通的，request里面的值是不能修改的，具体的参考文下链接，其中ParameterRequestWrapper.java就是解决这个问题的(也是从文中copy的)</p> <p>我的理解是 ParameterRequestWrapper.java 重行定义了request的一些方法 实现了修改 request 里面的值。。。</p> <p>好吧 我只是对其做了简单的应用 不是真正的解决问题。。。。。。</p> <p>感觉 @和尚 ！！！</p> <p>...........！</p> <ol> <li>php</li> </ol> <p>xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p> <p> </p> <ul> <li> <p title="使用HttpServletRequestWrapper在filter修改request参数">http://blog.csdn.net/xieyuooo/article/details/8447301</p> </li> <li> <p title="如何修改request的parameter的几种方式 ">http://rensanning.iteye.com/blog/1706208</p> </li> </ul> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/code">code</a></li> <li><a href="/tag/filter">filter</a></li> <li><a href="/tag/form">form</a></li> <li><a href="/tag/html">html</a></li> <li><a href="/tag/input">input</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/request">request</a></li> </ul> </footer> </article> <menu class="page"> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

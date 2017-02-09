@@ -1,0 +1,151 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>audio.js 折腾 - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2014-12-27T20:45:28.000Z">December 27, 2014</time> <h1>audio.js 折腾</h1> </header> <section class="post-main"><p>恩 要做一个不得了的东西, 有音频要播放, 为了更加快速了(其实不会)就找了一个音频播放的工具.也就是 audo.js 了</p> <p>主页: http://kolber.github.com/audiojs/</p> <p>这东西叻在遇到支持 html5 的浏览器就使用 html5 的方式播放, 不支持的就使用 flash 播放, 所有浏览器的界面都是统一的.</p> <p>上述的几个优点了看着很好, 其实都是问题....</p> <p>比如不想用那原始的界面, 没错, audiojs 的样式是可以自己定义的, 只要添加样式把原始的样式覆盖掉就成了, 但是! 事实是你所想要的html的结构并不是 audiojs 所给出的那样, 这样只会让你写起来更复杂, 为了 audiojs 所给出的标签结构来美化, 而并不是自己所想要的结构.</p> <p>上述说的遇到支持 html5 的浏览器了也并不全面, 事实情况是, 如果浏览器支持 html5 的 audio 标签但是不支持 mp3 格式的音频都会以 flash 方式播放.</p> <p>那么 进入正文吧</p> <p>首先初始化页面中的所有 audio , 音频了就使用 audio 标签加载就行了. 然后执行 audiojs 的初始化, 播放器了就自己用 html 拼一个出来就是. 主要说说 audiojs 所提供的参数以及函数吧.</p> <pre>    var asall = audiojs.createAll();
+    var as = asall[0];</pre> <p>然后打开浏览器控制台查看 as 变量有如下的参数</p> <pre>duration                      284.029387755102
+loadStartedCalled      false
+loadedPercent           1
+mp3                            "/well/music/a.mp3?v=2"
+playing                       false
+settings                      Object { autoplay=true, loop=false, preload=true, more...}
+source                       audio
+swfReady                   true
+wrapper                     div#audiojs_wrapper0.audiojs
+element                     embed
+init                             function()
+load                           function(c)
+loadError                  function()
+loadProgress           function(percent, duration)
+loadStarted              function()
+pause                       function()
+play                          function()
+playPause                 function()
+setVolume               function(c)
+skipTo                     function(c)
+trackEnded             function()
+updatePlayhead     function(percent)</pre> <p>几个用到的描述下</p> <p>duration 是文件的长度 恩差不多</p> <p>playing 是否正在播放</p> <p>settings audiojs 相关设置</p> <p>element 播放音频的对象</p> <p>loadError 载入音频失败回调</p> <p>loadProgress 载入音频的过程回调</p> <p>play 播放音频</p> <p>pause 暂停播放</p> <p>swfReady swf 加载完毕</p> <p>setVolume 设置音量</p> <p>skipTo 音频跳转到指定位置</p> <p>trackEnded 音乐播放结束后回调</p> <p>updatePlayhead 音乐正在播放中的回调</p> <p>然后就开始自定义吧</p> <p>====</p> <pre>function isFlash(as){
+     /*
+      判断audiojs是否通过flash加载的,
+      settings 中提供了 hasFlash 但是我测试后发现不管是 flash 还是 audio 都是 true 可能另有作用 详细的没看, swfReady 发现 在flash 播放的时候 为true 而 audio 播放的时候是没有这个参数的
+     */
+     return as.swfReady;
+};
+    /*
+     获取播放的时间值  
+     直接 copy audiojs 代码的
+      这里有个区别就是  如果是获取总时间 percent 是不需要的
+      percent 只有在 获取当前进度的时候才需要
+   */
+    function parseTime(duration, percent){
+        var p = 0;
+        if (percent) p = duration * percent; else p = duration;
+        var m = Math.floor(p / 60),
+            s = Math.floor(p % 60);
+        return ((m&lt;10?'0':'')+m+':'+(s&lt;10?'0':'')+s);
+    };
+
+   /*
+    没发现或者说没理解是什么作用
+   不过 看到 audiojs 的进度以及音量调节中是有获取这个值的
+   */
+    function leftPos(elem) {
+        var curleft = 0;
+        if (elem.offsetParent)
+            do { curleft += elem.offsetLeft; } while (elem = elem.offsetParent);
+        return curleft;
+    };
+
+
+// 播放结束回调
+as.trackEnded = function(){
+    nextMusic(); // 预先定义切换下一首函数
+};
+
+// 音频缓冲中的处理
+// 这一步 主要是获取 audiojs 正在缓冲音乐的时候相关参数来做些效果处理
+// 比如 缓冲的时候 的一个滚动条
+as.loadProgress = function(percent, duration){
+      var self = this;
+      // 这里要分俩中状态处理, 就是 flash 和 audio 分别对待
+      // 只有在 flash 方式的时候回调函数提供了 percent 和 duration 这俩个参数, audio 方式 回调是没有返回参数的, 需要自己获取
+      if (isFlash(as)) {
+        // ==== 这些一定要带上, 这些参数会传递到供后面的函数使用,如果不带后面的函数将获取不到这些数据, 具体去看 audiojs 的源码
+        as.loadedPercent = percent;
+        as.duration = duration;
+        as.settings.loadStarted.apply(as);
+        as.settings.loadProgress.apply(as, [percent]);
+       // ==========================================
+       //  后面就可以加入自己的代码了 控制自己定义的样式
+        $('.progress-load').style.width = (percent*100)+'%';
+        $('#time-tol').innerHTML = parseTime(duration);
+          return;
+       }
+      // audio 方式处理
+      // 这里也是直接把 audiojs 中的代码拿出来的. 这些都是必须得加上的, 否则会导致后面的函数无法获取到值
+        if (self.element.buffered != null &amp;&amp; self.element.buffered.length) {
+            if (!self.loadStartedCalled) {
+                self.loadStartedCalled = self.loadStarted();
+            }
+            var durationLoaded = self.element.buffered.end(self.element.buffered.length - 1);
+            self.loadedPercent = durationLoaded / self.duration;
+
+            self.settings.loadProgress.apply(self, [self.loadedPercent]);
+             
+            // 下方就可以加入自己的控制代码
+            $('.progress-load').style.width = (self.loadedPercent*100)+'%';
+            $('#time-tol').innerHTML = parseTime(audio.duration);
+        }
+};
+
+       /// 正在播放音乐的处理
+       /// 获取正在播放中的相关参数 进行自己的效果处理
+       // 只有flash方式才会有 percent 参数
+      as.updatePlayhead = function(percent){
+            // 同样区分 flash 和 audio 俩中方式
+            var self = this;
+            if (isFlash(as)) {
+                  $('.progress-cur').style.width = (percent*100)+'%';
+                  $('#time-cur').innerHTML = parseTime(self.duration, percent);
+                return;
+            }
+            // == 这里是 audiojs 源码中拿出来的因为 audio 方式回调是没有当前播放进度的, 所以得自己获取
+            var percent = self.element.currentTime / self.duration;
+            self.settings.updatePlayhead.apply(self, [percent]);
+            // ===========
+            // 获取了之后加入自己的一些处理
+            $('.progress-cur').style.width = (percent*100)+'%';
+            $('#time-cur').innerHTML = parseTime(self.duration, percent);
+            return;
+        };
+
+
+   /*
+     主要的就是重写上方的俩个函数, 那控制 诸如 播放进度 当前播放的时间这些信息, 然后其他的 比如 暂停 下一首 这些 可以直接对自己的按钮绑定事件即可
+   */
+    $('#btn_switch').bind('click', function(){
+         // 点击 btn_switch 如果音频真正播放 就暂停  否则就开始播放
+         !as.playing ? as.play() : as.pause();
+    });
+ /// 其他的绑定也是如此</pre> <p>基本上了处理代码就如上方这样.</p> <p>后面绑定的事件中有俩个需要注意的是 点击调整音量和点击进度条跳转音频播放的时间</p> <pre>/*
+音频播放进去点击事件, 这里的事件触发都是从audiojs里拿出来的,
+只是将这个绑定放到自己定义的进度条上进行触发
+*/
+$('.guess-progress').bind('click', function(event){
+    var self = this;
+    if (!as.playing) as.play();
+    var i = (event.clientX-leftPos(self))/self.offsetWidth;
+    // 同样的 也需要判断 flash 和 audio 二者的处理方式是不同的
+    if (isFlash(as)) {
+        audio.updatePlayhead.call(as, [i]);
+        audio.element.skipTo(i);
+        return;
+    }
+    as.skipTo(i);
+    return;
+});
+
+/*
+绑定音量点击事件
+*/
+$('.ctrl-volume').bind('click', function(e){
+       var i = (e.clientX-leftPos(this))/this.offsetWidth;
+       $('.volume-cur').style.width = (i*100)+'%';
+       as.setVolume(i);
+});</pre> <p>特别需要注意 setVolume 这个函数, 或者说需要注意的并不是这个函数, 怎么说了, 就是 audiojs 在使用 flash 方式进行播放的时候了, setVolume 这个函数是无效的, 亦或者说, 是 audiojs 所提供的 swf 文件是不提供这个 setVolume 函数的, 所以 会看到控制台有提示说 setVolumen is not function, 详细见 audio issue</p> <p><a title=" IE8 stops on a.element.setVolume(c)}; #51 " href="https://github.com/kolber/audiojs/issues/51" target="_blank">IE8 stops on a.element.setVolume(c)}; #51</a></p> <p>解决方式叻.这个 issue 中</p> <p>https://github.com/kolber/audiojs/issues/51#issuecomment-9720606</p> <p>有个演示页</p> <p>http://demo.svnlabs.com/html5player/volume-control/</p> <p>这个页面的测试 音量是可以调节的, 起初一直以为是 js 或者什么配置有问题, 原来是 swf 有问题= =.</p> <p>把那个演示页的 swf 下载了, 覆盖掉自己的就行了.</p> <p>另外, 自动播放, 按照 audiojs 网页中所说的给 audio 标签加个 autoplay 属性, 是可以自动播放, 测试中发现 使用 audiojs 中默认的是可以, 但是经我这么一修改 发现有问题,</p> <p>linux firefox devliper edition 可以正常使用</p> <p>window firefox DE || chrome 可以自动播放, 但是貌似被播放了俩遍</p> <p>不知道是我哪里写错了.</p> <p>然后有测试过 在 create 之后执行 as.play() 在flash 方式中会报错 说 pplay not function</p> <p>= =</p> <p>所以.. 最后又被我发现 settings 中有 autoplay 这个配置,</p> <p>对 create 之后</p> <pre>as.settings.autoplay = true;</pre> <p>我就是这么解决的.</p> <p>======</p> <p>好吧 修修补补 也算是完成了, 恩, 基本上就这样.</p> <p>图叻就先不放了, 不就这个就能发布了, 域名的话 就先 guess.iaceob.name 好了</p> <p>对, 没错 是个电台!</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/audiojs">audiojs</a></li> <li><a href="/tag/fm">fm</a></li> <li><a href="/tag/js">js</a></li> <li><a href="/tag/toss">toss</a></li> </ul> </footer> </article> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

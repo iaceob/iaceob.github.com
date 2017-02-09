@@ -1,0 +1,68 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>javascript 解析分页 - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2015-01-03T19:00:51.000Z">January 3, 2015</time> <h1>javascript 解析分页</h1> </header> <section class="post-main"><p>怀旧, 看到了这篇古老的<a title="分页自定义标签" href="/post/paging-custom-tag/">文章</a>, 一个 java servlet 的自定义分页标签, 毕竟每个人的观念以及认识都在改变, 看到了这就想到了现在在用的了, 感觉现在和以前差别还是挺大的, 那就来说说吧.</p> <p>先来说说之前的那篇文章吧.</p> <p>首先那是一个标准的 jsp 自定义标签的方式, 在 web.xml 中注册标签名, 标签会调用后台的java类, 传递 行数 页数 等参数, 这个类就去分析这些数字来生成 html, 后输出, 另外还有增加了很多自定义的功能.</p> <p>相对来说, 还是比较完善的.</p> <p>不过现在来看话, 只感觉到繁杂, 标签使用麻烦, 整个配置麻烦, 而且 还给服务器增加了负担.</p> <p>其实那东西我自己都没用过= =</p> <p>好吧. 前面的先这样, 那么 说说现在的吧.</p> <p>现在的处理方案是全部使用js来做分页, 既然是分页查询, 都肯定会有 总行数 总页数 页码 每页数据量</p> <p>有了这些, 就可以对其进行分析了</p> <pre>/**
+ * 解析分页页码
+ */
+function parsePage(totalRow, totalPage, pageNumber, pageSize, url, pageParam) {
+    totalRow = totalRow||0;
+    totalPage = totalPage||0;
+    pageNumber = pageNumber||0;
+    pageSize = pageSize||0;
+    url = url||window.location.href;
+    pageParam = pageParam||'page';
+    var phtml = '&lt;div&gt;';
+    phtml += '&lt;span&gt;共&lt;strong&gt;' + totalRow + '&lt;/strong&gt;条&lt;/span&gt;&lt;span&gt;每页&lt;strong&gt;' + pageSize + '&lt;/strong&gt;条&lt;/span&gt;';
+    if (pageNumber &gt; 1) {
+        phtml += '&lt;a href="' + joinPageUrl(1, url, pageParam) + '" data-page="1"&gt;首页&lt;/a&gt;';
+        phtml += '&lt;a href="' + joinPageUrl((pageNumber - 1), url, pageParam) + '" data-page="' + (pageNumber - 1) + '"&gt;上一页&lt;/a&gt;';
+    } else {
+        phtml += '&lt;span&gt;首页&lt;/span&gt;';
+        phtml += '&lt;span&gt;上一页&lt;/span&gt;';
+    }
+    var prevp = pageNumber - 4;
+    for (var i = 0; i &lt; 4; i++) {
+        var prevpj = prevp++;
+        if (prevpj &gt; 0) {
+            phtml += '&lt;a href="' + joinPageUrl(prevpj, url, pageParam) + '" data-page="' + prevpj + '"&gt;' + prevpj + '&lt;/a&gt;';
+        }
+    };
+    phtml += '&lt;span&gt;&lt;strong&gt;' + pageNumber + '&lt;/strong&gt;&lt;/span&gt;';
+    var nexp = pageNumber;
+    for (var i = 0; i &lt; 5; i++) {
+        var nexpj = ++nexp;
+        if (nexpj &lt; pageNumber + 5 &amp;&amp; nexpj &lt;= totalPage) {
+            phtml += '&lt;a href="' + joinPageUrl(nexpj, url, pageParam) + '" data-page="' + nexpj + '"&gt;' + nexpj + '&lt;/a&gt;';
+        }
+    };
+    if (pageNumber &lt; totalPage) {
+        phtml += '&lt;a href="' + joinPageUrl((pageNumber + 1), url, pageParam) + '" data-page="' + (pageNumber + 1) + '"&gt;下一页&lt;/a&gt;';
+        phtml += '&lt;a href="' + joinPageUrl(totalPage, url, pageParam) + '" data-page="' + totalPage + '"&gt;尾页&lt;/a&gt;';
+    } else {
+        phtml += '&lt;span&gt;下一页&lt;/span&gt;';
+        phtml += '&lt;span&gt;尾页&lt;/span&gt;';
+    };
+    phtml += '&lt;span&gt;' + pageNumber + '/' + totalPage + '&lt;/span&gt;';
+    phtml += '&lt;/div&gt;';
+    return phtml;
+};
+
+/**
+ * 拼接分页链接
+ * 分页链接简单处理
+ * */
+function joinPageUrl(pageNumber, url, pageParam) {
+    pageParam = pageParam||kit.config.site.pageParam;
+    url = url.split('?');
+    var upr='';
+    if (url.length&lt;=1) {
+        upr += url[0] + '?' + pageParam + '=' + pageNumber;
+        return upr;
+    }
+    var up = url[1].split('&amp;');
+    var urlParam = [];
+    for(var i=up.length; (i--)&gt;0;) {
+      urlParam = up[i].split('=');
+      if (urlParam[0]!=pageParam) upr += up[i]+'&amp;';
+    }
+    upr += pageParam + '=' + pageNumber;
+    url = url[0] + '?' + upr;
+    return url;
+};</pre> <p>分析的流程都是大同小异的之前怎么做这里就怎么做</p> <p>这里唯一只是多了一个 joinPageUrl 这个函数的处理, 就是分页链接的自定义, 例如 ajax 加载某个内容, url 并不是当前页面的 url , 那就可以直接传递分页的 url , 另外这里也添加了多参数的功能, 依稀记得 以前 thinkphp 内置的分页标签以前就存在这个问题, 例如原分页链接如下</p> <p>//host.com/a.php?type=0</p> <p>这是第一页 , 然后 tp 的分页标签在生成页码的时候 把 type=0 给抛弃了, 也就是 第二页像这样</p> <p>//host.com/a.php?page=2</p> <p>正确的应该是</p> <p>//host.com/a.php?type=0&amp;page=2</p> <p>当然, 现在tp已经没有这问题了, 已经被修复了.</p> <p>这里的 joinPageUrl 里 首先会去获取 url 如果有参数, 会分析所有参数, 并加上分页的参数.</p> <p>====</p> <p>逻辑还是那个逻辑, 只是形式变了而已, 分页从后台跑到前台来做了, 这样也减轻了后台的负担, 同样这样也更灵活, 任何地方想要分页, 只要传递参数过来,这里就能进行分析.</p> <p>但这绝对不是最好的方案, 这样做非常不利于seo, 所以酌情使用咯.</p> <p>应该算是最简单的一种方案, 使用很方便.</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/page">page</a></li> <li><a href="/tag/parse">parse</a></li> </ul> </footer> </article> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

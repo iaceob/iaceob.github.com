@@ -1,0 +1,18 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>gae - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2013-12-04T19:17:38.000Z">December 4, 2013</time> <h1><a href="/post/ubuntu-goagent/">阿根廷 。。。。。</a></h1> </header> <section class="post-main"><p>goagent</p> <p>https://code.google.com/p/goagent</p> <p>下载aoagent解压到 /opt</p> <pre>~$ sudo unzip ~/download/goagent-goagent-v3.0.8-61-g1246c9c.zip -D /opt</pre> <p>https://developers.google.com/appengine/downloads</p> <p>下载 <code>Google App Engine SDK for Python</code> 解压到 /opt</p> <pre>~$ sudo unzip ~/download/google_appengine_1.8.8.zip -D /opt</pre> <p>在gogent/server/python目录下有文件 app.yaml 文件，打开进行编辑，输入创建的appid</p> <pre>~$ sudo gedit /opt/goagent/server/python/app.yaml</pre> <pre>application: yourappid
+version: 1
+runtime: python27
+api_version: 1
+threadsafe: true</pre> <p>版本默认是1</p> <p>将goagent提交的gae中</p> <pre>~$ sudo python /opt/google_engine/appcfg.py update /opt/goagent/server/python</pre> <p>输入 email 和 password 提交</p> <p>======</p> <p>客户端使用</p> <p><code>/opt/goagent/local</code> 目录下有文件 <code>proxy.ini</code></p> <p>打开修改appid</p> <p>(从别处得知需要将profile改成 google_hk，如果是 google_cn 还是不能用)</p> <pre>[gae]
+appid = yourappid
+password = 
+path = /2
+profile = google_hk
+mode = https
+hosts = [google_hk]hosts</pre> <p>运行 proxy.py 就可以去阿根廷</p> <p> </p> <p>创建快捷方式</p> <pre>sudo gedit /usr/share/applications/goagent.desktop</pre> <pre>[Desktop Entry] 
+Name = goagent
+Comment = a proxy tool
+Exec = /opt/goagent/local/proxy.py
+Icon = /opt/goagent/local/goagent.png 
+Terminal = true
+Type = Application
+Categories = Application;Development;</pre> <p>现在需要给快捷方式以sudo超级用户方式运行，否则点击会一闪而过。当然你也可以不让他在终端显示，只需要将Terminal=true改成Terminal=false</p> <pre>sudo chmod 777 /opt/goagent/local/proxy.py</pre> <p>关于switchy等配置 。。。<br/> goagent 包中已经有 switchy google浏览器插件 直接托放<br/> go google ...</p> <ul> <li>https://code.google.com/p/goagent/</li> <li>https://appengine.google.com/</li> <li>https://developers.google.com/appengine/downloads</li> <li>http://www.samabox.com/projects/chrome/switchy</li> <li>http://equation85.github.io/blog/goagent-config/</li> </ul></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/gae">gae</a></li> <li><a href="/tag/goagent">goagent</a></li> <li><a href="/tag/google">google</a></li> <li><a href="/tag/python">python</a></li> <li><a href="/tag/ubuntu">ubuntu</a></li> </ul> </footer> </article> <menu class="page"> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

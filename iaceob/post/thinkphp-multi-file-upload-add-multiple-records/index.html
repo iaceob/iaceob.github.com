@@ -1,0 +1,98 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>thinkphp 多文件上传添加多条记录 - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2013-06-06T16:17:32.000Z">June 6, 2013</time> <h1>thinkphp 多文件上传添加多条记录</h1> </header> <section class="post-main"><p> 使用thinkphp上传文件已经很简单了，thinkphp封装的上传类还是很好用的，官网上也有上传文件的实例，这里主要说一下多文件上传和上传多少个文件就添加多少条语句到数据库。 </p> <p> web开发中有时上传多文件的时候需要添加多条记录到数据库中，而不是一条记录，比如上传相册的图片，不能将所有的图片都上传到一个表中的，但是这样的多文件上传方式在官网没有看到，就自己写了一个方法，也许有更好的活着之前就有人这么写过了，这里只做参考。 </p> <p> 上传使用的input file选择文件的，这里用上传图片做演示。 </p> <p> 首先上传多个图片name就不能是单一的一个值了，应该是一个数组这样上传多图片的时候，就能将图片的信息放到一个数据里面让后台去操作，在name的值后面加上[],上传表单必须使用post方式进行提交，而且表单还需要添加一个 enctype="multipart/form-data" 参数。 </p> <pre>
+&lt;form  action="__URL__/addPicture" method="post" enctype="multipart/form-data"&gt;
+        &lt;input type="file" name="image[]"&gt;    
+        &lt;input type="file" name="image[]"&gt;
+        &lt;input type="file" name="image[]"&gt;
+        &lt;br&gt;
+        &lt;input type="submit" value="Upload"&gt;
+&lt;/form&gt;</pre> <p> </p> <p> 提交到后台，然后进行处理 </p> <pre>
+		/**
+		 * 
+		 * 添加图片
+		 */
+		public function addPicture() {
+			header("Content-Type:text/html; charset=UTF-8");
+			$image = $_FILES['image'];
+			
+
+			if (empty($image)) {
+				$this-&gt;error('必须上传文件');
+			} else {
+				$Image = $this-&gt;upPicture(); // 上传图片并将上传后的信息交给$Image
+				if (isset($Image)) { 
+					// 将linkImage交给addlinks完成添加数据库
+					if ($this-&gt;executionAddPicture($Image)) { 
+						$this-&gt;success('操作成功');
+					} else {
+						$this-&gt;success('因为部分上传表单没有添加图片，所以未添加文件的表单将添加失败，已经添加文件的表单添加成功。');
+					}
+				} else {
+					$this-&gt;error('文件上传出错，与管理员联系');
+				}
+			}
+		}</pre> <p> </p> <p> </p> <p> 上传图片的方法 </p> <pre>
+
+		/**
+		 * 上传图片
+		 */
+		private function upPicture() {
+			import ('@.ORG.Util.UploadFile');
+			
+			$path ='./Public/hi/albums/'; // 文件上传路径
+			$saveRule= 'uniqid'; // 上传文件名的命名规则
+			$allowExts = array('jpg','jpeg','gif','png','bmp'); // 允许上传的文件类型
+			
+			$Upload = new UploadFile();
+			$Upload-&gt;savePath = $path;
+			$Upload-&gt;saveRule = $saveRule;
+			$Upload-&gt;uploadReplace = 'true'; // 如果有同名文件是否覆盖
+			$Upload-&gt;allowExts = $allowExts;		
+			$Upload-&gt;thumbRemoveOrigin = 1;
+					
+			// upload() 方法  如果上传成功返回true 失败 false
+			if ($Upload-&gt;upload() ) {
+				$info = $Upload-&gt;getUploadFileInfo();
+				return $info;
+				
+			} else {
+				// 专门获取上传的错误信息
+				$this-&gt;error($Upload-&gt;getErrorMsg());
+			}
+			
+		}</pre> <p> </p> <p> 添加数据的方法 </p> <pre>
+
+		/**
+		 * 
+		 * 执行添加照片
+		 */
+		public function executionAddPicture($data) {
+			header("Content-Type:text/html; charset=UTF-8");
+			$file = $_FILES['image']; // 得到上传了多少张图片
+			$Picture = M('Picture');
+			
+	    	if ($Picture-&gt;create()) {
+                             // 循环添加到数据库
+				for($i=0;$i&lt;count($file);$i++){ 
+						$Picture-&gt;createtime = time();
+						$Picture-&gt;image = $data[$i]['savename'];
+						$result = $Picture-&gt;add();
+			    }
+			
+//				dump ($data[$i]['savename']);   //  value=null
+//				echo count($file);  // 
+//				exit;
+				
+				if ($result) {
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				$this-&gt;errot($Albums-&gt;getError());
+			}	
+			
+//			dump ($file);
+//			exit;
+			
+			
+		}</pre> <p> </p> <p> 到这里多文件上传添加多条数据就结束了，关键的一部分代码就是添加到数据库之前的循环。 </p> <p> $file = $_FILE[‘image’]; // 得到上传了多少张图片 </p> <p> for($i=0; $i&lt;count($file); $i++) { </p> <p> $Picture-&gt;createtime = time(); // 时间戳 </p> <p> $Picture-&gt;image = $data[$i][‘savename’]; </p> <p> $result = $Picture-&gt;add(); </p> <p> } </p> <p> 这里代码的流程如下 </p> <p> <img src="/img/thinkphp-multi-file-upload-add-multiple-records/1.png"> </p> <p> </p> <p> 主要就在于这个循环如果将add()拿出这个循环的话，只会添加循环的最后一条数据。</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/php">php</a></li> <li><a href="/tag/thinkphp">thinkphp</a></li> <li><a href="/tag/多文件上传">多文件上传</a></li> <li><a href="/tag/循环添加数据">循环添加数据</a></li> </ul> </footer> </article> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

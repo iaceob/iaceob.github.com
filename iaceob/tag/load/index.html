@@ -1,0 +1,48 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>load - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2013-11-08T15:37:24.000Z">November 8, 2013</time> <h1><a href="/post/not-free-to-use-lazy-loading/">不要随意使用懒加载！！</a></h1> </header> <section class="post-main"><p>记得之前看过说 hibernate 的懒加载使用 是在需要的地方就使用不需要的地方就不要使用。。。。</p> <p>很蛋疼的一句话 谁都知道啊 。。。。</p> <p>---</p> <p>虽然很蛋疼 不过还真就体会了一次 懒加载严重影响了系统的运行 代码如下</p> <p>分别有A实体类和B实体类 并且是多对多关系</p> <p>最终生成的表有3张 a b c 其中c表存储的是a表的id和b表的id</p> <pre>        Set&lt;A&gt; as = new HashSet&lt;A&gt;();
+        A a = new A();
+        String[] split = module.split(",");
+        int aId;
+        for (int i=0; i&lt;split.length; i++) {
+            try {
+                aId = Integer.parseInt(split[i]);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "类型错误";
+            }
+            a = this.moduleDao.getAById(aId);
+            modules.add(a);
+        }
+        B b = new B();
+        b.setBID(bID);
+        b.setBName(bName);
+        b.setAs(as);
+        b.setCreateUserID(uid);
+        b.setCreateTime(new Date());
+        String saveBID = this.bDao.saveB(b);</pre> <p>保存的代码就如上面 感觉很但疼 hibernate 这操作 。。。。。 还需要循环去查询数据库。。。</p> <p>然后就去跑了一遍，惊呆了，花了40多秒才执行完。。。。</p> <p>很是不解 非常不解 。。。</p> <p>试了好多次 下面这些是记录下来的 耗时 (根据测试数据不同隔开)</p> <pre>用时36539毫秒；36.539秒
+用时27813毫秒；27.813秒
+用时26473毫秒；26.473秒
+用时30016毫秒；30.016秒
+------------
+用时29684毫秒；29.684秒
+用时44141毫秒；44.141秒
+用时28434毫秒；28.434秒
+用时31013毫秒；31.013秒
+------------
+用时26366毫秒；26.366秒
+用时28442毫秒；28.442秒
+用时36296毫秒；36.296秒
+用时31299毫秒；31.299秒
+------------
+用时42439毫秒；42.439秒
+用时44764毫秒；44.764秒
+------------
+用时6260毫秒；6.26秒
+用时3809毫秒；3.809秒
+用时4187毫秒；4.187秒
+用时3640毫秒；3.64秒
+---------
+用时23520毫秒；23.52秒
+---------
+用时65622毫秒；65.622秒
+
+</pre> <p>只有几条数据的时候 就比较快 数据一多 耗时都是30-40左右。。。</p> <p>这特么还是本地测试。。。。</p> <p>之后看了下 hibernate 生成的 sql 发现查询b的时候把a也给查了而且只要是有数据的全部都给查了 这特么怎么能不慢 。。。。</p> <p>检查后发现b实体类中关联a类采用了懒加载</p> <p>把懒加载去掉后 再次去执行</p> <p>有了质的提高 不过 数据多了 还是有点慢 但是 比懒加载快很多！！！！</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/hibernate">hibernate</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/lazy">lazy</a></li> <li><a href="/tag/load">load</a></li> </ul> </footer> </article> <menu class="page"> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

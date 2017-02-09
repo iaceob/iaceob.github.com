@@ -1,0 +1,89 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>先从js开始. - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2014-06-19T21:50:47.000Z">June 19, 2014</time> <h1>先从js开始.</h1> </header> <section class="post-main"><p>谈谈自己的理解.<br/> 想不好开场白...<br/> 从最基本的开始吧.</p> <p>js 是一种面向对象的语言.<br/> 首先先来说 <strong>use strict</strong> 开始说起,<br/> 我的理解就是 use strict 是 js 代码更规范话. 否则js的语法是可以非常混乱不严谨的.<br/> 例如这样</p> <pre>a = 2
+b=4
+alert(a+b)</pre> <p>这样对于js的解析引擎来说是没有问题的,可以正确的解析.<br/> 而定义了 use strict 上述代码就属于错误代码.</p> <pre>'use strict'
+a=2
+b=4
+alert(a+b)</pre> <p>这样是会解析失败的, 正确的写法</p> <pre>'use strict';
+var a=2;
+var b=4;
+alter(a+b);</pre> <p>这样的好处是当代码变得很多/复杂的时候便于方便阅读/调试等等,不会发生变量多而导致的一些不可察觉的错误出现,同时也能养成一个良好的书写代码习惯.<br/> 关于 ‘use strict’ 的位置,也并不是固定的, 放置与顶部或者某个函数的内部, 也就是相对的作用域不同, 顶部的话 表示着所有的js都使用这种方式,而函数内部的话 当前函数使用此方式解析.</p> <p>变量的作用域<br/> 同大多数语言相同, 定义于外部的变量为公共变量 函数内部的变量为局部变量 外部是不能访问 操作局部变量.</p> <p>数组和对象<br/> 先从数组开始<br/> 在js中数组的表现方式是 [] , 这就是一个空的数组, 或者实例Array函数 new Array();<br/> 获取数组中的数据也是使用遍历的方式</p> <pre>var names = ['tom', 'jan', 'jason', 'bynn'];
+for(var i=names.length; (i--)&gt;0;) {
+    console.log(names[i]);
+}
+console.log(names.length);
+// 输出结果:
+bynn
+jason
+jan
+tom
+4
+</pre> <p>在是对象<br/> 对象的表现方式是 {} 或者实例Object函数 new Object();<br/> 对象里面的数据的书写方式与json的书写方式相同 {key: value}<br/> 获取对象里的数据使用 .key 或者 [key]<br/> 俩者在不同情况中使用<br/> 如果 key 为字符串类型可以使用 . 语法获取value值 而如果 key 是 int double 等类型 使用 . 语法获取是不能获取到的, 因为从强类型的语言来说, 变量是不允许使用纯数字和首字母是不允许为数字的. 因此在对象中获取值 使用 [] 在任何情况下都是没有问题的.<br/> 此外在对象书写中 key 可以没有引号或单引号或双引号, 而value 除了在int double boolean之外则不行 value是object类型的数据.<br/> 当然 包括数组和对象在内都是可以嵌套使用的., 也就是数组中可以有对象和数组 对象中可以有对象和数组</p> <pre>// 正确情况
+var o={a:1}; // true a=1
+var o={a:'a'}; // true a='a'
+var o={a:2.0}; // true a=2.0
+var o={a:true}; // true a=true
+var o={1:1}; // true 1=1
+var o={1.0:(Object)}; // true 1.0=Object类型数据
+var o={a:{a1:'av'}}; // true a = {a1:'av'}
+var o={a:[{ar1:'ar1v'}, {ar2: 'ar2v'}]}; // true a=[{ar1:'ar1v'}, {ar2: 'ar2v'}]
+// 错误情况
+var o={a:a} // false
+</pre> <p>原型的扩充<br/> 属于叫嘛来着.<br/> 书写方式</p> <pre>class_name.prototype.method_name = function(argument) {
+    // body...
+};
+// class_name    函数名称
+// method_name    补充的方法名称
+// argument  参数
+//  body... 补充的方法体
+</pre> <p>也就是说给现有的某个函数添加新的功能<br/> 例如 String 函数没有 format 方法,那么就可以给 String 的原型添加该方法来实现某些操作</p> <pre>String.prototype.format = function() {
+alert(this);
+};
+
+这样使用
+var a = 'test';
+a.format();
+这样就会弹出a变量的内容
+方法体中的 this 表示的 当前变量的内容.
+</pre> <p>对象添加方法<br/> 给一个对象中添加方法有俩中方式<br/> 第一种:</p> <pre>var obj = {test: function(){alert('test')}};
+obj.test()  // 会弹出 test
+// obj 中没有 test2 这个方法 这个时候就可以直接使用 . 语法添加
+obj.test2 = function(){alert('test2');}
+obj.test2(); // 弹出 test2
+</pre> <p>第二种:</p> <pre>var obj = {
+test: test(),
+test2: test2()
+}
+function test(){
+alert('test');
+}
+function test2() {
+alert('test2');
+}
+</pre> <p>可以实现相同的功能.</p> <p>闭包<br/> 这是js所特有的一种特性也是实现js面向对象的直接体现.<br/> 下面是一个简单的闭包示例</p> <pre>function f1(){
+   var d = 1;
+   function f2(){
+       return d;
+  }
+ return f2();
+}
+var res = f1();
+res();
+// 执行f1函数 将返回1, f2函数最为f1的内部函数, 从外部是访问不了的,也就是说 对外开放的只有f1函数.
+// f2 函数 就是闭包的体现
+</pre> <p>在如</p> <pre>function f1(){
+    var d=1;
+    addfunc = function(){d+=1;};
+   function f2(){
+      return d;
+  }
+  return f2();
+}
+var res = f1();
+res(); // 1
+addfunc();
+res(); // 2
+// f2 这个闭包的函数是一直存在于内存中的
+// 当第一次执行f1函数的时候 f1 函数内部会调用f2函数 f2 函数返回d变量 之后f1在返回f2函数 输出的也就是 f1
+// 接着 执行 addfunc 这个匿名函数 给 d+1 
+// 第二次在访问f1这个函数因为d被+1 f2 会在内存中读取被操作后的d,被返回 再次获取到的值就是 2
+</pre> <p>========<br/> 一些基本的应用在这里, 但是这并不能很完善的讲述js.<br/> 先从这里开始.<br/> 之后在来详细叙述这些内容</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/closure">closure</a></li> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/syntax">syntax</a></li> </ul> </footer> </article> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

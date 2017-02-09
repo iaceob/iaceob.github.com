@@ -1,0 +1,39 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>Nginx 反向代理 - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2014-10-25T17:24:49.000Z">October 25, 2014</time> <h1>Nginx 反向代理</h1> </header> <section class="post-main"><p>nginx 的配置文件 nginx 有这写配置</p> <pre>include /etc/nginx/conf.d/*.conf;
+include /etc/nginx/sites-enabled/*;
+</pre> <p>就是会自动导入 /etc/nginx/conf.d 目录下 conf 后缀的文件和 /etc/nginx/sites-enabled 目录下的所有文件.</p> <p>除了默认导入的 default 配置 这些配置也将加载.</p> <p>看过好多配置反向代理的方式, 配置类似与这样</p> <pre>server {
+	listen 80;
+	server_name host.com;
+	location / {
+		proxy_pass         http://100.111.122.133;
+		#proxy_redirect     off;
+		proxy_set_header   Host $host;
+		proxy_set_header   X-Real-IP  $remote_addr;
+		proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header   Referer http://$host;    
+	}
+}</pre> <p>可是正在这样配置的时候, 重启 nginx 会无法启动, 说错误是 listen 80 这里, 因为 default 配置文件中已经监听了端口, 这里再加就冲突了.</p> <p>不知是就我这有问题.</p> <p>其实让其工作, 配置还是很简单的.</p> <p>一个简单的配置方式</p> <pre>server {
+    server_name host.name;
+
+    location / {
+        proxy_pass http://localhost:8080;
+    }
+}
+</pre> <p>这样就能够实现 host.name 反向代理到本机的 8080 端口</p> <p>--</p> <p>但是 nginx 反向代理, 如果是代理到一个二级目录上, 比如 还有一个 tomcat 的服务, 有个 test 项目, 那么访问链接应该为 localhost:8080/test 这个时候到 nginx 配置代理的时候</p> <pre>server {
+    server_name host.com;
+    
+    location / {
+        proxy_pass http://localhost:8080/test/;
+    }
+}
+</pre> <p>这样配置, 重启, 访问 host.com 已经实现了访问了, 但是也是有个问题的.</p> <p>例如 java 在代码中, 使用 request 获取域名 路径的时候, 就很"智能"的检测到, 这是使用二级目录进行访问的, 通常情况下网页中如果是使用的绝对路径, 带上了更目录</p> <p>url 是 host.com</p> <p>而获取的其他文件路径 会加上 /test/xxxx</p> <p>这样文件路径就错误了</p> <p>发现也有人问这问题</p> <p>http://www.oschina.net/question/208700_35450</p> <p>http://www.oschina.net/question/256934_45085</p> <p>不过也没看到有什么解决方案.</p> <p> </p> <p>其实遇到这问题就灵光一闪想了个解决方法, 不过感觉不是很正规的方式, 奈何也没找到更好的方法.</p> <p>实现这个二级目录的代理, 获取路径错误的问题, 通过 hosts 的方式解决</p> <p>在 hosts 文件中新加一个规则, 去欺骗tomcat, 配置到这个二级目录直接访问. 做俩次解析</p> <pre>127.0.0.1 local.host.com</pre> <p>这样 local.host.com 在服务器中指向的就是本机, 当然这个域名是可以随便写的.</p> <p>然后在 tomcat 中绑定 local.host.com 直接到 test 二级目录</p> <pre>&lt;Host name="local.host.com" appBase="webapps"
+          unpackWARs="true" autoDeploy="true"
+          xmlValidation="false" xmlNamespaceAware="false"&gt;
+       &lt;Context path="" docBase="/tomcat/webapps/text" debug="0"
+                 reloadable="true" crossContext="true"/&gt;
+&lt;/Host&gt;</pre> <p>然后在 nginx 中配置反向代理到 这个域名</p> <pre>server {
+    server_name host.com;
+    
+    location / {
+        proxy_pass http://local.host.com;
+    }
+}</pre> <p>这时候在去 访问 host.com 加载的文件路径就是正确的了.</p> <p>request 获取的域名就是 local.host.com 并且不是二级目录, 那么 nginx 转发出去就不会存在路径问题.</p> <p>虽然是可以用了, 不过感觉这种实现方式...</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/nginx">nginx</a></li> <li><a href="/tag/proxy">proxy</a></li> <li><a href="/tag/tomcat">tomcat</a></li> </ul> </footer> </article> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

@@ -1,0 +1,211 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>paging - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2013-08-09T20:04:43.000Z">August 9, 2013</time> <h1><a href="/post/paging-custom-tag/">分页自定义标签</a></h1> </header> <section class="post-main"><p> 嗯，很久都没有写文章了，貌似快一个月了。。。。 </p> <p> 这整个7月 很。。。。 </p> <p> 什么世道。。。。。 </p> <p> 好吧，不抱怨了，抱怨也没什么用啊。。 </p> <p> 发一个这几天才写的公共部分代码，分页。 </p> <p> 几乎每一个网站都会有分页的，那么前台显示中是要显示页码的，这样每次遇到页码都要重新写一次很麻烦，后来想到了包含一个公共的页面这样就将公共代码集中到一个页面中，可是虽然这样比每次都写方便，但是这样写的话那个页码的页面会非常的繁琐，假如使用了 struts2 的标签，和el表达式，做这些页码判断的话，会有很长很长的篇幅去搞，而且还不一定通用，万一哪系统没用struts2或者el表达式，那又得麻烦；这里写的这种方式是使用那个自定义标签来实现公共分页页码的功能，关于自定义标签，这个功能还是很强大的，如果不明白的话，可以到网路上搜一搜。 </p> <p> </p> <p> 分页自定义标签开始： </p> <p> 建立java文件 PagingTag.java 在目录 name.iaceob.taglib </p> <pre>
+package name.iaceob.taglib;
+
+import java.io.IOException;
+
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.TagSupport;
+
+
+/**
+ * 
+ * 分页自定义标签，显示分页页码
+ * @version 1.2
+ * @author 生物烯丙菊
+ *
+ */
+public class PagingTag extends TagSupport  {
+
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4378177896058045032L;
+	
+	private String currentPage = "1"; // 当前页 传递值 默认为1
+	private String totalPage; // 总页数 传递值
+	private String pageSize; //每页记录数
+	private String allRow; // 总记录数
+	private String showsNumber = "10"; // 显示页码数量
+	private String isOpenForm = "false"; // 是否开始跳转页面 form 表单
+	private String parameter = ""; // 额外的get参数
+	
+	// 
+	private String customInfo = "first#&amp;amp;lt;##previous#&amp;amp;lt;&amp;amp;lt;##next#&amp;amp;gt;&amp;amp;gt;##last#&amp;amp;gt;##submit#u8df3u8f6c##pagingInfo#u9875u6570uff1a##pageSize#u6570u636eu91cfuff1a"; // 自定义显示信息
+	private String customHtml = ""; // 自定义分页html(下版本)
+	
+	
+	
+		
+	
+	/**
+	 * 
+	 * 实现分页页码
+	 * @author 生物烯丙菊
+	 */
+	@SuppressWarnings("static-access")
+	public int doStartTag() throws JspException {
+		// TODO Auto-generated method stub
+		
+		int currentPage = Integer.parseInt(this.currentPage); // 当前页
+		int totalPage = Integer.parseInt(this.totalPage); //总页数
+		int showsNumber = Integer.parseInt(this.showsNumber); // 显示页码的数量
+		
+		boolean isOpenForm = Boolean.valueOf(this.isOpenForm); // 强制转换为boolean类型
+		
+		// 如果 parameter 为空 也就是没有额外的get参数，那么就让 parameter为空
+		String parameter;
+		if (this.parameter.equals("")) {
+			parameter = "";
+		}  else {
+			parameter = this.parameter;
+			// System.out.println("额外参数：" + parameter);
+		}
+		
+		/*
+		 * 判断当前页是否大于最大页数和小于最小页数 如果是 则让当前页等于最大或者最小页数
+		 */
+		if (currentPage &amp;lt; 1) {
+			currentPage = 1;
+		} else if (currentPage &amp;gt; totalPage) {
+			currentPage = totalPage;
+		}
+		
+		
+		/*
+		 * 打印页码到页面
+		 */
+		try {
+			this.pageContext.getOut().print("&amp;lt;ul id="pager"&amp;gt;");
+			
+			this.pageContext.getOut().print(this.getPagingLeft(currentPage, parameter, this.customInfo)); // 打印左侧上一页以及第一页
+			this.pageContext.getOut().print(this.getPagingCenter(showsNumber, currentPage, totalPage, parameter)); //打印中间页码内容
+			this.pageContext.getOut().print(this.getPagingRight(currentPage, totalPage, parameter, this.customInfo)); // 打印右侧下一页以及最后一页
+			this.pageContext.getOut().print(this.getOpenForm(isOpenForm, currentPage, parameter, this.customInfo));
+			this.pageContext.getOut().print(this.getPageNumberInfo(currentPage, totalPage, this.customInfo)); // 打印页码信息
+			this.pageContext.getOut().print(this.getPageSize(this.pageSize, this.allRow, this.customInfo)); // 打印每页信息量
+			
+			this.pageContext.getOut().print("&amp;lt;/ul&amp;gt;");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} // 打印到页面中
+		
+		return EVAL_PAGE;
+	}
+
+
+	public static String getPagingLeft(int currentPage, string parameter, String customInfo) {
+           .....
+        }
+  
+      ......
+	
+}</pre> <p> </p> <p> 嗯，因为篇幅问题，代码较多具体的实现代码这里没有贴，下面会给个链接供下载。 </p> <p> 这个java文件首先继承了TagSupport，这是写自定义标签必须继承的类。 </p> <p> 之后重写(是重写吧。。。)doStartTag方法实现标签功能 </p> <p> this.pageContext.getOut().print( .... ); 打印内容到页面中。 </p> <p> 具体的实现方法在下面写的方法中 getPagingLeft getPagingCenter 等等。 </p> <p> 功能实现了便在配置前台的标签的信息了 </p> <p> 在WEB-INF下新建一个cabbage.tld 内容如下 </p> <pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;taglib xmlns="http://java.sun.com/xml/ns/j2ee" 
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee web-jsptaglibrary_2_0.xsd" 
+        version="2.0"&gt;  
+	
+	&lt;tlib-version&gt;1.0&lt;/tlib-version&gt;
+	&lt;short-name&gt;cabbage&lt;/short-name&gt;
+	&lt;uri&gt;http://blog.iaceob.name&lt;/uri&gt;
+
+
+
+	&lt;!-- =====================分页页码========================== --&gt;
+	&lt;tag&gt;
+		&lt;name&gt;paging&lt;/name&gt;
+		&lt;tag-class&gt;name.iaceob.taglib.PagingTag&lt;/tag-class&gt;
+		&lt;!-- ========传递当前页============= --&gt;
+		&lt;attribute&gt;
+			&lt;name&gt;currentPage&lt;/name&gt;
+	        &lt;required&gt;true&lt;/required&gt;
+	        &lt;rtexprvalue&gt;true&lt;/rtexprvalue&gt;
+		&lt;/attribute&gt;
+		&lt;!-- ========传递总页数============= --&gt;
+		&lt;attribute&gt;
+			&lt;name&gt;totalPage&lt;/name&gt;
+	        &lt;required&gt;true&lt;/required&gt;
+	        &lt;rtexprvalue&gt;true&lt;/rtexprvalue&gt;
+		&lt;/attribute&gt;
+		&lt;!-- =========每页记录数============ --&gt;
+		&lt;attribute&gt;
+			&lt;name&gt;pageSize&lt;/name&gt;
+			&lt;required&gt;false&lt;/required&gt;
+			&lt;rtexprvalue&gt;true&lt;/rtexprvalue&gt;	
+		&lt;/attribute&gt;
+		&lt;!-- =========总记录数============== --&gt;
+		&lt;attribute&gt;
+			&lt;name&gt;allRow&lt;/name&gt;
+			&lt;required&gt;false&lt;/required&gt;
+			&lt;rtexprvalue&gt;true&lt;/rtexprvalue&gt;	
+		&lt;/attribute&gt;
+		&lt;!-- ==========显示数量============ --&gt;
+		&lt;attribute&gt;
+			&lt;name&gt;showsNumber&lt;/name&gt;
+			&lt;required&gt;false&lt;/required&gt;
+			&lt;rtexprvalue&gt;true&lt;/rtexprvalue&gt;
+		&lt;/attribute&gt;
+		&lt;!-- ==========是否开启快捷跳转页面 form表单========== --&gt;
+		&lt;attribute&gt;
+			&lt;name&gt;isOpenForm&lt;/name&gt;
+			&lt;required&gt;false&lt;/required&gt;
+			&lt;rtexprvalue&gt;true&lt;/rtexprvalue&gt;
+		&lt;/attribute&gt;
+		&lt;!-- ===========额外get参数========== --&gt;
+		&lt;attribute&gt;
+			&lt;name&gt;parameter&lt;/name&gt;
+			&lt;required&gt;false&lt;/required&gt;
+			&lt;rtexprvalue&gt;true&lt;/rtexprvalue&gt;
+		&lt;/attribute&gt;
+		&lt;!-- ==============自定义信息============= --&gt;
+		&lt;attribute&gt;
+			&lt;name&gt;customInfo&lt;/name&gt;
+			&lt;required&gt;false&lt;/required&gt;
+			&lt;rtexprvalue&gt;true&lt;/rtexprvalue&gt;
+		&lt;/attribute&gt;
+		
+	&lt;/tag&gt;
+
+&lt;/taglib&gt;
+</pre> <p> </p> <p> </p> <p> 具体哪个属性是什么意思上面也描述了 </p> <p> 这个tld文件配置的便是供前台使用标签信息 </p> <p> 首先tag标签下面的name标签中的内容便是自定义标签中的名字 </p> <p> attribute 则是这个表中的各个属性 name 是属性名称 required 是否必须 rtexprvalue 是否可以通过传值的方式拿到值 </p> <p> 这其中 分页的页码计算 必须用到当前页和总页数，所以说只有这俩个属性才是必须的，其他的都可以不用。 </p> <p> 当这个配置好了之后在web.xml中加载这个标签(在有些地方看好像都不用这么做，直接找到这个标签的位置，而在web.xml中配置的话就能拿到一个相对的链接) </p> <pre>
+	 
+	 &lt;!-- ============自定义标签定义===============  --&gt;
+	 &lt;jsp-config&gt;
+	 	&lt;!-- 格式化时间戳标签 --&gt;
+	 	&lt;taglib&gt;
+	 		&lt;taglib-uri&gt;/cabbage&lt;/taglib-uri&gt;
+	 		&lt;taglib-location&gt;/WEB-INF/cabbage.tld&lt;/taglib-location&gt;
+	 	&lt;/taglib&gt;
+	 &lt;/jsp-config&gt;
+
+	 &lt;!-- ============自定义标签定义===============  --&gt;</pre> <p> </p> <p> 这些都配置完毕了，那么就可以在前台使用啦 </p> <p> 在页面顶部导入这个标签 </p> <pre>
+
+&lt;%@ taglib prefix="cabbage" uri="/cabbage" %&gt; </pre> <p> </p> <p> 下面就可以在需要的地方使用了 使用方法如下 </p> <p> 嗯 数据都是测试用的 所以就直接制定了 </p> <pre>
+
+
+
+	&lt;%
+		String customInfo = "first#&lt;i&gt;&lt;/i&gt;##previous#&lt;i&gt;&lt;/i&gt;##next#&lt;i&gt;&lt;/i&gt;##last#&lt;i&gt;&lt;/i&gt;##submit#提交##pagingInfo#页数##pageSize#数据量";
+		String totalPage = "10000";
+		String pageSize = "20";
+		String allRow = "200000";
+		String showsNumber = "6";
+	 %&gt;
+
+
+
+
+	&lt;cabbage:paging 
+		currentPage="${param.page != null ? param.page : 1 }"
+		totalPage="&lt;%=totalPage %&gt;" 
+		pageSize="&lt;%=pageSize %&gt;" 
+		allRow="&lt;%=allRow %&gt;"
+		showsNumber="&lt;%=showsNumber %&gt;"
+		isOpenForm="true"
+		parameter="welcome=${param.welcome }&amp;type=${param.type }&amp;server=${param.server }&amp;browers=${param.browers }&amp;language=${param.language }"
+		customInfo="&lt;%=customInfo %&gt;"
+		
+	/&gt; </pre> <p> </p> <p> 这样就能看到分页了。效果如下图： </p> <p> 。。。。 坑爹 不能上传了 刚好现在域名也还没搞好，以后再传吧 </p> <p> </p> <p> </p> <p> 这个分页标签是之前写的java的快速开发框架中的一部分，这次又对框架进行了一次优化和整理，下次一起挂上来。 </p> <p> 下面是这个分页标签的源码包，嗯，要注意，下载的这个肯定是跑不起来的，因为只是简单的将需要的文件打包的，不过想测试跑起来也很容易，自己建个工程吧文件拷进去测试下就行了。详细的话可以在后面发布的框架中看到。 </p> <p> 而且这里描述的也不清楚，具体的详细描述，代码中有注释还挺多的，在那展示页面中也有详细的描述，相信很容易看懂。 </p> <p> </p> <p> </p> <p> <a href="http://pan.baidu.com/share/link?shareid=2809058181&amp;uk=1409985539" target="_blank">http://pan.baidu.com/share/link?shareid=2809058181&amp;uk=1409985539</a> </p> <p> </p> <p> </p> <p> 2013-08-09 </p> <p> 生物烯丙菊</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/custom">custom</a></li> <li><a href="/tag/j2ee">j2ee</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/page">page</a></li> <li><a href="/tag/paging">paging</a></li> <li><a href="/tag/tag">tag</a></li> </ul> </footer> </article> <menu class="page"> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

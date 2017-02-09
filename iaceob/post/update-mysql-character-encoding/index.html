@@ -1,0 +1,29 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>修改mysql数据库字符编码 - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2013-10-20T23:06:28.000Z">October 20, 2013</time> <h1>修改mysql数据库字符编码</h1> </header> <section class="post-main"><p>在ubuntu中把项目跑起来，添加了一条数据发现数据为中文时候，中文都变成了 ? 号。</p> <p>起初认为是因为项目或者说tomcat的配置原因导致传到后台的中文乱码了。</p> <p>然后在后台断点测试发现传递到后台的中文字符没有乱码，那就是数据库的原因了。</p> <p>修改方法如下：</p> <p>登录mysql查看字符编码</p> <pre>mysql&gt; show variables like 'character%';
++--------------------------+---------------------------------------+
+| Variable_name            | Value                                 |
++--------------------------+---------------------------------------+
+| character_set_client     | utf8                                  |
+| character_set_connection | utf8                                  |
+| character_set_database   | latin1                                |
+| character_set_filesystem | binary                                |
+| character_set_results    | utf8                                  |
+| character_set_server     | latin1                                |
+| character_set_system     | utf8                                  |
+| character_sets_dir       | /opt/mysql/server-5.5/share/charsets/ |
++--------------------------+---------------------------------------+
+8 rows in set (0.00 sec)</pre> <p>character_set_database 的编码是 latin1 这样添加中文的话就会乱码</p> <p>修改编码</p> <pre>mysql&gt; set character_set_database = utf8;
+
+mysql&gt; set character_set_server = utf8;</pre> <p> </p> <pre>mysql&gt; show variables like 'character%';
++--------------------------+---------------------------------------+
+| Variable_name            | Value                                 |
++--------------------------+---------------------------------------+
+| character_set_client     | utf8                                  |
+| character_set_connection | utf8                                  |
+| character_set_database   | utf8                                  |
+| character_set_filesystem | binary                                |
+| character_set_results    | utf8                                  |
+| character_set_server     | utf8                                  |
+| character_set_system     | utf8                                  |
+| character_sets_dir       | /opt/mysql/server-5.5/share/charsets/ |
++--------------------------+---------------------------------------+
+8 rows in set (0.00 sec)</pre> <p>修改完成后再添加中文数据就不会乱码了。</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/character">character</a></li> <li><a href="/tag/mysql">mysql</a></li> <li><a href="/tag/ubuntu">ubuntu</a></li> </ul> </footer> </article> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

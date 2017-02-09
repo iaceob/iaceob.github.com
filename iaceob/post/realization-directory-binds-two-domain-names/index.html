@@ -1,0 +1,47 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>实现目录绑定二级域名访问 - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2013-07-05T16:29:20.000Z">July 5, 2013</time> <h1>实现目录绑定二级域名访问</h1> </header> <section class="post-main"><p>实现给目录绑定二级域名，这样就能用二级域名来访问相应的目录了。</p> <p>这里使用的是apache作为服务器的，首先让apache支持htaccess。</p> <p>查看phpinfo中 apache2handler 项目下面有没有开启 mod_rewrite 如果没有开启，就到httpd.conf中进行配置</p> <pre>	#LoadModule rewrite_module modules/mod_rewrite.so
+</pre> <p>删除前面的#号，及开启功能，如果没有这句可以在下面另起一行添加。</p> <p> </p> <p>开启功能之后，修改httpd.conf让apache支持.htaccess</p> <pre>&lt;Directory "E:/development/wwwroot"&gt;
+
+#
+# Possible values for the Options directive are "None", "All",
+# or any combination of:
+#   Indexes Includes FollowSymLinks SymLinksifOwnerMatch ExecCGI MultiViews
+#
+# Note that "MultiViews" must be named *explicitly* --- "Options All"
+# doesn't give it to you.
+#
+# The Options directive is both complicated and important.  Please see
+# http://httpd.apache.org/docs/2.0/mod/core.html#options
+# for more information.
+#
+    Options Indexes FollowSymLinks
+
+#
+# AllowOverride controls what directives may be placed in .htaccess files.
+# It can be "All", "None", or any combination of the keywords:
+#   Options FileInfo AuthConfig Limit
+#
+    AllowOverride None
+
+#
+# Controls who can get stuff from this server.
+#
+    Order allow,deny
+    Allow from None
+
+&lt;/Directory&gt;</pre> <p>将上面的AllowOverride None 和 Allow from None 后面的None修改成all</p> <p>这样apache就启用htaccess功能了</p> <p>修改之后到项目的更目录，添加 .htaccess 文件，文件的内容如下</p> <p> </p> <pre># 开启功能 
+RewriteEngine on 
+
+# 你要绑定的二级域名 
+RewriteCond %{HTTP_HOST} ^(blog.)?test.com$ 
+
+# 把那个子目录指向要绑定的二级域名 
+# 这里以子目录blog目录为例 
+RewriteCond %{REQUEST_URI} !^/blog/ 
+RewriteCond %{REQUEST_FILENAME} !-f 
+RewriteCond %{REQUEST_FILENAME} !-d 
+RewriteRule ^(.*)$ /cms/$1 
+
+#这里改成要绑定的二级域名和要绑定的子目录 
+RewriteCond %{HTTP_HOST} ^(blog.)?test.com$ 
+RewriteRule ^(/)?$ blog/index.php [L]
+</pre> <p> </p> <p>根据自己的需要修改成自己的目录和域名。</p> <p>本地测试的话可以通过该hosts来添加域名。</p> <p>测试效果如下：</p> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/apache">apache</a></li> <li><a href="/tag/htaccess">htaccess</a></li> <li><a href="/tag/httpd-conf">httpd.conf</a></li> <li><a href="/tag/mod_rewrite">mod_rewrite</a></li> </ul> </footer> </article> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

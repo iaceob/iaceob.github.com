@@ -1,0 +1,23 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>executeFind - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2013-11-04T13:53:17.000Z">November 4, 2013</time> <h1><a href="/post/hibernate-errror-a-different-object-with-the-same-identifier-value-was-already-associated-with-the-session/">a different object with the same identifier value was already associated with the session</a></h1> </header> <section class="post-main"><p>hibernatre 出现如下错误： a different object with the same identifier value was already associated with the session</p> <p>--</p> <p>找了很多资料都说这是一个hibernate经典的错误。</p> <p>错误的原因是因为hibernate在执行操作数据库的时候在session 中发现了同一个实体类有着多个不同的下表 那么hibernate就不知道该去找那个来进行提交了。</p> <p>下面是我代码运行的错误报告</p> <pre>DEBUG - Collection found: [name.iaceob.entity.Aent.bents#61], Was:[name.iaceob.Aent.bents#61](initialized)
+DEBUG - Collection found: [name.iaceob.entity.Bent.aents#1], Was:[name.iaceob.Bent.aents#6](initialized)
+DEBUG - Collection found: [name.iaceob.entity.Bent.aents#1], Was:[name.iaceob.Bent.aents#6](initialized)
+DEBUG - Flushed: 0 insertions, 0 updates, 0 deletions to 3 objects</pre> <p>在执行操作的时候 出现了3个object 其他的文章中也说过出现这种错误大多是在 一对多 或者 多对多 的关系中</p> <p>因为在这中关系中 hibernate 在操作数据库的时候会将这些数据都查出来赋值给对象 最终操作数据库的时候 session 中将会出现很多个这个对象 那么就会报出这样的错误。</p> <p>关于这个错误 解释的文章也很多 也提出了很多的解决办法</p> <blockquote> <p>使用session.clean()，如果在clean操作后面又进行了saveOrUpdate(object)等改变数据状态的操作，有可能会报出"Found two representations of same collection"异常。</p> <p>使用session.refresh(object)，当object不是数据库中已有数据的对象的时候，不能使用session.refresh(object)因为该方法是从hibernate的session中去重新取object，如果session中没有这个对象，则会报错所以当你使用saveOrUpdate(object)之前还需要判断一下。</p> <p>session.merge(object)，Hibernate里面自带的方法，推荐使用。</p> </blockquote> <p>不错 貌似是得这么解决，不过都没有什么实例。</p> <p>因为我项目中用的数据操作是 HibernateTemplate 所以这里提出的解决方法是针对这种进行的 如果不是使用的 HibernateTemplate 而是直接使用的 hibernate session 进行操作的 那么应该更加方便，直接如上面引入的方法进行操作即可</p> <pre>    public void updateLevel(final Aent aent) {
+        // TODO Auto-generated method stub
+        // this.hibernateTemplate.update(aent);
+        this.hibernateTemplate.executeFind(new HibernateCallback() {
+
+            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+                // TODO Auto-generated method stub
+                Aent aent2 =  (Aent) session.merge(aent);
+                session.update(aent2);
+                return null;
+            }
+
+        });
+    }</pre> <p>上面注释的 this.hibernateTemplate.update(aent); 便是直接操作数据的方式</p> <p>因为session中会出现很多的同样的对象 报错了使用的解决方式就是上面引入内容中的 session.merge() 这个方法，merge这个方法的主要作用就是合并对象的意思 把多个对象合并成为一个对象。</p> <p>合并 aent 后赋给一个新的对象，在进行修改或者添加，这样session 中只有一个对象了 就不会出现这个错误</p> <p>如果不是使用HibernateTemplate的话 我想应该比这解决要简单的多 直接 session.merge(entity) 就解决了</p> <p>HibernateTemplate 的 executeFind 这个方法里面的返回方法 要使用传递过来的参数 必须是 final 的才可以使用 final 的变量是不可以修改的，因此在返回方法中需要重新实例化一个对象 这个对象保存的就是合并后的对象 在进行操作数据。</p> <p> </p> <p>貌似 HibernateTemplate 也有 merge clean 等方法 但是在这里也试过了 也同样会报错。不能解决问题。</p> <p> </p> <p>======</p> <p>等等 HibernateTemplate 解决办法有了 而且还更加简单方便 。。</p> <pre>public void saveNews(News news){
+      this.hibernateTemplate.merge(news);
+}</pre> <p>这样就能直接提交到数据库了 不用在save了</p> <p>这样写过</p> <pre>public void saveNews(News news) {
+     News nwes2 = this.hibernateTemplate.merge(news);
+     this.hibernateTemplate.save(news2);
+}</pre> <p>报错了 但是数据添加了 报错信息是因为 主键重复</p> <p>这里直接 merge 就提交到数据库了 返回的 merge 返回的是 提交的对象</p> <pre>News nwes2 = this.hibernateTemplate.merge(news);
+news2.getNewsId(); // 获得提交到数据库的id</pre> <p> </p> <p>这个可以有 前面的解决方式 就无视了吧 虽然也能解决。</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/executefind">executeFind</a></li> <li><a href="/tag/hibernate">hibernate</a></li> <li><a href="/tag/hibernatetemplate">hibernatetemplate</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/merge">merge</a></li> <li><a href="/tag/update">update</a></li> </ul> </footer> </article> <menu class="page"> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

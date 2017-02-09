@@ -1,0 +1,59 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>character - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2013-10-22T15:53:17.000Z">October 22, 2013</time> <h1><a href="/post/mysql-create-database-set-character/">mysql 建库设置字符集</a></h1> </header> <section class="post-main"><p>不可否认。。。在ubuntu下，乱码出现的频率变得大多了。。。。</p> <p> </p> <p>创建库的时候设置库的编码 使数据库编码和项目编码统一 则不会乱码</p> <p> </p> <p> </p> <pre>mysql&gt; create database test_db character set utf8 collate utf8_bin;
+Query OK, 1 row affected (0.00 sec)
+
+mysql&gt; use test_db
+Database changed
+mysql&gt; status
+--------------
+mysql  Ver 14.14 Distrib 5.5.32, for debian-linux-gnu (i686) using readline 6.2
+
+Connection id:          92
+Current database:       test_db
+Current user:           root@localhost
+SSL:                    Not in use
+Current pager:          stdout
+Using outfile:          ''
+Using delimiter:        ;
+Server version:         5.5.30-log MySQL Community Server (GPL)
+Protocol version:       10
+Connection:             Localhost via UNIX socket
+Server characterset:    latin1
+Db     characterset:    utf8
+Client characterset:    utf8
+Conn.  characterset:    utf8
+UNIX socket:            /var/run/mysqld/mysqld.sock
+Uptime:                 4 hours 51 min 48 sec
+
+Threads: 7  Questions: 4139  Slow queries: 0  Opens: 252  Flush tables: 1  Open tables: 63  Queries per second avg: 0.236
+--------------
+
+mysql&gt; 
+</pre> <pre>create database test_db character set utf8 collate utf8_bin;</pre> <p>创建库的时候在后面设置库的字符集。</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/character">character</a></li> <li><a href="/tag/charset">charset</a></li> <li><a href="/tag/mysql">mysql</a></li> <li><a href="/tag/sql">sql</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-10-21T00:18:47.000Z">October 21, 2013</time> <h1><a href="/post/ubuntu-emma-chinese-garbled/">ubuntu emma 中文乱码</a></h1> </header> <section class="post-main"><p>emma 是 ubuntu 中一个mysql图形管理工具</p> <p>默认emma使用的编码是latin1那么数据中如果有中文的话查询出来会是乱码。</p> <p>设置emma的编码为utf8查询出来的中文就会正常</p> <p>执行如下命令：</p> <pre>~$ sudo sublime ~/.emma/emmarc</pre> <p>修改 db_encoding 值为 utf8</p> <pre>db_encoding=utf8</pre> <p>重新启动emma，在查询就会正常显示。</p> <p>如果还是乱码 执行这条sql便会正常</p> <pre>set names utf8</pre></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/character">character</a></li> <li><a href="/tag/emma">emma</a></li> <li><a href="/tag/mysql">mysql</a></li> <li><a href="/tag/ubuntu">ubuntu</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-10-20T23:06:28.000Z">October 20, 2013</time> <h1><a href="/post/update-mysql-character-encoding/">修改mysql数据库字符编码</a></h1> </header> <section class="post-main"><p>在ubuntu中把项目跑起来，添加了一条数据发现数据为中文时候，中文都变成了 ? 号。</p> <p>起初认为是因为项目或者说tomcat的配置原因导致传到后台的中文乱码了。</p> <p>然后在后台断点测试发现传递到后台的中文字符没有乱码，那就是数据库的原因了。</p> <p>修改方法如下：</p> <p>登录mysql查看字符编码</p> <pre>mysql&gt; show variables like 'character%';
++--------------------------+---------------------------------------+
+| Variable_name            | Value                                 |
++--------------------------+---------------------------------------+
+| character_set_client     | utf8                                  |
+| character_set_connection | utf8                                  |
+| character_set_database   | latin1                                |
+| character_set_filesystem | binary                                |
+| character_set_results    | utf8                                  |
+| character_set_server     | latin1                                |
+| character_set_system     | utf8                                  |
+| character_sets_dir       | /opt/mysql/server-5.5/share/charsets/ |
++--------------------------+---------------------------------------+
+8 rows in set (0.00 sec)</pre> <p>character_set_database 的编码是 latin1 这样添加中文的话就会乱码</p> <p>修改编码</p> <pre>mysql&gt; set character_set_database = utf8;
+
+mysql&gt; set character_set_server = utf8;</pre> <p> </p> <pre>mysql&gt; show variables like 'character%';
++--------------------------+---------------------------------------+
+| Variable_name            | Value                                 |
++--------------------------+---------------------------------------+
+| character_set_client     | utf8                                  |
+| character_set_connection | utf8                                  |
+| character_set_database   | utf8                                  |
+| character_set_filesystem | binary                                |
+| character_set_results    | utf8                                  |
+| character_set_server     | utf8                                  |
+| character_set_system     | utf8                                  |
+| character_sets_dir       | /opt/mysql/server-5.5/share/charsets/ |
++--------------------------+---------------------------------------+
+8 rows in set (0.00 sec)</pre> <p>修改完成后再添加中文数据就不会乱码了。</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/character">character</a></li> <li><a href="/tag/mysql">mysql</a></li> <li><a href="/tag/ubuntu">ubuntu</a></li> </ul> </footer> </article> <menu class="page"> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

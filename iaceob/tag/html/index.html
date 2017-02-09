@@ -1,0 +1,552 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>html - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2014-12-09T22:23:37.000Z">December 9, 2014</time> <h1><a href="/post/iframe-auto-height/">iframe 自适应高度</a></h1> </header> <section class="post-main"><p>很久以前就在网络的某处找到过一个iframe自适应高度的文章, 并且测试过还非常好用, 可惜当时这个方案被取消了, 而是使用了frameset代替了iframe来实现页面搭建了, 当时就直接修改了, 也没有在意. 直到今天突然有人在问iframe怎么自适应高度... 原文件已经找不到了, 又是一番查找, 果然找到的都不是想要的, 然后就自己重写了个. 虽然还有瑕疵.</p> <p>初级方案:</p> <p>使用onload在iframe加载完毕后触发一个函数获取iframe页面的高度, 然后修改父页面iframe标签的height值, 达到高度自适应的目的.</p> <p>在被iframe的页面中添加如下代码</p> <pre>&lt;script&gt;
+function resetSize(){
+    var height = document.body.scrollHeight;
+    parent.document.getElementById('frameid').style.height = height+'px';
+};
+window.onload=resetSize;
+&lt;/script&gt;</pre> <p>这样iframe在加载完毕后就会同步父页面的高度与iframe页面的高度一样, 虽然实现起来很简单, 但是有些不足, onload 在加载后就会在工作了, iframe的页面如果有其他操作父页面的高度是不会更改的onload只会在页面加载完毕后执行.</p> <p> </p> <p>终极方案:</p> <p>利用 DOMNodeInserted 和 DOMNodeRemoved 事件来监听节点的改变, 调用重置函数来同步高度.</p> <p>给被iframe的页面body添加 DOMNodeInserted DOMNodeRemoved 这俩个事件来监听页面内容的增加或删除, 同步父页面iframe标签的高度.</p> <p>在被iframe的页面中添加如下代码</p> <pre>&lt;script&gt;
+function resetSize(){
+    var height = document.body.scrollHeight;
+    parent.document.getElementById('frameid').style.height = height+'px';
+};
+window.onload=resetSize;
+document.body.addEventListener('DOMNodeInserted', resetSize, false);
+document.body.addEventListener('DOMNodeRemoved', resetSize, false);
+&lt;/script&gt;</pre> <p>这样就能够实现实时内容同步了, 不过至少我没测试过兼容性= =, firefox dev 是可以正常运行的.</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/auto">auto</a></li> <li><a href="/tag/height">height</a></li> <li><a href="/tag/html">html</a></li> <li><a href="/tag/iframe">iframe</a></li> <li><a href="/tag/javascript">javascript</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-02-11T10:38:56.000Z">February 11, 2014</time> <h1><a href="/post/about-write-html/">html 书写相关</a></h1> </header> <section class="post-main"><p>关于html的书写</p> <p>html代码简写法：Emmet和Haml</p> <p>http://www.ruanyifeng.com/blog/2013/06/emmet_and_haml.html</p> <p>html 书写工具 ( Brackets )</p> <p>http://brackets.io/</p> <p>emmet 书写方式编辑器插件</p> <p>http://emmet.io/download/</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/brackets">brackets</a></li> <li><a href="/tag/html">html</a></li> <li><a href="/tag/ideemmet">ideemmet</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-12-20T10:02:02.000Z">December 20, 2013</time> <h1><a href="/post/how-box-shadow-works-in-css/">How Box-Shadow Works in CSS</a></h1> </header> <section class="post-main"><p>box-shadown works in css</p> <h2>The html:</h2> <pre>&lt;html&gt;
+    &lt;head&gt;    
+        &lt;title&gt;box-shadow works in css&lt;/title&gt;
+    &lt;/head&gt; 
+    &lt;body&gt; 
+        &lt;div id="main"&gt; 
+            &lt;h1&gt;Create Box Shadows&lt;/h1&gt; 
+            &lt;h2&gt;Using CSS Styles&lt;/h2&gt; 
+        &lt;/div&gt; 
+    &lt;/body&gt; 
+&lt;/html&gt;</pre> <h2>The CSS:</h2> <pre>body{     
+    background:#fff; 
+} 
+h1, h2{     
+    font-family:"Gill Sans", "Gill Sans MT", "Myriad Pro", "DejaVuSans Condensed", Helvetica, Arial, sans-serif;     
+    text-shadow: -2px -2px 2px rgba( 0, 0, 0, .5);     
+    color: #eee;     
+    text-align:center;     
+    padding-top: 20px; 
+} 
+#main{ 
+    background:#fff; height: 200px; 
+    box-shadow: -1px 2px 5px 3px #05EDFB; 
+}</pre> <h2>The Result:</h2> <style type="text/css"><!--
+#main-box-shadow-test{ background:#fff; height: 200px; box-shadow: -1px 2px 5px 3px #05EDFB; }  .box-shadow-style h1, .box-shadow-style h2{ font-family:"Gill Sans", "Gill Sans MT", "Myriad Pro", "DejaVuSans Condensed", Helvetica, Arial, sans-serif; text-shadow: -2px -2px 2px rgba( 0, 0, 0, .5); color: #eee; text-align:center; padding-top: 20px; }
+--></style> <div id="main-box-shadow-test"> <h1>Create Box Shadows</h1> <h2>Using CSS Styles</h2> </div> <p> </p> <pre>#main{
+    background:#fff;
+    height: 200px;
+    box-shadow: inset -1px 2px 5px 3px #05EDFB;
+}</pre> <style type="text/css"><!--
+#main-box-shadow-test-2{ background:#fff; height: 200px; box-shadow: inset -1px 2px 5px 3px #05EDFB; }
+--></style> <div id="main-box-shadow-test-2"> <h1>Create Box Shadows</h1> <h2>Using CSS Styles</h2> </div> <p> </p> <p> </p> <p> </p> <p> </p> <ul> <li> <p title=" How Box-Shadow Works in CSS">http://www.webdesignblog.co/how-box-shadow-works-in-css/</p> </li> </ul></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/box-shadow">box-shadow</a></li> <li><a href="/tag/css">css</a></li> <li><a href="/tag/html">html</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-12-15T03:31:15.000Z">December 15, 2013</time> <h1><a href="/post/css-gaussian-blur/">css 高斯模糊</a></h1> </header> <section class="post-main"><p>css 实现高斯模糊效果</p> <style type="text/css"><!--
+.demo-blur{ text-shadow: 0px 0px 10px rgba(51, 51, 51, 0.9); color: rgba(0, 0, 0, 0); opacity: 0.5; } .demo-gaussian-blur{ -webkit-filter: blur(6px); -moz-filter: blur(6px); -o-filter: blur(6px); -ms-filter: blur(6px); filter: blur(6px); }
+.demo-blur-shadow{text-shadow: 0px 20px 2px #abc000;}
+--></style> <p> </p> <p> </p> <p>演示：</p> <p>text-shadow 文字阴影方式</p> <p><img src="/img/css-gaussian-blur/1.png"></p> <p>google</p> <p>google</p> <p>这种方式也并不能完全说是高斯模糊 只是使用了 <code>text-shadow</code> 文字阴影 等配合使用 这样文字会有效果 但是图片则不会有效果</p> <pre>.demo-blur{ 
+    text-shadow: 0px 0px 10px rgba(51, 51, 51, 0.9); 
+    color: rgba(0, 0, 0, 0); 
+    opacity: 0.5; 
+}
+
+.demo-blur-shadow {
+    text-shadow: 0px 20px 2px #333333;
+}
+</pre> <p> </p> <p>css filter 过滤方式</p> <p><img src="/img/css-gaussian-blur/1.png"></p> <p>google</p> <pre>.demo-gaussian-blur{ 
+    -webkit-filter: blur(3px); 
+    -moz-filter: blur(3px); 
+    -o-filter: blur(3px); 
+    -ms-filter: blur(3px); 
+    filter: blur(3px); 
+}</pre> <p>支持对图片等包括 video 标签的模糊。</p> <p>但是 这种方法 目前支持的浏览器不多</p> <p><img src="/img/css-gaussian-blur/2.jpg"></p> <p>上图中绿色标识的浏览器都可以使用</p> <p> </p> <p>svg 方式</p> <pre>&lt;?xml version="1.0" encoding="utf-8"?&gt; 
+&lt;!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"&gt; 
+&lt;!--Scalable Vector Graphic--&gt; 
+&lt;svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ev="http://www.w3.org/2001/xml-events" baseProfile="full"&gt; 
+    &lt;defs&gt; 
+        &lt;filter id="blur"&gt; 
+            &lt;feGaussianBlur stdDeviation="10" /&gt; 
+        &lt;/filter&gt; 
+     &lt;/defs&gt; 
+     &lt;image xlink:href="http://x.x.x/yourimg.jpg" x="0" y="0" filter="url(#blur)" /&gt; 
+&lt;/svg&gt;</pre> <pre>.blur {	
+    filter: url(blur.svg#blur); /* FireFox, Chrome, Opera */
+
+    -webkit-filter: blur(10px); /* Chrome, Opera */
+       -moz-filter: blur(10px);
+        -ms-filter: blur(10px);    
+            filter: blur(10px);
+
+    filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius=10, MakeShadow=false); /* IE6~IE9 */
+}</pre> <pre>&lt;img src="xxx.jpg" /&gt;</pre> <p> </p> <p>StackBlur.js canvas</p> <p>css</p> <pre>.blur {		
+    filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius=10, MakeShadow=false); /* IE6~IE9 */
+}
+:root .blur {
+    display: none; /* IE9+, Firefox, Chrome, Opera - hidden */
+    filter: none; /* no IE9 */
+}</pre> <p>html</p> <pre> &lt;img src="xxx.jpg" id="blur" /&gt; 
+ &lt;canvas id="canvas"&gt;&lt;/canvas&gt;</pre> <p>js</p> <pre>&lt;script src="StackBlur.js"&gt;&lt;/script&gt; 
+&lt;script&gt; stackBlurImage( "blur", "canvas", 20, false ); &lt;/script&gt;</pre> <p> </p> <p>====</p> <p>综合来看</p> <p>使用文字阴影方式虽然效果没有其他方式好 但是目前大多浏览器都能够支持</p> <p>css filter 过滤的效果很好但是目前支持的浏览器不多</p> <p>svg方式效果也很好 而且浏览器都支持svg 但是svg使用略不爽(个人感觉。。。)</p> <p>StackBlur.js+canvas 是个亮点 canvas 标签是html5的标签 目前大多现代浏览器都能够支持了， stackblur.js 的模糊效果也很好</p> <p> </p> <p>相关链接：</p> <ul> <li> <p title="CSS3 filter 模糊滤镜的应用">http://mao.li/css3-blur-filter-pratice/</p> </li> <li> <p title="小tip-使用css将图片转换成模糊毛玻璃效果">http://www.zhangxinxu.com/wordpress/?p=3804</p> </li> <li> <p title="StackBlur.js">http://www.quasimondo.com/StackBlurForCanvas/StackBlur.js</p> </li> <li> <p title="StackBlurDemo">http://www.quasimondo.com/StackBlurForCanvas/StackBlurDemo.html</p> </li> <li> <p title="Item Blur Effect with CSS3 &amp; jQuery">http://tympanus.net/Tutorials/ItemBlur/</p> </li> </ul></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/blur">blur</a></li> <li><a href="/tag/canvas">canvas</a></li> <li><a href="/tag/css">css</a></li> <li><a href="/tag/filter">filter</a></li> <li><a href="/tag/gaussian">gaussian</a></li> <li><a href="/tag/html">html</a></li> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/svg">svg</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-12-12T01:55:54.000Z">December 12, 2013</time> <h1><a href="/post/user-form-input-filter/">用户文本输入过滤器</a></h1> </header> <section class="post-main"><p>用户文本输入过滤器</p> <p>有句话好像这么说 "永远不要相信用户的输入"</p> <p>。。。。。。</p> <p>很简单 如果没有对用户的输入进行过滤的话</p> <p>站点是非常不安全的，且用户可能会输入一些敏(和谐)感(和谐)字</p> <p>比如前台一个表单文本输入框中 输入 <code>&lt;script&gt;alert("hello")&lt;/script&gt;</code></p> <p>然后就这么直接提交到了数据库中 当页面中查询了这条数据 那么页面就会弹出一个框。。。当然能做的事情很多，这是很危险的。</p> <p>js也可用在提交之前就对文本过滤 然后传递到后台去的值都是被过滤后的值，这样就不会出现这样的问题。但是！。。。。js是防不住人的。</p> <p>前台也许不用对用户输入的数据过滤 但是后台必须要有过滤</p> <p>这里是 java 版的 这段时间也没用 php 了 等到时侯用了 在来补充这文章</p> <ol> <li>j2ee 用户文本输入过滤器</li> </ol> <p>index.jsp</p> <pre>&lt;%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta charset="UTF-8"&gt;
+        &lt;title&gt;Insert title here&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;form action="ht2ms.action" method="post"&gt;
+            &lt;textarea name="html" rows="10" cols="25"&gt;&lt;/textarea&gt;
+            &lt;textarea name="html2" rows="10" cols="25"&gt;&lt;/textarea&gt;
+            &lt;input type="submit" value="提交"/&gt;
+        &lt;/form&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</pre> <p>ht2ms.jsp</p> <pre>&lt;%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%&gt;
+&lt;!DOCTYPE&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta charset="utf-8"&gt;
+        &lt;title&gt;Insert title here&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;form action="&lt;%=basePath %&gt;index.jsp" method="get"&gt;
+            &lt;input type="submit" value="返回"/&gt;
+        &lt;/form&gt;
+        &lt;strong&gt;结果:&lt;/strong&gt;
+        &lt;p&gt;${aaa }
+        &lt;p&gt;${bbb }
+        &lt;p&gt;-------------------------------
+        &lt;p&gt;&lt;%out.print(request.getAttribute("aaa")); %&gt;
+        &lt;p&gt;&lt;%out.print(request.getAttribute("bbb")); %&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</pre> <p>HtmlTag2MetacharactersServlet.java</p> <pre>package com.demo.filter;
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * Servlet implementation class HtmlTag2MetacharactersServlet
+ */
+public class HtmlTag2MetacharactersServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public HtmlTag2MetacharactersServlet() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+    /**
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doPost(request, response);
+    }
+
+    /**
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        request.setCharacterEncoding("utf-8");
+
+        String html = request.getParameter("html");
+        String html2 = request.getParameter("html2");
+
+        System.out.println("servlet====" + html);
+        System.out.println("servlet====" + html2);
+        request.setAttribute("aaa", html);
+        request.setAttribute("bbb", html2);
+
+        response.setContentType("text/html");
+        response.setCharacterEncoding("UTF-8");
+        request.getRequestDispatcher("/ht2ms.jsp").include(request,response);
+    }
+
+}</pre> <p>HtmlTag2MetacharactersFilter.java</p> <pre>package com.demo.filter;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+/**
+ * Servlet Filter implementation class htmlTag2Metacharacters
+ */
+//@WebFilter("/htmlTag2Metacharacters")
+public class HtmlTag2MetacharactersFilter implements Filter {
+
+    /**
+     * Default constructor. 
+     */
+    public HtmlTag2MetacharactersFilter() {
+        // TODO Auto-generated constructor stub
+    }
+
+    /**
+     * @see Filter#destroy()
+     */
+    public void destroy() {
+        // TODO Auto-generated method stub
+    }
+
+    /**
+     * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
+     */
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest filterRequest = (HttpServletRequest)request;
+        HttpSession session = filterRequest.getSession();
+        request.setCharacterEncoding("utf-8");
+
+//        Map map = request.getParameterMap();
+//        Set&lt;String&gt; key = map.keySet();
+//        for (Iterator it = key.iterator(); it.hasNext();) {
+//            String s = (String) it.next();
+//            request.removeAttribute(s);
+//            request.setAttribute(s, htmlTag2Metacharacters(request.getParameter(s)));
+//            System.out.println(htmlTag2Metacharacters(request.getParameter(s)));
+//            System.out.println(request.getParameter(s));
+//        }
+
+        Map&lt;String,String[]&gt; m = new HashMap&lt;String,String[]&gt;(request.getParameterMap());
+        Set&lt;String&gt; key = m.keySet();
+        for (Iterator it = key.iterator(); it.hasNext();) {
+            String s = (String) it.next();  
+            m.put(s, new String[]{ htmlTag2Metacharacters(request.getParameter(s)) });
+        }
+        request = new ParameterRequestWrapper((HttpServletRequest)request, m);  
+        System.out.println(request.getParameter("html"));  
+        System.out.println(request.getParameter("html2"));
+
+        chain.doFilter(request, response);
+    }
+
+    /**
+     * @see Filter#init(FilterConfig)
+     */
+    public void init(FilterConfig fConfig) throws ServletException {
+        // TODO Auto-generated method stub
+    }
+
+   public String htmlTag2Metacharacters(String html) { 
+        if (html == null) { 
+            return ""; 
+        } 
+        StringBuffer escapedText = new StringBuffer(); 
+        for (int i=0; i&lt;html.length(); i++) { 
+            char ch = html.charAt(i); 
+            switch (ch) {
+            case ''':
+                escapedText.append("&amp;#39;");
+                break;
+            case '"':
+                escapedText.append("&amp;quot;");
+                break;
+            case '&lt;':
+                escapedText.append("&amp;lt;"); 
+                break;
+            case '&gt;':
+                escapedText.append("&amp;gt;"); 
+                break;
+            case '&amp;':
+                escapedText.append("&amp;amp;"); 
+                break;
+            case 'n':
+                escapedText.append("&lt;br&gt;n"); 
+                break;
+            case ' ':
+                escapedText.append("&amp;nbsp;"); 
+                break;
+            case 't':
+                escapedText.append("&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;"); 
+                break;
+            default:
+                escapedText.append(ch); 
+            }
+        } 
+        return escapedText.toString(); 
+    } 
+
+}</pre> <p>ParameterRequestWrapper.java</p> <pre>package com.demo.filter;
+
+import java.util.Enumeration;
+import java.util.Map;
+import java.util.Vector;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+
+public class ParameterRequestWrapper extends HttpServletRequestWrapper {  
+
+    private Map&lt;String, String[]&gt; params;  
+
+    public ParameterRequestWrapper(HttpServletRequest request,  
+            Map&lt;String, String[]&gt; newParams) {  
+        super(request);  
+
+        this.params = newParams;  
+
+        // RequestDispatcher.forward parameter  
+        renewParameterMap(request);  
+    }  
+
+    @Override  
+    public String getParameter(String name) {  
+        String result = "";  
+
+        Object v = params.get(name);  
+        if (v == null) {  
+            result = null;  
+        } else if (v instanceof String[]) {  
+            String[] strArr = (String[]) v;  
+            if (strArr.length &gt; 0) {  
+                result =  strArr[0];  
+            } else {  
+                result = null;  
+            }  
+        } else if (v instanceof String) {  
+            result = (String) v;  
+        } else {  
+            result =  v.toString();  
+        }  
+
+        return result;  
+    }  
+
+    @Override  
+    public Map getParameterMap() {  
+        return params;  
+    }  
+
+    @Override  
+    public Enumeration getParameterNames() {  
+        return new Vector(params.keySet()).elements();  
+    }  
+
+    @Override  
+    public String[] getParameterValues(String name) {  
+        String[] result = null;  
+
+        Object v = params.get(name);  
+        if (v == null) {  
+            result =  null;  
+        } else if (v instanceof String[]) {  
+            result =  (String[]) v;  
+        } else if (v instanceof String) {  
+            result =  new String[] { (String) v };  
+        } else {  
+            result =  new String[] { v.toString() };  
+        }  
+
+        return result;  
+    }  
+
+    private void renewParameterMap(HttpServletRequest req) {  
+
+        String queryString = req.getQueryString();  
+
+        if (queryString != null &amp;&amp; queryString.trim().length() &gt; 0) {  
+            String[] params = queryString.split("&amp;");  
+
+            for (int i = 0; i &lt; params.length; i++) {  
+                int splitIndex = params[i].indexOf("=");  
+                if (splitIndex == -1) {  
+                    continue;  
+                }  
+
+                String key = params[i].substring(0, splitIndex);  
+
+                if (!this.params.containsKey(key)) {  
+                    if (splitIndex &lt; params[i].length()) {  
+                        String value = params[i].substring(splitIndex + 1);  
+                        this.params.put(key, new String[] { value });  
+                    }  
+                }  
+            }  
+        }  
+    }  
+
+}</pre> <p>web.xml</p> <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5"&gt;
+  &lt;display-name&gt;&lt;/display-name&gt;
+  &lt;welcome-file-list&gt;
+    &lt;welcome-file&gt;index.jsp&lt;/welcome-file&gt;
+  &lt;/welcome-file-list&gt;
+  &lt;servlet&gt;
+    &lt;servlet-name&gt;ht2ms&lt;/servlet-name&gt;
+    &lt;servlet-class&gt;com.demo.filter.HtmlTag2MetacharactersServlet&lt;/servlet-class&gt;
+    &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+  &lt;/servlet&gt;
+  &lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;ht2ms&lt;/servlet-name&gt;
+    &lt;url-pattern&gt;/ht2ms.action&lt;/url-pattern&gt;
+  &lt;/servlet-mapping&gt;
+
+  &lt;filter&gt;
+      &lt;filter-name&gt;HtmlTag2Metacharacters&lt;/filter-name&gt;
+      &lt;filter-class&gt;com.demo.filter.HtmlTag2MetacharactersFilter&lt;/filter-class&gt;
+  &lt;/filter&gt;
+  &lt;filter-mapping&gt;
+      &lt;filter-name&gt;HtmlTag2Metacharacters&lt;/filter-name&gt;
+      &lt;url-pattern&gt;*.action&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;*.do&lt;/url-pattern&gt;
+  &lt;/filter-mapping&gt;
+&lt;/web-app&gt;</pre> <p> </p> <p>做完这些 用户输入的html标签都会被转换成通用字符，这样就会原型输出标签，不会被解释</p> <p>之前也试着在网路上找一些实例，可是都没有一个较为完整的代码 都不能实现功能，然后就各种蛋疼。。。</p> <p>真的很讨厌那种自己开了博客 然后文章都是从这从那拷贝出来的。。。。。。。</p> <p>(虽然我有时也会copy，但是！我copy过来的样式还是很好的好不 ！也留了原文链接的！)</p> <p>。。。。。。。。。。</p> <p>说说流程吧</p> <p>index 里面的表单数据提交到 servlet 去</p> <p>到servlet之前会在filter中对html标签进行过滤成转意字符，servlet在去从request获取的数据已经是被转码后的内容了</p> <p>然后在发送到request跳转到 ht2ms.jsp 显示</p> <p> </p> <p>关于filter里面的过滤</p> <p>filter 的流程大概为</p> <p>获取 request 里的所有内容 放到 map 中</p> <p>然后对这个map遍历 获取每个key和value</p> <p>然后对value转换</p> <p>将转换后的value再次发送到相应的key中</p> <p>完成了继续向下执行</p> <p>其中有段注释代码 那段代码是之前写的 既然是替换 遍历map的时候request.setAttrxxxxx相应的key和转换后的value就成了，但是实时上这样是行不通的，request里面的值是不能修改的，具体的参考文下链接，其中ParameterRequestWrapper.java就是解决这个问题的(也是从文中copy的)</p> <p>我的理解是 ParameterRequestWrapper.java 重行定义了request的一些方法 实现了修改 request 里面的值。。。</p> <p>好吧 我只是对其做了简单的应用 不是真正的解决问题。。。。。。</p> <p>感觉 @和尚 ！！！</p> <p>...........！</p> <ol> <li>php</li> </ol> <p>xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p> <p> </p> <ul> <li> <p title="使用HttpServletRequestWrapper在filter修改request参数">http://blog.csdn.net/xieyuooo/article/details/8447301</p> </li> <li> <p title="如何修改request的parameter的几种方式 ">http://rensanning.iteye.com/blog/1706208</p> </li> </ul> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/code">code</a></li> <li><a href="/tag/filter">filter</a></li> <li><a href="/tag/form">form</a></li> <li><a href="/tag/html">html</a></li> <li><a href="/tag/input">input</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/request">request</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-10-30T02:28:55.000Z">October 30, 2013</time> <h1><a href="/post/j2ee-html-compressor-filter/">j2ee html 压缩过滤器</a></h1> </header> <section class="post-main"><p>说起html压缩相信也很多人都知道</p> <p>html压缩后能更快的被浏览器解释 等等一些好处</p> <p>之前写那个整合框架的时候就想要把html压缩这功能加上去 传到前台浏览器解析的html全部都是一行</p> <p>找了很久都没有任何进展 也大概能想到是怎么实现 可惜。。。慢慢学吧！</p> <p>不负有心人 最近让我给找到了</p> <p>是在下面这篇博文中看到的实现方式</p> <p>http://www.fanyanan.com/note/item/97-jsp-filter-compress-html</p> <p>(表示大神给跪)</p> <p>总体的按照该篇文章实现了html的压缩功能</p> <p>不过也是有问题的 下面说说遇到的问题 (关于怎么实现压缩代码势力那篇文章中也都写过了 这里只把代码贴出来 解释就算了 到那篇文章去看吧)</p> <p>先贴代码</p> <p>HtmlCompressorFilter.java</p> <pre>/*****************
+*
+* 执行压缩html
+*/
+public void doFilter(ServletRequest filterRequest, ServletResponse filterResponse, FilterChain filterChain) throws IOException, ServletException {
+// TODO Auto-generated method stub
+
+HttpServletRequest request = (HttpServletRequest)filterRequest;
+HttpServletResponse response = (HttpServletResponse)filterResponse;
+ServletContext servletContext = null ;
+
+CharResponseWrapper charResponseWrapper = new CharResponseWrapper(response);
+filterChain.doFilter(filterRequest, charResponseWrapper);
+String html = charResponseWrapper.toString();
+
+HtmlCompressor compressor = new HtmlCompressor();
+//        compressor.setEnabled(true); // 如果为false，所有的压缩关闭(默认值是true)
+//        compressor.setRemoveComments(true); // 如果为false保持HTML注释(默认值是true)
+//        compressor.setRemoveMultiSpaces(true);  // 如果为false保持多个空白字符(默认值是true)
+//        compressor.setRemoveIntertagSpaces(true); // 删除迭代标签空白字符
+//        compressor.setRemoveQuotes(true);  // 删除不必要的标签属性报价
+//        compressor.setCompressCss(true); // css 压缩
+//        compressor.setCompressJavaScript(true); //  js压缩
+
+try {
+html=compressor.compress(html);
+} catch (Exception e) {
+e.printStackTrace();
+}
+
+response.getWriter().write(html);
+
+}</pre> <p>HtmlCompressor.java</p> <p>这个类没有使用那篇文章中提到的jar包而是提取出来的java文件，下面给出链接</p> <p>web.xml</p> <pre>    &lt;!-- 统一样式    sitemesh  --&gt;
+    &lt;filter&gt;
+        &lt;filter-name&gt;sitemesh&lt;/filter-name&gt;
+        &lt;filter-class&gt;com.opensymphony.module.sitemesh.filter.PageFilter&lt;/filter-class&gt;
+        &lt;!--&lt;filter-class&gt;org.sitemesh.config.ConfigurableSiteMeshFilter&lt;/filter-class&gt;--&gt;
+    &lt;/filter&gt;
+    &lt;filter-mapping&gt;
+        &lt;filter-name&gt;sitemesh&lt;/filter-name&gt;
+        &lt;url-pattern&gt;*.htm&lt;/url-pattern&gt;
+        &lt;url-pattern&gt;*.html&lt;/url-pattern&gt;
+        &lt;url-pattern&gt;*.do&lt;/url-pattern&gt;
+        &lt;url-pattern&gt;*.action&lt;/url-pattern&gt;
+        &lt;url-pattern&gt;*.jsp&lt;/url-pattern&gt;
+    &lt;/filter-mapping&gt;
+
+..........
+
+     &lt;!-- html 压缩过滤器 --&gt;
+     &lt;filter&gt;
+         &lt;filter-name&gt;htmlCompressorFilter&lt;/filter-name&gt;
+         &lt;filter-class&gt;name.iaceob.filter.HtmlCompressorFilter&lt;/filter-class&gt;
+     &lt;/filter&gt;
+     &lt;filter-mapping&gt;
+         &lt;filter-name&gt;htmlCompressorFilter&lt;/filter-name&gt;
+          &lt;url-pattern&gt;/*&lt;/url-pattern&gt; 
+        &lt;!-- &lt;url-pattern&gt;*.css&lt;/url-pattern&gt;
+         &lt;url-pattern&gt;*.htm&lt;/url-pattern&gt;
+          &lt;url-pattern&gt;*.html&lt;/url-pattern&gt;
+          &lt;url-pattern&gt;*.jsp&lt;/url-pattern&gt;
+         &lt;url-pattern&gt;*.do&lt;/url-pattern&gt;
+         &lt;url-pattern&gt;*.action&lt;/url-pattern&gt; --&gt;
+     &lt;/filter-mapping&gt;</pre> <p>这里只单独列出了 sitemesh 的配置和 html 压缩的配置 因为就是 sitemesh 除了问题 那篇文章中也说到了</p> <p>----------</p> <p>跑起来</p> <p>html 是被压缩了但是压缩的只是部分 也就是 &lt;decorator:body/&gt; 被sitemesh引入的部分 而且url还必须是jsp或者html才能被压缩 struts 或者其他被过滤的链接 都不会被压缩。</p> <p>试了很多方法都不行 仍然是这样 包括 升级了sitemesh 后来想想也就作罢 又时间在看看</p> <p>今天 恰好又有了兴趣 来看看</p> <p>忽然间发现一个问题这个html压缩的过滤器是找到这个页面的uri然后对其进行压缩 在写出 因为sitemesh在前面操作过这个页面 那么到后面的这个html压缩的过滤器 这个时候 uri 不是这个页面的真正uri了 而是被sitemesh过滤后的uri(那篇文章中也有提到)，这么一想 如果让html压缩的过滤器先跑 在去跑sitemesh的过滤器，然后就试了以下，然后果然可以了！！！！！！！</p> <p>----</p> <p>解决方法就是 把html压缩过滤器放到sitemesh的前面就行了</p> <p>原流程 jsp-&gt;sitemesh-&gt;htmlcompressor</p> <p>现流程 jsp-&gt;htmlcompressor-&gt;sitemesh</p> <p>有俩个jsp文件 a.jsp b.jsp</p> <p>a.jsp 是 sitemesh 的模板文件 b.jsp 值 sitemesh 的body文件</p> <p>a.jsp</p> <pre>&lt;html&gt;
+     &lt;head&gt;
+        &lt;title&gt;&lt;decorator:title default="test"/&gt; - sitemesh&lt;/title&gt;
+     &lt;/head&gt;
+     &lt;body&gt;
+       &lt;decorator:body/&gt;
+     &lt;/body&gt;
+&lt;/html&gt;</pre> <p>b.html</p> <pre>&lt;html&gt;
+
+    &lt;head&gt;
+        &lt;title&gt;html compressor&lt;/title&gt;
+    &lt;/head&gt;
+
+     &lt;body&gt;
+           &lt;h1&gt;Hello World !&lt;/h1&gt;
+           &lt;h2&gt;Welcome !&lt;/h2&gt; 
+     &lt;/body&gt;
+&lt;/html&gt;</pre> <p>之前流程</p> <p>sitemesh 先合并 页面</p> <pre>&lt;html&gt;
+     &lt;head&gt;
+        &lt;title&gt;test - sitemesh&lt;/title&gt;
+     &lt;/head&gt;
+     &lt;body&gt;
+        &lt;h1&gt;Hello World !&lt;/h1&gt;
+        &lt;h2&gt;Welcome !&lt;h2&gt;
+     &lt;/body&gt;
+&lt;/html&gt;</pre> <p>html 压缩过滤器 在进行压缩</p> <pre>&lt;html&gt;
+     &lt;head&gt;
+        &lt;title&gt;test - sitemesh&lt;/title&gt;
+     &lt;/head&gt;
+     &lt;body&gt;
+        &lt;h1&gt;Hello World !&lt;/h1&gt;&lt;h2&gt;Welcome !&lt;h2&gt;
+     &lt;/body&gt;
+&lt;/html&gt;</pre> <p> </p> <p>只能压缩 b.jsp 中的内容 而且页面还必须是要访问 b.jsp 才可以</p> <p>第二种</p> <p>html 压缩过滤器 先压缩html</p> <p>a.jsp</p> <pre>&lt;html&gt;&lt;head&gt;&lt;title&gt;&lt;decorator:title default="test"/&gt; - sitemesh&lt;/title&gt;&lt;/head&gt;&lt;body&gt;&lt;decorator:body/&gt;&lt;/body&gt;&lt;/html&gt;</pre> <p>d.jsp</p> <pre>&lt;html&gt;&lt;head&gt;&lt;title&gt;html compressor&lt;/title&gt;&lt;/head&gt;&lt;body&gt;&lt;h1&gt;Hello World !&lt;/h1&gt;&lt;h2&gt;Welcome !&lt;/h2&gt;&lt;/body&gt;&lt;/html&gt;</pre> <p>之后 sitemesh 在合并</p> <pre>&lt;html&gt;&lt;head&gt;&lt;title&gt;html compressor - sitemesh&lt;/title&gt;&lt;/head&gt;&lt;body&gt;&lt;h1&gt;Hello World !&lt;/h1&gt;&lt;h2&gt;Welcome !&lt;/h2&gt;&lt;/body&gt;&lt;/html&gt;</pre> <p>这样 最终 所有的html代码都会被压缩</p> <p> </p> <p>-----</p> <p>修改后的web.xml 如下</p> <pre>     &lt;!-- html 压缩过滤器 --&gt;
+     &lt;filter&gt;
+         &lt;filter-name&gt;htmlCompressorFilter&lt;/filter-name&gt;
+         &lt;filter-class&gt;com.kunda.filter.HtmlCompressorFilter&lt;/filter-class&gt;
+     &lt;/filter&gt;
+     &lt;filter-mapping&gt;
+         &lt;filter-name&gt;htmlCompressorFilter&lt;/filter-name&gt;
+         &lt;url-pattern&gt;/*&lt;/url-pattern&gt; 
+     &lt;!--    &lt;url-pattern&gt;*.css&lt;/url-pattern&gt;
+         &lt;url-pattern&gt;*.htm&lt;/url-pattern&gt;
+          &lt;url-pattern&gt;*.html&lt;/url-pattern&gt;
+          &lt;url-pattern&gt;*.jsp&lt;/url-pattern&gt;
+         &lt;url-pattern&gt;*.do&lt;/url-pattern&gt;
+         &lt;url-pattern&gt;*.action&lt;/url-pattern&gt; --&gt;
+     &lt;/filter-mapping&gt;
+
+......
+
+    &lt;!-- 统一样式    sitemesh  --&gt;
+    &lt;filter&gt;
+        &lt;filter-name&gt;sitemesh&lt;/filter-name&gt;
+        &lt;filter-class&gt;com.opensymphony.module.sitemesh.filter.PageFilter&lt;/filter-class&gt;
+        &lt;!--&lt;filter-class&gt;org.sitemesh.config.ConfigurableSiteMeshFilter&lt;/filter-class&gt;--&gt;
+    &lt;/filter&gt;
+    &lt;filter-mapping&gt;
+        &lt;filter-name&gt;sitemesh&lt;/filter-name&gt;
+        &lt;url-pattern&gt;*.htm&lt;/url-pattern&gt;
+        &lt;url-pattern&gt;*.html&lt;/url-pattern&gt;
+        &lt;url-pattern&gt;*.do&lt;/url-pattern&gt;
+        &lt;url-pattern&gt;*.action&lt;/url-pattern&gt;
+        &lt;url-pattern&gt;*.jsp&lt;/url-pattern&gt;
+    &lt;/filter-mapping&gt;</pre> <p>这样 所有的页面都会被压缩</p> <p> </p> <p>不过又产生了一个问题 。。。。。</p> <p>因为项目中使用了 dwr 这个过滤器也顺便把dwr生成的js给压缩了 。。。</p> <p>导致 dwr 不能使用</p> <p>俩个解决办法</p> <p>一个是把dwr的配置拿到html压缩的配置上面</p> <p>一个是在 html压缩过滤其中 的url-pattern 设置压缩的后缀名 不要写js就不会被压缩</p> <pre>     &lt;!-- html 压缩过滤器 --&gt;
+     &lt;filter&gt;
+         &lt;filter-name&gt;htmlCompressorFilter&lt;/filter-name&gt;
+         &lt;filter-class&gt;com.kunda.filter.HtmlCompressorFilter&lt;/filter-class&gt;
+     &lt;/filter&gt;
+     &lt;filter-mapping&gt;
+         &lt;filter-name&gt;htmlCompressorFilter&lt;/filter-name&gt;
+&lt;!--          &lt;url-pattern&gt;/*&lt;/url-pattern&gt; --&gt;
+         &lt;url-pattern&gt;*.css&lt;/url-pattern&gt;
+         &lt;url-pattern&gt;*.htm&lt;/url-pattern&gt;
+          &lt;url-pattern&gt;*.html&lt;/url-pattern&gt;
+          &lt;url-pattern&gt;*.jsp&lt;/url-pattern&gt;
+         &lt;url-pattern&gt;*.do&lt;/url-pattern&gt;
+         &lt;url-pattern&gt;*.action&lt;/url-pattern&gt;
+     &lt;/filter-mapping&gt;</pre> <p>当然 我没看到自己写的js或者css被压缩 。。。。。。</p> <p> </p> <p>好了 html 压缩的配置就到这了 这样 也就会压缩html了 到前台的html代码就会被压缩成一行</p> <p>html被压缩的站点 最常见的是 google 了 google 的几乎所有页面都是被压缩过的</p> <p> </p> <p>这样 提高了效率 也减慢了效率</p> <p>提高的是浏览器解析的效率 减慢的是服务器的效率</p> <p>就像那篇文章中说的</p> <blockquote> <p> 和起初预想的一样，这个Filter出现了性能问题，使用大量的正则与替换文本影响到了性能。12kb的网页用了40ms才过滤完。</p> </blockquote> <p> </p> <p>服务器的压力会增大 有所的就有所失 。。。。。。</p> <p>只能想想 用其他的办法来优化这个问题了。</p> <p>试个人而选吧。</p> <p> </p> <p><a title="HtmlCompressor" href="http://pan.baidu.com/s/103jL6" target="_blank">HtmlCompressor.zip</a></p> <p>(这个也是在网上找到的 在哪忘了 目测 直接搜 htmlcompressor 就会搜到， 也是一片博文)</p> <p> </p> <p> </p> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/compressor">compressor</a></li> <li><a href="/tag/filter">filter</a></li> <li><a href="/tag/html">html</a></li> <li><a href="/tag/j2ee">j2ee</a></li> <li><a href="/tag/java">java</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-10-08T19:05:30.000Z">October 8, 2013</time> <h1><a href="/post/ie-css3-htc/">ie-css3.htc</a></h1> </header> <section class="post-main"><p>让ie浏览器支持border-radius圆角等其他样式的文件，使用方法这里不说明了搜索一下！</p> <p> </p> <p> </p> <p><a href="http://pan.baidu.com/s/1GFXly" target="_Blank">ie-css3.rar</a></p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/css">css</a></li> <li><a href="/tag/css3">css3</a></li> <li><a href="/tag/html">html</a></li> <li><a href="/tag/ie-css3">ie-css3</a></li> </ul> </footer> </article> <menu class="page"> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

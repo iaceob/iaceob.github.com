@@ -1,0 +1,617 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>java - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2015-11-25T21:00:25.000Z">November 25, 2015</time> <h1><a href="/post/this-time-to-talk-about-the-experience-of-doing-performance-optimization/">谈谈这段时间做的效能优化经历以及千奇百怪的时间提取方案</a></h1> </header> <section class="post-main"><p>如前些天的<a title="日常" href="/post/daily-part-1/">日常</a>说的那样, 要解决各式各样的时间解析问题, 最终在原有的提取方式上又加入了一层提取方式.</p> <p>说性能之前先谈谈网页具体时间获取的方式, 使用了四种途径获取.</p> <p>1. 首先会从各搜索引擎的结果页中提取时间</p> <img src="/img/this-time-to-talk-about-the-experience-of-doing-performance-optimization/1.png"> <p>这个时间有着非常高的不确定性, 并非所有都存在时间, 而且时间格式还不固定, 在有这个时间也并非就一定是内页的发布时间.</p> <p>2. 使用 url 来获取时间, 类似如下的 url</p> <p>http://example.com/2015/1125/test.html</p> <p>依此来获取时间就能得到很准确的具体发布时间了, 通常格式也就那么几种, 做提取也很容易.</p> <p>同样这也会存在问题, 譬如下面俩个链接</p> <p>http://example.com/2015/11/29812.html</p> <p>http://example.com/2015/11/75632.html</p> <p>若是不能分析好的话, 可能会造成第一个链接获取时间错误得到了 2015-11-29, 这并不是正确的.</p> <p>但是并非所有的站点链接都会有发布的时间, 而且不能精确到具体的时间, 只能够到某天.</p> <p>3. 使用大批量的正则在网页中来匹配时间格式.</p> <p>通常这种方式能够获取带很准确的时间信息, 只要是有存在时间, 并且有对应的正则匹配, 就能获取到详细的时间, 不过带来的问题是严重的性能消耗, 这也是下面将要提到的问题.</p> <p>4. 不靠谱的时间提取器</p> <p>这个了其实也是依赖正则匹配来提取, 实质上也和方案 3 类似, 不过类似与这种提取器所提取的时间, 错误率非常高, 通常会返回很多时间给你, 其中或许确实存在正确的时间, 但是无从判断哪个才是正确的, 与买彩票形式差不多.</p> <p>最终权衡, 这四种方式都作为时间提取的方案一并考虑, 优先的原则是, 2&gt;3&gt;4&gt;1 , 将从 url 中获取的时间作为最优先选择, 在而使用定向规则匹配, 在考虑提取器 最后考虑搜索结果页中的时间, 若都不能获取, 那只能说 byebye.</p> <p>按照上述的方式获取基本山是能够提取出千奇百怪的时间了</p> <p> </p> <p>接下来说说性能这事</p> <p>如上方说的第二种方案, 利用大批量正则匹配时间, 正则是非常消耗性能的, 拿具体的代码来演示性能这事吧.</p> <pre>List&lt;String&gt; regexList; // 假设这里面存在 n 多个正则表达式
+</pre> <p> </p> <pre>public String extraTime(String content, String regex){
+    Pattern p = Pattern.compile(regex);
+    Matcher m = p.matcher(content);
+    if (!m.find()) return null;
+    return m.group("name");
+}
+
+public void extra(){
+    String content = ""; // 假设这就是要提取的文本
+    for (Integer i=0; i&lt;regexList.size(); i++) {
+        this.extraTime(content, regexList.get(i));
+    }
+}
+</pre> <p>另一种方式</p> <pre>public String mergeRegex(){
+    StringBuilder sb = new StringBuilder();
+    for (Integer i=0; i&lt;regexList.size(); i++) {
+        sb.append("(").append(regesList.get(i))
+             .append(i+1==regexList.size() ? ")" : ")|");
+    }
+    return sb.toString();
+}
+public void extra(){
+    String content = "";
+    Pattern p = Pattern.compile(this.mergeRegex());
+    Matcher m = p.matcher(content);
+    if (!m.find()) return;
+    m.group("name");
+}
+</pre> <p>优化方式只是把每个正则分别提取改为了把所有正则合并为一个正则用或的关系放在一次, 减少了多次创建 Pattern 类, 从而提高匹配的效率, 这个结果是非常明显的.</p> <p>其实道理大家都懂= = 也听说过正则很慢, 可是从第一反映仍然是使用逐个遍历的方案, 也有不想思考的原因, 只有到问题出现了才会去想办法解决....<br/> 正则真的很慢, 而且性能开销非常大, 能不用就不用.</p> <p>(文中代码并不具有实际作用, 只是实现逻辑而已)</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/extra">extra</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/pattern">pattern</a></li> <li><a href="/tag/time">time</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2015-09-27T22:48:33.000Z">September 27, 2015</time> <h1><a href="/post/jget-local-offline-download-service/">jget 本地离线下载服务</a></h1> </header> <section class="post-main"><p>几个月前入手了一台树苺派, 可是一直没能派上用场, 在那闲置, 当初买这是想做点更有科技感的事情, 可是不太现实...</p> <p>本人是个 acg 爱好者, 但苦于上不鸟 4鸡 又想在每天工作和下班路上打发打发时间, 看点动漫, 可又得提前缓存好, 若哪天忘了缓存, 那路上的时间就得无聊的望着窗外.</p> <p>遂, 就有了个想法, 做一个下载服务, 我提供一个地址, 让下载程序去慢慢下载, 等到家之后就把下载的视频 copy 到抓机, 这样就不用担心遗忘, 或者网络连接慢没下载完了, 我可以随时都添加一个任务, 让其慢慢下载去, 刚好这个树苺派也闲着, 就做了这么个 jget.</p> <p>jget 主要是两套程序, 一个 web 服务, 供添加任务, 账户信息, 另一个就是本地的下载程序.</p> <p>web 页面主要提供账户信息和账户所有的下载机信息, 这些信息是作为下载机器接入的条件, 如果并非是认证的机器接入是不允许的, 提供一个心跳服务接口, 实时刷新下载机的状态更新下载机器信息, 如果超出了所限定的时间仍然没有心跳连接, 那创建下载任务时将不出现这台机器, 可能是下载机器的网络有问题或者下载程序挂了. 每次下载机和 web 通信都应带上所需的账户验证信息, 否则将不能识别这台机器,从而不能够进行任务的处理.</p> <p>本地下载程序的主要做的事情就俩件: 服务中心心跳 和 任务获取解析, 在启动任务之前要先从 web 服务中心获取账户验证以及下载机器的验证信息, 验证通过后, 保存账户信息, 用于之后的 服务中心信息交互使用, 下载服务机的名称是作为这个账户下机器的唯一标识, 名称重复的将不会被添加当作新的机器而是当作心跳更新这个下载机的信息. 文件下载的处理俩中方式, 多线程下载和单线程下载, 首选多线程下载, 若目标服务器不支持则转为单线程, 下载模块使用的 java 实现的 <a title="Wget" href="https://github.com/axet/wget" target="_blank">wget</a> 库, 就使用而言 wget 基本上能满足下载的需求, 但是也有诸多问题, 不能设置 Cookie , 单线程下载无法获取进度(这个可能是我没发现怎么用).</p> <p>现已成功部署至树苺派并投入使用, 仍然有很多细节需要去优化, 具体代码实现在:</p> <p>http://iaceob.name:8528/gitbucket/iaceob/jget</p> <p>目前 web 界面尚未完整提供, 和尚准备来搞这界面, 搞完后会放入到 github 中.</p> <p>仍然还有很多细节处理要优化, 用着先</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/download">download</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/jget">jget</a></li> <li><a href="/tag/offline">offline</a></li> <li><a href="/tag/raspberry">raspberry</a></li> <li><a href="/tag/wget">wget</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2015-09-19T16:33:05.000Z">September 19, 2015</time> <h1><a href="/post/environment-variables-config/">环境变量配置</a></h1> </header> <section class="post-main"><p>关于 linux 的环境变量配置, 可以统一在 <code>/etc/profile.d/</code> 目录下建立相应的文件, 便于做统一管理</p> <p>例如 若要配置 java 环境变量 则建立 /etc/profile.d/java.sh</p> <pre>export JAVA_HOME=/opt/jdk
+export CLASSPATH=${JAVA_HOME}/lib
+export PATH=${JAVA_HOME}/bin:${PATH}</pre> <p>之后执行 <code>source /etc/profile.d/java.sh 使之立即生效 </code></p> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/env">env</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/linux">linux</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2015-04-23T13:48:29.000Z">April 23, 2015</time> <h1><a href="/post/come-to-talk-about-orm/">再来谈谈 ORM</a></h1> </header> <section class="post-main"><p>关于 ORM 的解释见 <a title="对象关系映射" href="http://zh.wikipedia.org/wiki/%E5%AF%B9%E8%B1%A1%E5%85%B3%E7%B3%BB%E6%98%A0%E5%B0%84" target="_blank">对象关系映射</a> .</p> <p>简单的来说就是对于每个项目上应用最广泛的数据库中每张表所对应的实体类, 实体类中每个变量对应这数据表中的每个字段. 并且有封装着简单的对数据库的访问, 也就是 CURD (create update read delete).</p> <p>这样确实是有很多好处的, 比如在实体类中对进行数据库操作的数据进行校验以及数据的正确性确认, 避免了插入一些危险的语句, Thinkphp 在这方面就做了有 自动验证 自动完成 等功能, 详见 Thinkphp 文档中说明.</p> <p>ORM 的一些比较出名的产品, 比如 java 中的 hibernate 框架. 实现了 ORM 的所有操作. 并且被用于众多大型项目中.</p> <p>但是真的需要用 ORM 方式来实现数据库操作吗 .</p> <p>就拿 hibernate 来说(已经很久没用了), 比如如下环境</p> <p>db 一个简单的用户表</p> <pre>create table person(
+ uid varchar(30) not null,
+ name nvarchar(50) not null,
+ password varchar(50) not null,
+ email nvarchar(50) not null,
+ gender tinyint,
+ ctime datetime,
+ primary key(uid)
+);</pre> <p>entity hibernate 中相应的实体类</p> <pre>public class Person(){
+ private String uid;
+ private String name;
+ private String password;
+ private String email;
+ private Short gender;
+ private Timestamp ctime;
+
+ public Person(){};
+
+ public String getUid(){ return this.uid; }
+ public String getName(){ return this.name; }
+ // .....
+ public void setUid(String uid){ this.uid=uid; }
+ public void setName(String name){ this.name=name; }
+
+ public String toString(){ return ''; };
+
+}</pre> <p>这个实体类就是用来描述数据表 person 的.</p> <p>比如现在有个需求要修改用户名, 那么实现肯定是通过语句</p> <pre>update person set name=? where uid=?</pre> <p>这样来实现的, hibernate 是怎么做的了, 首先先将这句 SQL 翻译成 HQL(hibernate 定义的一种数据库操作语句), 然后这里需要俩个字段相应的也就是实体类中 uid 和 name 变量, 因此 实体类中就需要有相应的构造器</p> <pre>public Person(String uid, String name){
+ this.uid = uid;
+ this.name = name;
+}</pre> <p>之后执行 HQL(已经不知道这个HQL该怎么写) 和实例化这个构造器就能够自动修改名称了.</p> <p>需求是完成了, 不过命名就只是一句 SQL 就能解决的事情却要搞得这么麻烦? 明明可以封装一个数据库操作类, 直接执行 SQL, 返回影响行数很简单的几句代码就能完成操作.</p> <p>好, 要说 java 本来就很繁琐, 那再来看看 php.</p> <p>当然 也就是前文提到的 thinkphp</p> <p>thinphp 提供了 D 和 M 函数来使用 Model 操作数据库.</p> <p>关于 M 和 D 的区别可以去观看 thinkphp 的文档.</p> <p>那么还是之前的这个表</p> <p>现有需求添加一个用户, 那么</p> <p>Model 添加 person 的 model 类</p> <pre>&lt;?php
+ class PersonModel extends Model{
+  protected $pk = 'uid';
+  protected $tableName = 'person';
+  protected $map = array(
+   'id' =&gt; 'uid',
+   'name' =&gt; 'name',
+   ...
+  );
+  protected $_validate = array(
+   array('id', 'require', 'id not null', 1);
+   // ...
+  );
+  protected $_auto = array(
+   array('ctime', 'getTime', 3, 'callback')
+  );
+
+  function getTime(){
+   return time();
+  }
+ }
+?&gt;</pre> <p>然后就是在具体的控制器中使用了</p> <pre>$model = D('Person');
+if (!$model-&gt;create()) echo $model-&gt;getError();die;
+echo $model-&gt;save() ? 'success' : $model-&gt;getError();</pre> <p>这样就完成了整个流程了, 也实现了需求.</p> <p>同时了 thinkphp 还提供了另外一种方式, 同样是这个需求, 来试试怎么完成.</p> <pre>$model = new Model();
+$sql = "insert into person(id, name, email, password, gender, ctime) values ('%s', '%s', '%s', '%s', %d, now())";
+$res = $model-&gt;execute($sql, array('1', 'test', 'test@example.com', md5('password'), 1));
+echo $res ? 'success' : $model-&gt;getError();</pre> <p>同样实现了这个需求, 这俩中方式到底是说着简便的 active record 模式还是这种原生的 sql 执行方式了?</p> <p>一目了然, 肯定是后者. 或许 ORM 这种方式确实存在着某些优势, 不过这些优势并不是选择这种方式的理由, 因为这种方式有个最大的弊端, 就是做不了复杂的多表业务逻辑操作.</p> <p>没错, 比如像 thinkphp 的 model 是提供 <code>-&gt;join();</code> 这种方式来进行关联的.像下面:<br/> 比如还有另外一张关联表, 存储这 用户所对应的城市 person_city | uid city<br/> 和一张城市的表 city | id name<br/> 现在想要查出用户所在的城市</p> <pre>$model = new Model();
+$arr = $model-&gt;table(C('DB_PREFIX') . 'person as p')
+             -&gt;field('p.name as person_name, c.name as city_id')
+             -&gt;join('left join ' . C('DB_PREFIX') . 'person_city as pc on p.uid=pc.uid')
+             -&gt;join('left join ' . C('DB_PREFIX') . 'city as c on pc.city=c.id')
+             -&gt;where(array('p.uid'=&gt;'1'))
+             -&gt;select();
+var_dump($arr);</pre> <p>这个查询出来的结果确实是我们想要的, 而且灵活的运用了 thinkphp model 的 active record 方式.</p> <p>那么再用原始的 sql 方式实现试试</p> <pre>$model = new Model();
+$sql = "select
+p.name as person_name, c.name as city_id
+from person as p
+left join person_city as pc on p.uid=pc.uid
+left join city as c on pc.city=c.id
+where p.uid='%s'";
+$arr = $model-&gt;query($sql, array('1'));
+var_dump($arr);die;</pre> <p>这是不是同样是需求所要的结果? 而且是不是相对于更加容易理解? 分析下来这段代码的意思就是先实例化一个 Model 对象, 然后定义一个 SQL 语句, 在执行这个 SQL 语句, 将返回的结果答应, 就是这么简单易解的方式. 而上面那个沉长的语句是什么意思了, 来一句一句分析下.</p> <p>首先实例化一个 Model 对象.</p> <pre>$model-&gt;table('xx') // 告诉 model 这是主表
+-&gt;field('xx') // 要查询这些字段
+-&gt;join('left join person_city') // 关联person_city这张表
+-&gt;join('left join city') // 关联 city 这张表
+-&gt;where('p.uid'=&gt;'1') // 查询的 条件
+-&gt;select() //   执行查询
+</pre> <p>这对于已经熟练使用的人来说是非常便于理解的, 不过如果是未接触过这种方式的人来说表达的意思很含糊, 不直观, 而且很多都是不必要的代码, 我相信基本上程序员都接触过 SQL, 而不可能所有人都接触过 active record 这种方式.</p> <p>另外这个简单的多表关联是可以实现, 如果是复杂的了? 比如之前写过的一篇文章 <a title="sql 中 full join 于 union" href="/post/sql-full-join-and-union/" target="_blank">sql 中 full join 于 union</a> 分别将 full join 和 union 实现的查询结果以 active model 的方式查询出来试试(thinkphp 还有另一种关联的方式, 不是通过 -&gt;join 而是使用关联模型)? 有理由相信就是这么简单的一句 sql 采用 关联模型 方式来实现, 这个模型会非常复杂, 而且还不容易理解.</p> <p>要知道, 包括 tinkphp 的 $model-&gt;table(‘xx’) 和 hibernate 的 hql , 数据库是不明白的, 所以说, thinkphp 和 hibernate 在提交数据库的时候还是会将这些翻译成数据库认识的 SQL 语句, 才能够正确的查询, 所以这不是在脱裤子放屁?<br/> 特别是 hibernate 的 hql 无中生有的造出了一种新的用法, 和 sql 完全不同, 而且 hibernate 还不能够建立 视图 的模型, 要知道数据库视图在实际项目中会频繁的用到.</p> <p>在比如, 你是一个开发人员用了 thinkphp 的关联模型或者是 java 的 hibernate 来实现操作数据的, 这个时候你有一个需求是非常复杂的数据库查询, 你并不会写, 所以你去问了 DBA 这个怎么写, DBA 花了 2 个小时终于把这个查询语句写出来了, 交给你, 这个时候你傻了, DBA 给你的是 SQL 语句, DBA 不一定会你所用的关联模型或者 HQL, 那么你还得用 2 个小时来把这句 SQL 翻译成 关联模型或者 HQL, 之后项目完成了, 上线了, 程序又会将 关联模型 或者 HQL 翻译成 SQL 传给数据库执行...</p> <p>所以这到底是简化了开发流程还是复杂了开发流程了.</p> <p>另一个想吐槽的是 thinkphp 的 C(‘DB_PREFIX’) , 就上文代码中使用过. 这个值获取数据库的表前缀, 配置在 config.php 中; 完全就是个鸡肋的设计, 你想啊, 项目上线后数据库表名怎么会该啊, 要到改数据的地步那相信就是数据库底层设计又问题了啊, 基础都又问题还怎么写代码? 另外万一一个库又俩种表前缀又怎么办?在定义一个 DB_PREFIX2 ? 别折腾了吧.... 又不实用 写的时候又麻烦 还得用连字符连起来, 给个特殊符号自动替换表前缀也比连字符强吧, 写起来多烦?</p> <p>--</p> <p>写这篇文章了, 其实最近有在看 nodejs , 查询了一些文章, 关于数据库操作, 数据库操作也是实用类似 Thinkphp 这种实现方式. 完全没明白, nodejs 是新世纪的语言为什么还存在着旧世纪的思维方式(或许是我没能明白这种方式的好处), 甚至还见到过 nodejs 封装一个实体存储数据, 哥哥....这不是java, java因为数据类型不能够直观的表达数据表才会有实体类封装, 一看实体就基本上能理解表(个人认为), 但是有看过 nodejs 的各种数据库驱动 包括 nosql 和 关系型数据库查询出来的数据返回都是标准的 js 对象啊... 已经可以直接调用的拉, 没必要在封装成实体了啊..</p> <p>大概就这些了, 反正关联模型这东西, 不要轻易去碰, 至少如果你的团队不大, 就几个人, 不要用这种方式, 会累死你还不一定能完成想要的结果.</p> <p>都说要精益求精, 化繁为简, sql 执行多么简单明了, 多去学习下 sql 语句吧. 那些各种 orm 框架说了支持多数据库, 不要被忽悠了, 除非是那种大型的商业级的项目可能会考虑到多数据库, 中小型项目一个数据库基本上就满足了, 因此你的代码更不就不需要去考虑对多数据库的支持, 再说 sql 语句大部分也是通用的, 只是个中有些语法上的区别, 总体都差不多.</p> <p>sql 语句能做很多事情, 并不比某种程序语言弱, 不要因为各种所谓的兼容等而忘却了根本, 还是那句 数据库是不认识任何 ORM 框架所提供的各种代码, 都是翻译成 SQL 语句提交给数据库的.</p> <p>本文代码并不一定完全正确, 只做演示说明.</p> <p>文末附上些连接:<br/> <a href="http://www.cnblogs.com/kuber/archive/2008/05/09/1188463.html" target="_blank">回复:什么是ActiveRecord</a><br/> <a href="https://github.com/amoa400/aa-mysql" target="_blank">aa-mysql</a></p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/activerecord">activerecord</a></li> <li><a href="/tag/hibernate">hibernate</a></li> <li><a href="/tag/hql">hql</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/model">model</a></li> <li><a href="/tag/orm">orm</a></li> <li><a href="/tag/php">php</a></li> <li><a href="/tag/sql">sql</a></li> <li><a href="/tag/thinkphp">thinkphp</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-04-13T16:44:47.000Z">April 13, 2014</time> <h1><a href="/post/re-create-the-wheels-in-xml-sql/">重造轮子之 sql in xml</a></h1> </header> <section class="post-main"><p>Slxlme<br/> 重造轮子之 sql in xml<br/> jfinal 存放sql于xml文件中进行sql管理</p> <p>作用是将sql写到xml文件中便于sql的管理<br/> 其中xml文件可以分为多个文件 避免一个文件存储时 因为太多而不便于维护<br/> 多个xml结构需相同<br/> xml 的默认节点配置如下</p> <pre>&lt;xlslme&gt;
+  &lt;container name="a"&gt;
+      &lt;sql id="bb"&gt;&lt;/sql&gt;
+  &lt;/container&gt;
+  ....
+&lt;xlsme&gt;</pre> <p>xml的存放路径默认在 src 目录下<br/> xml文件后缀默认采用 .sql.xml<br/> 节点名称可以更改 属性也可以更改 但是更改后 在config中配置扩展的时候需要和更改的节点名 属性名相同<br/> 存放sql的sql标签更改后无需在这里配置<br/> 获取sql使用 SqlKit.getSql("a.bb");</p> <p>在 jfinal 加入配置<br/> me.add(new SlxlmePlugin(arg0, arg1, ....));<br/> 相关配置在 SlxlmePlugin 中有说明</p> <p>项目地址: https://github.com/iaceob/slxlme</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/java">java</a></li> <li><a href="/tag/jfinal">jfinal</a></li> <li><a href="/tag/recoding">recoding</a></li> <li><a href="/tag/sql">sql</a></li> <li><a href="/tag/xml">xml</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-12-12T14:11:34.000Z">December 12, 2013</time> <h1><a href="/post/java-direct-insertion-bubble-sort-algorithm-etc/">Java 直接插入、冒泡 等 排序算法</a></h1> </header> <section class="post-main"><p>排序算法</p> <pre> 希尔排序：
+public class shellSort {  
+public  shellSort(){  
+    int a[]={1,54,6,3,78,34,12,45,56,100};  
+    double d1=a.length;  
+    int temp=0;  
+    while(true){  
+        d1= Math.ceil(d1/2);  
+        int d=(int) d1;  
+        for(int x=0;x&lt;d;x++){  
+            for(int i=x+d;i&lt;a.length;i+=d){  
+                int j=i-d;  
+                temp=a[i];  
+                for(;j&gt;=0&amp;&amp;temp&lt;a[j];j-=d){  
+                a[j+d]=a[j];  
+                }  
+                a[j+d]=temp;  
+            }  
+        }  
+        if(d==1)  
+            break;  
+    }  
+    for(int i=0;i&lt;a.length;i++)  
+        System.out.println(a[i]);  
+}  
+}  
+
+/******************************************************************/
+简单选择排序:
+public class selectSort {  
+    public selectSort(){  
+        int a[]={1,54,6,3,78,34,12,45};  
+        int position=0;  
+        for(int i=0;i&lt;a.length;i++){  
+
+            int j=i+1;  
+            position=i;  
+            int temp=a[i];  
+            for(;j&lt;a.length;j++){  
+            if(a[j]&lt;temp){  
+                temp=a[j];  
+                position=j;  
+            }  
+            }  
+            a[position]=a[i];  
+            a[i]=temp;  
+        }  
+        for(int i=0;i&lt;a.length;i++)  
+            System.out.println(a[i]);  
+    }  
+}  
+
+/*****************************************************************/
+堆排序 :
+import java.util.Arrays;  
+
+public class HeapSort {  
+     int a[]={49,38,65,97,76,13,27,49,78,34,12,64,5,4,62,99,98,54,56,17,18,23,34,15,35,25,53,51};  
+    public  HeapSort(){  
+        heapSort(a);  
+    }  
+    public  void heapSort(int[] a){  
+        System.out.println("开始排序");  
+        int arrayLength=a.length;  
+        //循环建堆  
+        for(int i=0;i= 0;i--){  
+            //k保存正在判断的节点  
+            int k=i;  
+            //如果当前k节点的子节点存在  
+            while(k*2+1&lt;=lastIndex){  
+                //k节点的左子节点的索引  
+                int biggerIndex=2*k+1;  
+                //如果biggerIndex小于lastIndex，即biggerIndex+1代表的k节点的右子节点存在  
+                if(biggerIndex &lt; lastIndex){  
+                    //若果右子节点的值较大  
+                    if(data[biggerIndex] &lt; data[biggerIndex+1]){  
+                        //biggerIndex总是记录较大子节点的索引  
+                        biggerIndex++;  
+                    }  
+                }  
+                //如果k节点的值小于其较大的子节点的值  
+                if(data[k] &lt; data[biggerIndex]){  
+                    //交换他们  
+                    swap(data,k,biggerIndex);  
+                    //将biggerIndex赋予k，开始while循环的下一次循环，重新保证k节点的值大于其左右子节点的值  
+                    k=biggerIndex;  
+                }else{  
+                    break;  
+                }  
+            }
+                }
+        }
+}
+
+/**************************************************************************/
+冒泡排序:
+public class bubbleSort {  
+public  bubbleSort(){  
+     int a[]={49,38,65,97,76,13,27,49,78,34,12,64,5,4,62,99,98,54,56,17,18,23,34,15,35,25,53,51};  
+    int temp=0;  
+    for(int i=0;i&lt;a.length-1;i++){  
+        for(int j=0;j&lt;a.length-1-i;j++){  
+        if(a[j]&gt;a[j+1]){  
+            temp=a[j];  
+            a[j]=a[j+1];  
+            a[j+1]=temp;  
+        }  
+        }  
+    }  
+    for(int i=0;i&lt;a.length;i++)  
+    System.out.println(a[i]);     
+}  
+}</pre> <ul> <li> <p title="Java 语言实现的直接插入、冒泡等几个经典排序算法">http://www.oschina.net/code/snippet_1262919_26838</p> </li> </ul></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/algorithm">algorithm</a></li> <li><a href="/tag/bubble">bubble</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/sort">sort</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-12-12T01:55:54.000Z">December 12, 2013</time> <h1><a href="/post/user-form-input-filter/">用户文本输入过滤器</a></h1> </header> <section class="post-main"><p>用户文本输入过滤器</p> <p>有句话好像这么说 "永远不要相信用户的输入"</p> <p>。。。。。。</p> <p>很简单 如果没有对用户的输入进行过滤的话</p> <p>站点是非常不安全的，且用户可能会输入一些敏(和谐)感(和谐)字</p> <p>比如前台一个表单文本输入框中 输入 <code>&lt;script&gt;alert("hello")&lt;/script&gt;</code></p> <p>然后就这么直接提交到了数据库中 当页面中查询了这条数据 那么页面就会弹出一个框。。。当然能做的事情很多，这是很危险的。</p> <p>js也可用在提交之前就对文本过滤 然后传递到后台去的值都是被过滤后的值，这样就不会出现这样的问题。但是！。。。。js是防不住人的。</p> <p>前台也许不用对用户输入的数据过滤 但是后台必须要有过滤</p> <p>这里是 java 版的 这段时间也没用 php 了 等到时侯用了 在来补充这文章</p> <ol> <li>j2ee 用户文本输入过滤器</li> </ol> <p>index.jsp</p> <pre>&lt;%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta charset="UTF-8"&gt;
+        &lt;title&gt;Insert title here&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;form action="ht2ms.action" method="post"&gt;
+            &lt;textarea name="html" rows="10" cols="25"&gt;&lt;/textarea&gt;
+            &lt;textarea name="html2" rows="10" cols="25"&gt;&lt;/textarea&gt;
+            &lt;input type="submit" value="提交"/&gt;
+        &lt;/form&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</pre> <p>ht2ms.jsp</p> <pre>&lt;%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%&gt;
+&lt;!DOCTYPE&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta charset="utf-8"&gt;
+        &lt;title&gt;Insert title here&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;form action="&lt;%=basePath %&gt;index.jsp" method="get"&gt;
+            &lt;input type="submit" value="返回"/&gt;
+        &lt;/form&gt;
+        &lt;strong&gt;结果:&lt;/strong&gt;
+        &lt;p&gt;${aaa }
+        &lt;p&gt;${bbb }
+        &lt;p&gt;-------------------------------
+        &lt;p&gt;&lt;%out.print(request.getAttribute("aaa")); %&gt;
+        &lt;p&gt;&lt;%out.print(request.getAttribute("bbb")); %&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</pre> <p>HtmlTag2MetacharactersServlet.java</p> <pre>package com.demo.filter;
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * Servlet implementation class HtmlTag2MetacharactersServlet
+ */
+public class HtmlTag2MetacharactersServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public HtmlTag2MetacharactersServlet() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+    /**
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doPost(request, response);
+    }
+
+    /**
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        request.setCharacterEncoding("utf-8");
+
+        String html = request.getParameter("html");
+        String html2 = request.getParameter("html2");
+
+        System.out.println("servlet====" + html);
+        System.out.println("servlet====" + html2);
+        request.setAttribute("aaa", html);
+        request.setAttribute("bbb", html2);
+
+        response.setContentType("text/html");
+        response.setCharacterEncoding("UTF-8");
+        request.getRequestDispatcher("/ht2ms.jsp").include(request,response);
+    }
+
+}</pre> <p>HtmlTag2MetacharactersFilter.java</p> <pre>package com.demo.filter;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+/**
+ * Servlet Filter implementation class htmlTag2Metacharacters
+ */
+//@WebFilter("/htmlTag2Metacharacters")
+public class HtmlTag2MetacharactersFilter implements Filter {
+
+    /**
+     * Default constructor. 
+     */
+    public HtmlTag2MetacharactersFilter() {
+        // TODO Auto-generated constructor stub
+    }
+
+    /**
+     * @see Filter#destroy()
+     */
+    public void destroy() {
+        // TODO Auto-generated method stub
+    }
+
+    /**
+     * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
+     */
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest filterRequest = (HttpServletRequest)request;
+        HttpSession session = filterRequest.getSession();
+        request.setCharacterEncoding("utf-8");
+
+//        Map map = request.getParameterMap();
+//        Set&lt;String&gt; key = map.keySet();
+//        for (Iterator it = key.iterator(); it.hasNext();) {
+//            String s = (String) it.next();
+//            request.removeAttribute(s);
+//            request.setAttribute(s, htmlTag2Metacharacters(request.getParameter(s)));
+//            System.out.println(htmlTag2Metacharacters(request.getParameter(s)));
+//            System.out.println(request.getParameter(s));
+//        }
+
+        Map&lt;String,String[]&gt; m = new HashMap&lt;String,String[]&gt;(request.getParameterMap());
+        Set&lt;String&gt; key = m.keySet();
+        for (Iterator it = key.iterator(); it.hasNext();) {
+            String s = (String) it.next();  
+            m.put(s, new String[]{ htmlTag2Metacharacters(request.getParameter(s)) });
+        }
+        request = new ParameterRequestWrapper((HttpServletRequest)request, m);  
+        System.out.println(request.getParameter("html"));  
+        System.out.println(request.getParameter("html2"));
+
+        chain.doFilter(request, response);
+    }
+
+    /**
+     * @see Filter#init(FilterConfig)
+     */
+    public void init(FilterConfig fConfig) throws ServletException {
+        // TODO Auto-generated method stub
+    }
+
+   public String htmlTag2Metacharacters(String html) { 
+        if (html == null) { 
+            return ""; 
+        } 
+        StringBuffer escapedText = new StringBuffer(); 
+        for (int i=0; i&lt;html.length(); i++) { 
+            char ch = html.charAt(i); 
+            switch (ch) {
+            case ''':
+                escapedText.append("&amp;#39;");
+                break;
+            case '"':
+                escapedText.append("&amp;quot;");
+                break;
+            case '&lt;':
+                escapedText.append("&amp;lt;"); 
+                break;
+            case '&gt;':
+                escapedText.append("&amp;gt;"); 
+                break;
+            case '&amp;':
+                escapedText.append("&amp;amp;"); 
+                break;
+            case 'n':
+                escapedText.append("&lt;br&gt;n"); 
+                break;
+            case ' ':
+                escapedText.append("&amp;nbsp;"); 
+                break;
+            case 't':
+                escapedText.append("&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;"); 
+                break;
+            default:
+                escapedText.append(ch); 
+            }
+        } 
+        return escapedText.toString(); 
+    } 
+
+}</pre> <p>ParameterRequestWrapper.java</p> <pre>package com.demo.filter;
+
+import java.util.Enumeration;
+import java.util.Map;
+import java.util.Vector;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+
+public class ParameterRequestWrapper extends HttpServletRequestWrapper {  
+
+    private Map&lt;String, String[]&gt; params;  
+
+    public ParameterRequestWrapper(HttpServletRequest request,  
+            Map&lt;String, String[]&gt; newParams) {  
+        super(request);  
+
+        this.params = newParams;  
+
+        // RequestDispatcher.forward parameter  
+        renewParameterMap(request);  
+    }  
+
+    @Override  
+    public String getParameter(String name) {  
+        String result = "";  
+
+        Object v = params.get(name);  
+        if (v == null) {  
+            result = null;  
+        } else if (v instanceof String[]) {  
+            String[] strArr = (String[]) v;  
+            if (strArr.length &gt; 0) {  
+                result =  strArr[0];  
+            } else {  
+                result = null;  
+            }  
+        } else if (v instanceof String) {  
+            result = (String) v;  
+        } else {  
+            result =  v.toString();  
+        }  
+
+        return result;  
+    }  
+
+    @Override  
+    public Map getParameterMap() {  
+        return params;  
+    }  
+
+    @Override  
+    public Enumeration getParameterNames() {  
+        return new Vector(params.keySet()).elements();  
+    }  
+
+    @Override  
+    public String[] getParameterValues(String name) {  
+        String[] result = null;  
+
+        Object v = params.get(name);  
+        if (v == null) {  
+            result =  null;  
+        } else if (v instanceof String[]) {  
+            result =  (String[]) v;  
+        } else if (v instanceof String) {  
+            result =  new String[] { (String) v };  
+        } else {  
+            result =  new String[] { v.toString() };  
+        }  
+
+        return result;  
+    }  
+
+    private void renewParameterMap(HttpServletRequest req) {  
+
+        String queryString = req.getQueryString();  
+
+        if (queryString != null &amp;&amp; queryString.trim().length() &gt; 0) {  
+            String[] params = queryString.split("&amp;");  
+
+            for (int i = 0; i &lt; params.length; i++) {  
+                int splitIndex = params[i].indexOf("=");  
+                if (splitIndex == -1) {  
+                    continue;  
+                }  
+
+                String key = params[i].substring(0, splitIndex);  
+
+                if (!this.params.containsKey(key)) {  
+                    if (splitIndex &lt; params[i].length()) {  
+                        String value = params[i].substring(splitIndex + 1);  
+                        this.params.put(key, new String[] { value });  
+                    }  
+                }  
+            }  
+        }  
+    }  
+
+}</pre> <p>web.xml</p> <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5"&gt;
+  &lt;display-name&gt;&lt;/display-name&gt;
+  &lt;welcome-file-list&gt;
+    &lt;welcome-file&gt;index.jsp&lt;/welcome-file&gt;
+  &lt;/welcome-file-list&gt;
+  &lt;servlet&gt;
+    &lt;servlet-name&gt;ht2ms&lt;/servlet-name&gt;
+    &lt;servlet-class&gt;com.demo.filter.HtmlTag2MetacharactersServlet&lt;/servlet-class&gt;
+    &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+  &lt;/servlet&gt;
+  &lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;ht2ms&lt;/servlet-name&gt;
+    &lt;url-pattern&gt;/ht2ms.action&lt;/url-pattern&gt;
+  &lt;/servlet-mapping&gt;
+
+  &lt;filter&gt;
+      &lt;filter-name&gt;HtmlTag2Metacharacters&lt;/filter-name&gt;
+      &lt;filter-class&gt;com.demo.filter.HtmlTag2MetacharactersFilter&lt;/filter-class&gt;
+  &lt;/filter&gt;
+  &lt;filter-mapping&gt;
+      &lt;filter-name&gt;HtmlTag2Metacharacters&lt;/filter-name&gt;
+      &lt;url-pattern&gt;*.action&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;*.do&lt;/url-pattern&gt;
+  &lt;/filter-mapping&gt;
+&lt;/web-app&gt;</pre> <p> </p> <p>做完这些 用户输入的html标签都会被转换成通用字符，这样就会原型输出标签，不会被解释</p> <p>之前也试着在网路上找一些实例，可是都没有一个较为完整的代码 都不能实现功能，然后就各种蛋疼。。。</p> <p>真的很讨厌那种自己开了博客 然后文章都是从这从那拷贝出来的。。。。。。。</p> <p>(虽然我有时也会copy，但是！我copy过来的样式还是很好的好不 ！也留了原文链接的！)</p> <p>。。。。。。。。。。</p> <p>说说流程吧</p> <p>index 里面的表单数据提交到 servlet 去</p> <p>到servlet之前会在filter中对html标签进行过滤成转意字符，servlet在去从request获取的数据已经是被转码后的内容了</p> <p>然后在发送到request跳转到 ht2ms.jsp 显示</p> <p> </p> <p>关于filter里面的过滤</p> <p>filter 的流程大概为</p> <p>获取 request 里的所有内容 放到 map 中</p> <p>然后对这个map遍历 获取每个key和value</p> <p>然后对value转换</p> <p>将转换后的value再次发送到相应的key中</p> <p>完成了继续向下执行</p> <p>其中有段注释代码 那段代码是之前写的 既然是替换 遍历map的时候request.setAttrxxxxx相应的key和转换后的value就成了，但是实时上这样是行不通的，request里面的值是不能修改的，具体的参考文下链接，其中ParameterRequestWrapper.java就是解决这个问题的(也是从文中copy的)</p> <p>我的理解是 ParameterRequestWrapper.java 重行定义了request的一些方法 实现了修改 request 里面的值。。。</p> <p>好吧 我只是对其做了简单的应用 不是真正的解决问题。。。。。。</p> <p>感觉 @和尚 ！！！</p> <p>...........！</p> <ol> <li>php</li> </ol> <p>xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p> <p> </p> <ul> <li> <p title="使用HttpServletRequestWrapper在filter修改request参数">http://blog.csdn.net/xieyuooo/article/details/8447301</p> </li> <li> <p title="如何修改request的parameter的几种方式 ">http://rensanning.iteye.com/blog/1706208</p> </li> </ul> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/code">code</a></li> <li><a href="/tag/filter">filter</a></li> <li><a href="/tag/form">form</a></li> <li><a href="/tag/html">html</a></li> <li><a href="/tag/input">input</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/request">request</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-12-10T11:07:20.000Z">December 10, 2013</time> <h1><a href="/post/hibernate3-case-by-java-lang-nosuchmethoderror-javax-persistence-onetoone-orphanremovalz/">hibernate3 – case by: java.lang.NoSuchMethodError: javax.persistence.OneToOne.orphanRemoval()Z</a></h1> </header> <section class="post-main"><p>从 hibernate3.3 升级到 hibernate3.5</p> <p>项目中使用hibernate版本是 3.3 (。。。)</p> <p>但是由于项目需求 需要使用 <code>@Subselect</code> 注解来完成复杂的数据查询</p> <p>但是 3.3 不支持 <code>@Subselect</code> 。。。</p> <p>然后 就各种蛋疼。。。。</p> <p>那么就升级吧</p> <p>下载了个 4.0 。。完全跑不起来</p> <p>折磨了好长时间</p> <p>然后找最接近的版本 配置应该差不多</p> <p>下载了 3.5</p> <p>spring 的 <code>applicationContext.xml</code> 文件中也没有改什么配置</p> <p>只是要注意 hibernate 的 jar 包</p> <p>项目中使用 hibernate annoation 来进行配置的</p> <p>hibernate 3.3 的 annotation 是独立的包 也就是需要导入几个包</p> <pre>hibernate3.jar
+hibernate-annotations.jar
+hibernate-commons-annotations.jar</pre> <p>但是 hibernate3.5 的 annotation 已经集合到了 hibernate3.jar 中</p> <p>心惊肉调 。。。这不坑爹吗。。。</p> <p>果然 删除了 hibernate3.3 的jar包 把 hibernate3.5 的 jar包拷贝进去配置没改 直接报错了 。。。。</p> <p>一番查找</p> <p>结果：</p> <p>hibernate3.5 需要导入 <code>hibernate-jpa-2.0-api-1.0.0.Final.jar </code>hibernate3.5 使用jpa标准注解。</p> <p>然后又报错了。。。</p> <p>错误内容如标题</p> <p>又一番查找</p> <p>hibernate-jpa-2.0-api-1.0.0.Final和ejb3-persistence有冲突，如果升级到 Hibernate3.5<br/> 那么可以把ejb3-persistence干掉</p> <p>然后 我泪奔了 终于特么好了。。。。</p> <p>===================</p> <p>表示不仅仅就这里说的几个错误。。。。</p> <p>还有好多没记录</p> <p>反正好蛋疼的说</p> <p>真被折腾的我 。。。</p> <p>hibernate 操作数据是方便 但是抛弃了sql的灵活性。。</p> <p>太高深</p> <p> </p> <ul> <li>http://www.cnblogs.com/hqr9313/archive/2012/08/14/2638168.html</li> </ul></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/hibernate">hibernate</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/nosuchmethoderror">NoSuchMethodError</a></li> <li><a href="/tag/spring">spring</a></li> <li><a href="/tag/subselect">subselect</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-11-08T15:37:24.000Z">November 8, 2013</time> <h1><a href="/post/not-free-to-use-lazy-loading/">不要随意使用懒加载！！</a></h1> </header> <section class="post-main"><p>记得之前看过说 hibernate 的懒加载使用 是在需要的地方就使用不需要的地方就不要使用。。。。</p> <p>很蛋疼的一句话 谁都知道啊 。。。。</p> <p>---</p> <p>虽然很蛋疼 不过还真就体会了一次 懒加载严重影响了系统的运行 代码如下</p> <p>分别有A实体类和B实体类 并且是多对多关系</p> <p>最终生成的表有3张 a b c 其中c表存储的是a表的id和b表的id</p> <pre>        Set&lt;A&gt; as = new HashSet&lt;A&gt;();
+        A a = new A();
+        String[] split = module.split(",");
+        int aId;
+        for (int i=0; i&lt;split.length; i++) {
+            try {
+                aId = Integer.parseInt(split[i]);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "类型错误";
+            }
+            a = this.moduleDao.getAById(aId);
+            modules.add(a);
+        }
+        B b = new B();
+        b.setBID(bID);
+        b.setBName(bName);
+        b.setAs(as);
+        b.setCreateUserID(uid);
+        b.setCreateTime(new Date());
+        String saveBID = this.bDao.saveB(b);</pre> <p>保存的代码就如上面 感觉很但疼 hibernate 这操作 。。。。。 还需要循环去查询数据库。。。</p> <p>然后就去跑了一遍，惊呆了，花了40多秒才执行完。。。。</p> <p>很是不解 非常不解 。。。</p> <p>试了好多次 下面这些是记录下来的 耗时 (根据测试数据不同隔开)</p> <pre>用时36539毫秒；36.539秒
+用时27813毫秒；27.813秒
+用时26473毫秒；26.473秒
+用时30016毫秒；30.016秒
+------------
+用时29684毫秒；29.684秒
+用时44141毫秒；44.141秒
+用时28434毫秒；28.434秒
+用时31013毫秒；31.013秒
+------------
+用时26366毫秒；26.366秒
+用时28442毫秒；28.442秒
+用时36296毫秒；36.296秒
+用时31299毫秒；31.299秒
+------------
+用时42439毫秒；42.439秒
+用时44764毫秒；44.764秒
+------------
+用时6260毫秒；6.26秒
+用时3809毫秒；3.809秒
+用时4187毫秒；4.187秒
+用时3640毫秒；3.64秒
+---------
+用时23520毫秒；23.52秒
+---------
+用时65622毫秒；65.622秒
+
+</pre> <p>只有几条数据的时候 就比较快 数据一多 耗时都是30-40左右。。。</p> <p>这特么还是本地测试。。。。</p> <p>之后看了下 hibernate 生成的 sql 发现查询b的时候把a也给查了而且只要是有数据的全部都给查了 这特么怎么能不慢 。。。。</p> <p>检查后发现b实体类中关联a类采用了懒加载</p> <p>把懒加载去掉后 再次去执行</p> <p>有了质的提高 不过 数据多了 还是有点慢 但是 比懒加载快很多！！！！</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/hibernate">hibernate</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/lazy">lazy</a></li> <li><a href="/tag/load">load</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-11-04T13:53:17.000Z">November 4, 2013</time> <h1><a href="/post/hibernate-errror-a-different-object-with-the-same-identifier-value-was-already-associated-with-the-session/">a different object with the same identifier value was already associated with the session</a></h1> </header> <section class="post-main"><p>hibernatre 出现如下错误： a different object with the same identifier value was already associated with the session</p> <p>--</p> <p>找了很多资料都说这是一个hibernate经典的错误。</p> <p>错误的原因是因为hibernate在执行操作数据库的时候在session 中发现了同一个实体类有着多个不同的下表 那么hibernate就不知道该去找那个来进行提交了。</p> <p>下面是我代码运行的错误报告</p> <pre>DEBUG - Collection found: [name.iaceob.entity.Aent.bents#61], Was:[name.iaceob.Aent.bents#61](initialized)
+DEBUG - Collection found: [name.iaceob.entity.Bent.aents#1], Was:[name.iaceob.Bent.aents#6](initialized)
+DEBUG - Collection found: [name.iaceob.entity.Bent.aents#1], Was:[name.iaceob.Bent.aents#6](initialized)
+DEBUG - Flushed: 0 insertions, 0 updates, 0 deletions to 3 objects</pre> <p>在执行操作的时候 出现了3个object 其他的文章中也说过出现这种错误大多是在 一对多 或者 多对多 的关系中</p> <p>因为在这中关系中 hibernate 在操作数据库的时候会将这些数据都查出来赋值给对象 最终操作数据库的时候 session 中将会出现很多个这个对象 那么就会报出这样的错误。</p> <p>关于这个错误 解释的文章也很多 也提出了很多的解决办法</p> <blockquote> <p>使用session.clean()，如果在clean操作后面又进行了saveOrUpdate(object)等改变数据状态的操作，有可能会报出"Found two representations of same collection"异常。</p> <p>使用session.refresh(object)，当object不是数据库中已有数据的对象的时候，不能使用session.refresh(object)因为该方法是从hibernate的session中去重新取object，如果session中没有这个对象，则会报错所以当你使用saveOrUpdate(object)之前还需要判断一下。</p> <p>session.merge(object)，Hibernate里面自带的方法，推荐使用。</p> </blockquote> <p>不错 貌似是得这么解决，不过都没有什么实例。</p> <p>因为我项目中用的数据操作是 HibernateTemplate 所以这里提出的解决方法是针对这种进行的 如果不是使用的 HibernateTemplate 而是直接使用的 hibernate session 进行操作的 那么应该更加方便，直接如上面引入的方法进行操作即可</p> <pre>    public void updateLevel(final Aent aent) {
+        // TODO Auto-generated method stub
+        // this.hibernateTemplate.update(aent);
+        this.hibernateTemplate.executeFind(new HibernateCallback() {
+
+            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+                // TODO Auto-generated method stub
+                Aent aent2 =  (Aent) session.merge(aent);
+                session.update(aent2);
+                return null;
+            }
+
+        });
+    }</pre> <p>上面注释的 this.hibernateTemplate.update(aent); 便是直接操作数据的方式</p> <p>因为session中会出现很多的同样的对象 报错了使用的解决方式就是上面引入内容中的 session.merge() 这个方法，merge这个方法的主要作用就是合并对象的意思 把多个对象合并成为一个对象。</p> <p>合并 aent 后赋给一个新的对象，在进行修改或者添加，这样session 中只有一个对象了 就不会出现这个错误</p> <p>如果不是使用HibernateTemplate的话 我想应该比这解决要简单的多 直接 session.merge(entity) 就解决了</p> <p>HibernateTemplate 的 executeFind 这个方法里面的返回方法 要使用传递过来的参数 必须是 final 的才可以使用 final 的变量是不可以修改的，因此在返回方法中需要重新实例化一个对象 这个对象保存的就是合并后的对象 在进行操作数据。</p> <p> </p> <p>貌似 HibernateTemplate 也有 merge clean 等方法 但是在这里也试过了 也同样会报错。不能解决问题。</p> <p> </p> <p>======</p> <p>等等 HibernateTemplate 解决办法有了 而且还更加简单方便 。。</p> <pre>public void saveNews(News news){
+      this.hibernateTemplate.merge(news);
+}</pre> <p>这样就能直接提交到数据库了 不用在save了</p> <p>这样写过</p> <pre>public void saveNews(News news) {
+     News nwes2 = this.hibernateTemplate.merge(news);
+     this.hibernateTemplate.save(news2);
+}</pre> <p>报错了 但是数据添加了 报错信息是因为 主键重复</p> <p>这里直接 merge 就提交到数据库了 返回的 merge 返回的是 提交的对象</p> <pre>News nwes2 = this.hibernateTemplate.merge(news);
+news2.getNewsId(); // 获得提交到数据库的id</pre> <p> </p> <p>这个可以有 前面的解决方式 就无视了吧 虽然也能解决。</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/executefind">executeFind</a></li> <li><a href="/tag/hibernate">hibernate</a></li> <li><a href="/tag/hibernatetemplate">hibernatetemplate</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/merge">merge</a></li> <li><a href="/tag/update">update</a></li> </ul> </footer> </article> <menu class="page"> <li class="page-next"> <a href="/tag/java/page/2" title="Next">Next</a> </li> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

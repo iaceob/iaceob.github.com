@@ -1,0 +1,12 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>sentence - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2013-11-12T15:48:26.000Z">November 12, 2013</time> <h1><a href="/post/sql-sentence-mysql/">sql语句 – mysql</a></h1> </header> <section class="post-main"><p> </p> <p>创建一库</p> <pre>create database dbname;</pre> <p>显示所有库</p> <pre>show databases;</pre> <p>选择一个库</p> <pre>use dbname;</pre> <p>导出一个库</p> <pre>// 
+mysqldump -uroot -p -t dbname&gt;'~/savepath/customdbname.sql'</pre> <p>查出当前库有多少外键</p> <pre>select    
+    concat(table_name, '.', column_name) as 'foreign key',     
+    concat(referenced_table_name, '.', referenced_column_name) as 'references'  
+from  
+    information_schema.key_column_usage   
+where  
+    table_schema='$databasename' and  
+    referenced_table_name is not null;</pre> <p>删除外键</p> <pre>alter table table_name drop foreign key foreignKeyName;</pre> <p>删除/增加/修改 某表字段</p> <pre>alter table table_name drop column column_name; -- 删除
+alter talbe table_name add column_name tinyint not null default 0; -- 增加
+alter table table_name change column_name new_column_name integer; -- 重命名 column_name
+</pre></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/mysql">mysql</a></li> <li><a href="/tag/sentence">sentence</a></li> <li><a href="/tag/sql">sql</a></li> </ul> </footer> </article> <menu class="page"> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

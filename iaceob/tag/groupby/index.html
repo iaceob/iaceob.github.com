@@ -1,0 +1,56 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>groupby - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2015-12-24T22:18:01.000Z">December 24, 2015</time> <h1><a href="/post/original-interpretation-sql-group-by-with-rollup/">原文解讀 – SQL GROUP BY WITH ROLLUP</a></h1> </header> <section class="post-main"><p>现有表 test 如下数据:</p> <pre>continent           country                 sales
+------   -------  -----
+North America        Northwest            123237.00
+North America        Northwest             37534.00
+North America        Northwest             48003.00
+North America        Southwest            164232.00
+North America        Southeast             39667.00
+North America        Southeast            105810.00
+Europe               France                74569.00
+Europe               Germany               59456.00
+Pacific              Australia             93403.00
+Europe               United Kingdom        78327.00</pre> <p><strong>需求一: 统计出各洲各国的总销售额</strong></p> <p><em>分析: 总销售额采用 sum(sales) 来获取, 然后使用 group by 来将各个国家合并<br/> </em></p> <pre>select continent, country, sum(sales) as total from test group by continent, country</pre> <p>结果:</p> <pre>continent                country                 total
+------   ------   ------
+Europe               France                74569.00
+Europe               Germany               59456.00
+Europe               United Kingdom        78327.00
+North America        Northwest            208774.00
+North America        Southeast            145477.00
+North America        Southwest            164232.00
+Pacific              Australia             93403.00</pre> <p>满足需求.</p> <p> </p> <p><strong>需求二: 在需求一的基础上, 增加各洲的销售总额, 以及所有国家 (所有州)的销售总额</strong></p> <p><em>分析: 逐个分析, 在需求一中已分析出各国的销售总额, 在计算出各州 以及 所有国家的总销售额, 使用 union 连接</em></p> <pre>select continent, country, sum(sales) as total from test group by continent, country
+union
+
+select continent, null, total from (
+  select continent, sum(sales) as total from test group by continent
+) as cyj
+
+union
+select null, null, total from (
+  select sum(sales) as total from test
+) as ct</pre> <p>结果:</p> <pre>continent                country                 total
+-------  -------  -------
+Europe               France                74569.00
+Europe               Germany               59456.00
+Europe               United Kingdom        78327.00
+North America        Northwest            208774.00
+North America        Southeast            145477.00
+North America        Southwest            164232.00
+Pacific              Australia             93403.00
+Europe               &lt;null&gt;                 212352.00
+North America        &lt;null&gt;                 518483.00
+Pacific              &lt;null&gt;                  93403.00
+&lt;null&gt;                 &lt;null&gt;                 824238.00</pre> <p>满足需求.</p> <p> </p> <p>另一种方案, 也是本文介绍的方案 GROUP BY WITH ROLLUP</p> <pre>select continent, country, sum(sales) as total from test
+group by continent, country
+with rollup</pre> <p>结果</p> <pre>continent                country                 total
+-------  -------  -------
+Europe               France                74569.00
+Europe               Germany               59456.00
+Europe               United Kingdom        78327.00
+Europe               &lt;null&gt;                 212352.00
+North America        Northwest            208774.00
+North America        Southeast            145477.00
+North America        Southwest            164232.00
+North America        &lt;null&gt;                 518483.00
+Pacific              Australia             93403.00
+Pacific              &lt;null&gt;                  93403.00
+&lt;null&gt;                 &lt;null&gt;                 824238.00</pre> <p>满足需求.</p> <p>-</p> <p>到这里, 基本上本文算是完毕了. group by with rollup 其实做的就是上面和 union 出来的结果一样的工作, 只不过更简洁有力.</p> <p>原文中还介绍了 grouping 这么个函数, 这个函数的作用就是判断查询的字段是否是 with rollup 出来的结果, 如果是就返回 1 不是就返回 0, 这样就能够用 case when 来给这个 with rollup 出来的 null 赋予一个期望值, 或者其他操作, 实际上, 这是不必要的, 倒是可用用 grouping 单独做一个字段来供程序判断, 若要给 null 赋值的话, 可以使用 isnull(continent,’xxx’) 这种方式 (MySQL 是 ifnull) 即可. grouping 的使用方式就不写了, 直接去看原文吧.</p> <p> </p> <p> </p> <p>原文链接: http://sqlandme.com/2011/07/07/sql-server-tsql-group-by-with-rollup/</p> <p>测试: http://sqlfiddle.com/#!9/225c3/7</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/database">database</a></li> <li><a href="/tag/groupby">groupby</a></li> <li><a href="/tag/mssql">mssql</a></li> <li><a href="/tag/mysql">mysql</a></li> <li><a href="/tag/rollup">rollup</a></li> <li><a href="/tag/sql">sql</a></li> <li><a href="/tag/with">with</a></li> </ul> </footer> </article> <menu class="page"> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

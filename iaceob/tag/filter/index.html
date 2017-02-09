@@ -1,0 +1,1269 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>filter - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2013-12-15T03:31:15.000Z">December 15, 2013</time> <h1><a href="/post/css-gaussian-blur/">css 高斯模糊</a></h1> </header> <section class="post-main"><p>css 实现高斯模糊效果</p> <style type="text/css"><!--
+.demo-blur{ text-shadow: 0px 0px 10px rgba(51, 51, 51, 0.9); color: rgba(0, 0, 0, 0); opacity: 0.5; } .demo-gaussian-blur{ -webkit-filter: blur(6px); -moz-filter: blur(6px); -o-filter: blur(6px); -ms-filter: blur(6px); filter: blur(6px); }
+.demo-blur-shadow{text-shadow: 0px 20px 2px #abc000;}
+--></style> <p> </p> <p> </p> <p>演示：</p> <p>text-shadow 文字阴影方式</p> <p><img src="/img/css-gaussian-blur/1.png"></p> <p>google</p> <p>google</p> <p>这种方式也并不能完全说是高斯模糊 只是使用了 <code>text-shadow</code> 文字阴影 等配合使用 这样文字会有效果 但是图片则不会有效果</p> <pre>.demo-blur{ 
+    text-shadow: 0px 0px 10px rgba(51, 51, 51, 0.9); 
+    color: rgba(0, 0, 0, 0); 
+    opacity: 0.5; 
+}
+
+.demo-blur-shadow {
+    text-shadow: 0px 20px 2px #333333;
+}
+</pre> <p> </p> <p>css filter 过滤方式</p> <p><img src="/img/css-gaussian-blur/1.png"></p> <p>google</p> <pre>.demo-gaussian-blur{ 
+    -webkit-filter: blur(3px); 
+    -moz-filter: blur(3px); 
+    -o-filter: blur(3px); 
+    -ms-filter: blur(3px); 
+    filter: blur(3px); 
+}</pre> <p>支持对图片等包括 video 标签的模糊。</p> <p>但是 这种方法 目前支持的浏览器不多</p> <p><img src="/img/css-gaussian-blur/2.jpg"></p> <p>上图中绿色标识的浏览器都可以使用</p> <p> </p> <p>svg 方式</p> <pre>&lt;?xml version="1.0" encoding="utf-8"?&gt; 
+&lt;!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"&gt; 
+&lt;!--Scalable Vector Graphic--&gt; 
+&lt;svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ev="http://www.w3.org/2001/xml-events" baseProfile="full"&gt; 
+    &lt;defs&gt; 
+        &lt;filter id="blur"&gt; 
+            &lt;feGaussianBlur stdDeviation="10" /&gt; 
+        &lt;/filter&gt; 
+     &lt;/defs&gt; 
+     &lt;image xlink:href="http://x.x.x/yourimg.jpg" x="0" y="0" filter="url(#blur)" /&gt; 
+&lt;/svg&gt;</pre> <pre>.blur {	
+    filter: url(blur.svg#blur); /* FireFox, Chrome, Opera */
+
+    -webkit-filter: blur(10px); /* Chrome, Opera */
+       -moz-filter: blur(10px);
+        -ms-filter: blur(10px);    
+            filter: blur(10px);
+
+    filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius=10, MakeShadow=false); /* IE6~IE9 */
+}</pre> <pre>&lt;img src="xxx.jpg" /&gt;</pre> <p> </p> <p>StackBlur.js canvas</p> <p>css</p> <pre>.blur {		
+    filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius=10, MakeShadow=false); /* IE6~IE9 */
+}
+:root .blur {
+    display: none; /* IE9+, Firefox, Chrome, Opera - hidden */
+    filter: none; /* no IE9 */
+}</pre> <p>html</p> <pre> &lt;img src="xxx.jpg" id="blur" /&gt; 
+ &lt;canvas id="canvas"&gt;&lt;/canvas&gt;</pre> <p>js</p> <pre>&lt;script src="StackBlur.js"&gt;&lt;/script&gt; 
+&lt;script&gt; stackBlurImage( "blur", "canvas", 20, false ); &lt;/script&gt;</pre> <p> </p> <p>====</p> <p>综合来看</p> <p>使用文字阴影方式虽然效果没有其他方式好 但是目前大多浏览器都能够支持</p> <p>css filter 过滤的效果很好但是目前支持的浏览器不多</p> <p>svg方式效果也很好 而且浏览器都支持svg 但是svg使用略不爽(个人感觉。。。)</p> <p>StackBlur.js+canvas 是个亮点 canvas 标签是html5的标签 目前大多现代浏览器都能够支持了， stackblur.js 的模糊效果也很好</p> <p> </p> <p>相关链接：</p> <ul> <li> <p title="CSS3 filter 模糊滤镜的应用">http://mao.li/css3-blur-filter-pratice/</p> </li> <li> <p title="小tip-使用css将图片转换成模糊毛玻璃效果">http://www.zhangxinxu.com/wordpress/?p=3804</p> </li> <li> <p title="StackBlur.js">http://www.quasimondo.com/StackBlurForCanvas/StackBlur.js</p> </li> <li> <p title="StackBlurDemo">http://www.quasimondo.com/StackBlurForCanvas/StackBlurDemo.html</p> </li> <li> <p title="Item Blur Effect with CSS3 &amp; jQuery">http://tympanus.net/Tutorials/ItemBlur/</p> </li> </ul></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/blur">blur</a></li> <li><a href="/tag/canvas">canvas</a></li> <li><a href="/tag/css">css</a></li> <li><a href="/tag/filter">filter</a></li> <li><a href="/tag/gaussian">gaussian</a></li> <li><a href="/tag/html">html</a></li> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/svg">svg</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-12-12T01:55:54.000Z">December 12, 2013</time> <h1><a href="/post/user-form-input-filter/">用户文本输入过滤器</a></h1> </header> <section class="post-main"><p>用户文本输入过滤器</p> <p>有句话好像这么说 "永远不要相信用户的输入"</p> <p>。。。。。。</p> <p>很简单 如果没有对用户的输入进行过滤的话</p> <p>站点是非常不安全的，且用户可能会输入一些敏(和谐)感(和谐)字</p> <p>比如前台一个表单文本输入框中 输入 <code>&lt;script&gt;alert("hello")&lt;/script&gt;</code></p> <p>然后就这么直接提交到了数据库中 当页面中查询了这条数据 那么页面就会弹出一个框。。。当然能做的事情很多，这是很危险的。</p> <p>js也可用在提交之前就对文本过滤 然后传递到后台去的值都是被过滤后的值，这样就不会出现这样的问题。但是！。。。。js是防不住人的。</p> <p>前台也许不用对用户输入的数据过滤 但是后台必须要有过滤</p> <p>这里是 java 版的 这段时间也没用 php 了 等到时侯用了 在来补充这文章</p> <ol> <li>j2ee 用户文本输入过滤器</li> </ol> <p>index.jsp</p> <pre>&lt;%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta charset="UTF-8"&gt;
+        &lt;title&gt;Insert title here&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;form action="ht2ms.action" method="post"&gt;
+            &lt;textarea name="html" rows="10" cols="25"&gt;&lt;/textarea&gt;
+            &lt;textarea name="html2" rows="10" cols="25"&gt;&lt;/textarea&gt;
+            &lt;input type="submit" value="提交"/&gt;
+        &lt;/form&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</pre> <p>ht2ms.jsp</p> <pre>&lt;%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%&gt;
+&lt;!DOCTYPE&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta charset="utf-8"&gt;
+        &lt;title&gt;Insert title here&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;form action="&lt;%=basePath %&gt;index.jsp" method="get"&gt;
+            &lt;input type="submit" value="返回"/&gt;
+        &lt;/form&gt;
+        &lt;strong&gt;结果:&lt;/strong&gt;
+        &lt;p&gt;${aaa }
+        &lt;p&gt;${bbb }
+        &lt;p&gt;-------------------------------
+        &lt;p&gt;&lt;%out.print(request.getAttribute("aaa")); %&gt;
+        &lt;p&gt;&lt;%out.print(request.getAttribute("bbb")); %&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</pre> <p>HtmlTag2MetacharactersServlet.java</p> <pre>package com.demo.filter;
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * Servlet implementation class HtmlTag2MetacharactersServlet
+ */
+public class HtmlTag2MetacharactersServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public HtmlTag2MetacharactersServlet() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+    /**
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doPost(request, response);
+    }
+
+    /**
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        request.setCharacterEncoding("utf-8");
+
+        String html = request.getParameter("html");
+        String html2 = request.getParameter("html2");
+
+        System.out.println("servlet====" + html);
+        System.out.println("servlet====" + html2);
+        request.setAttribute("aaa", html);
+        request.setAttribute("bbb", html2);
+
+        response.setContentType("text/html");
+        response.setCharacterEncoding("UTF-8");
+        request.getRequestDispatcher("/ht2ms.jsp").include(request,response);
+    }
+
+}</pre> <p>HtmlTag2MetacharactersFilter.java</p> <pre>package com.demo.filter;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+/**
+ * Servlet Filter implementation class htmlTag2Metacharacters
+ */
+//@WebFilter("/htmlTag2Metacharacters")
+public class HtmlTag2MetacharactersFilter implements Filter {
+
+    /**
+     * Default constructor. 
+     */
+    public HtmlTag2MetacharactersFilter() {
+        // TODO Auto-generated constructor stub
+    }
+
+    /**
+     * @see Filter#destroy()
+     */
+    public void destroy() {
+        // TODO Auto-generated method stub
+    }
+
+    /**
+     * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
+     */
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest filterRequest = (HttpServletRequest)request;
+        HttpSession session = filterRequest.getSession();
+        request.setCharacterEncoding("utf-8");
+
+//        Map map = request.getParameterMap();
+//        Set&lt;String&gt; key = map.keySet();
+//        for (Iterator it = key.iterator(); it.hasNext();) {
+//            String s = (String) it.next();
+//            request.removeAttribute(s);
+//            request.setAttribute(s, htmlTag2Metacharacters(request.getParameter(s)));
+//            System.out.println(htmlTag2Metacharacters(request.getParameter(s)));
+//            System.out.println(request.getParameter(s));
+//        }
+
+        Map&lt;String,String[]&gt; m = new HashMap&lt;String,String[]&gt;(request.getParameterMap());
+        Set&lt;String&gt; key = m.keySet();
+        for (Iterator it = key.iterator(); it.hasNext();) {
+            String s = (String) it.next();  
+            m.put(s, new String[]{ htmlTag2Metacharacters(request.getParameter(s)) });
+        }
+        request = new ParameterRequestWrapper((HttpServletRequest)request, m);  
+        System.out.println(request.getParameter("html"));  
+        System.out.println(request.getParameter("html2"));
+
+        chain.doFilter(request, response);
+    }
+
+    /**
+     * @see Filter#init(FilterConfig)
+     */
+    public void init(FilterConfig fConfig) throws ServletException {
+        // TODO Auto-generated method stub
+    }
+
+   public String htmlTag2Metacharacters(String html) { 
+        if (html == null) { 
+            return ""; 
+        } 
+        StringBuffer escapedText = new StringBuffer(); 
+        for (int i=0; i&lt;html.length(); i++) { 
+            char ch = html.charAt(i); 
+            switch (ch) {
+            case ''':
+                escapedText.append("&amp;#39;");
+                break;
+            case '"':
+                escapedText.append("&amp;quot;");
+                break;
+            case '&lt;':
+                escapedText.append("&amp;lt;"); 
+                break;
+            case '&gt;':
+                escapedText.append("&amp;gt;"); 
+                break;
+            case '&amp;':
+                escapedText.append("&amp;amp;"); 
+                break;
+            case 'n':
+                escapedText.append("&lt;br&gt;n"); 
+                break;
+            case ' ':
+                escapedText.append("&amp;nbsp;"); 
+                break;
+            case 't':
+                escapedText.append("&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;"); 
+                break;
+            default:
+                escapedText.append(ch); 
+            }
+        } 
+        return escapedText.toString(); 
+    } 
+
+}</pre> <p>ParameterRequestWrapper.java</p> <pre>package com.demo.filter;
+
+import java.util.Enumeration;
+import java.util.Map;
+import java.util.Vector;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+
+public class ParameterRequestWrapper extends HttpServletRequestWrapper {  
+
+    private Map&lt;String, String[]&gt; params;  
+
+    public ParameterRequestWrapper(HttpServletRequest request,  
+            Map&lt;String, String[]&gt; newParams) {  
+        super(request);  
+
+        this.params = newParams;  
+
+        // RequestDispatcher.forward parameter  
+        renewParameterMap(request);  
+    }  
+
+    @Override  
+    public String getParameter(String name) {  
+        String result = "";  
+
+        Object v = params.get(name);  
+        if (v == null) {  
+            result = null;  
+        } else if (v instanceof String[]) {  
+            String[] strArr = (String[]) v;  
+            if (strArr.length &gt; 0) {  
+                result =  strArr[0];  
+            } else {  
+                result = null;  
+            }  
+        } else if (v instanceof String) {  
+            result = (String) v;  
+        } else {  
+            result =  v.toString();  
+        }  
+
+        return result;  
+    }  
+
+    @Override  
+    public Map getParameterMap() {  
+        return params;  
+    }  
+
+    @Override  
+    public Enumeration getParameterNames() {  
+        return new Vector(params.keySet()).elements();  
+    }  
+
+    @Override  
+    public String[] getParameterValues(String name) {  
+        String[] result = null;  
+
+        Object v = params.get(name);  
+        if (v == null) {  
+            result =  null;  
+        } else if (v instanceof String[]) {  
+            result =  (String[]) v;  
+        } else if (v instanceof String) {  
+            result =  new String[] { (String) v };  
+        } else {  
+            result =  new String[] { v.toString() };  
+        }  
+
+        return result;  
+    }  
+
+    private void renewParameterMap(HttpServletRequest req) {  
+
+        String queryString = req.getQueryString();  
+
+        if (queryString != null &amp;&amp; queryString.trim().length() &gt; 0) {  
+            String[] params = queryString.split("&amp;");  
+
+            for (int i = 0; i &lt; params.length; i++) {  
+                int splitIndex = params[i].indexOf("=");  
+                if (splitIndex == -1) {  
+                    continue;  
+                }  
+
+                String key = params[i].substring(0, splitIndex);  
+
+                if (!this.params.containsKey(key)) {  
+                    if (splitIndex &lt; params[i].length()) {  
+                        String value = params[i].substring(splitIndex + 1);  
+                        this.params.put(key, new String[] { value });  
+                    }  
+                }  
+            }  
+        }  
+    }  
+
+}</pre> <p>web.xml</p> <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5"&gt;
+  &lt;display-name&gt;&lt;/display-name&gt;
+  &lt;welcome-file-list&gt;
+    &lt;welcome-file&gt;index.jsp&lt;/welcome-file&gt;
+  &lt;/welcome-file-list&gt;
+  &lt;servlet&gt;
+    &lt;servlet-name&gt;ht2ms&lt;/servlet-name&gt;
+    &lt;servlet-class&gt;com.demo.filter.HtmlTag2MetacharactersServlet&lt;/servlet-class&gt;
+    &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+  &lt;/servlet&gt;
+  &lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;ht2ms&lt;/servlet-name&gt;
+    &lt;url-pattern&gt;/ht2ms.action&lt;/url-pattern&gt;
+  &lt;/servlet-mapping&gt;
+
+  &lt;filter&gt;
+      &lt;filter-name&gt;HtmlTag2Metacharacters&lt;/filter-name&gt;
+      &lt;filter-class&gt;com.demo.filter.HtmlTag2MetacharactersFilter&lt;/filter-class&gt;
+  &lt;/filter&gt;
+  &lt;filter-mapping&gt;
+      &lt;filter-name&gt;HtmlTag2Metacharacters&lt;/filter-name&gt;
+      &lt;url-pattern&gt;*.action&lt;/url-pattern&gt;
+      &lt;url-pattern&gt;*.do&lt;/url-pattern&gt;
+  &lt;/filter-mapping&gt;
+&lt;/web-app&gt;</pre> <p> </p> <p>做完这些 用户输入的html标签都会被转换成通用字符，这样就会原型输出标签，不会被解释</p> <p>之前也试着在网路上找一些实例，可是都没有一个较为完整的代码 都不能实现功能，然后就各种蛋疼。。。</p> <p>真的很讨厌那种自己开了博客 然后文章都是从这从那拷贝出来的。。。。。。。</p> <p>(虽然我有时也会copy，但是！我copy过来的样式还是很好的好不 ！也留了原文链接的！)</p> <p>。。。。。。。。。。</p> <p>说说流程吧</p> <p>index 里面的表单数据提交到 servlet 去</p> <p>到servlet之前会在filter中对html标签进行过滤成转意字符，servlet在去从request获取的数据已经是被转码后的内容了</p> <p>然后在发送到request跳转到 ht2ms.jsp 显示</p> <p> </p> <p>关于filter里面的过滤</p> <p>filter 的流程大概为</p> <p>获取 request 里的所有内容 放到 map 中</p> <p>然后对这个map遍历 获取每个key和value</p> <p>然后对value转换</p> <p>将转换后的value再次发送到相应的key中</p> <p>完成了继续向下执行</p> <p>其中有段注释代码 那段代码是之前写的 既然是替换 遍历map的时候request.setAttrxxxxx相应的key和转换后的value就成了，但是实时上这样是行不通的，request里面的值是不能修改的，具体的参考文下链接，其中ParameterRequestWrapper.java就是解决这个问题的(也是从文中copy的)</p> <p>我的理解是 ParameterRequestWrapper.java 重行定义了request的一些方法 实现了修改 request 里面的值。。。</p> <p>好吧 我只是对其做了简单的应用 不是真正的解决问题。。。。。。</p> <p>感觉 @和尚 ！！！</p> <p>...........！</p> <ol> <li>php</li> </ol> <p>xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p> <p> </p> <ul> <li> <p title="使用HttpServletRequestWrapper在filter修改request参数">http://blog.csdn.net/xieyuooo/article/details/8447301</p> </li> <li> <p title="如何修改request的parameter的几种方式 ">http://rensanning.iteye.com/blog/1706208</p> </li> </ul> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/code">code</a></li> <li><a href="/tag/filter">filter</a></li> <li><a href="/tag/form">form</a></li> <li><a href="/tag/html">html</a></li> <li><a href="/tag/input">input</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/request">request</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-10-30T02:41:07.000Z">October 30, 2013</time> <h1><a href="/post/j2ee-gzip-compress/">j2ee gzip 压缩</a></h1> </header> <section class="post-main"><p>又是压缩！！！</p> <p> </p> <p>又是在别出找的。。。。</p> <p> </p> <p>不过 效率还是很好的</p> <p> </p> <p>已经忘了 是在哪找到的了 同样和 之前的html压缩一样 因为出了问题 (和那是一样的问题)这里只把代码贴出来</p> <p> </p> <p>CompressionFilter.java</p> <pre>package name.iaceob.filter;
+
+import java.io.IOException;
+import java.util.Enumeration;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import name.iaceob.util.CompressionServletResponseWrapper;
+
+/**
+ * Implementation of &lt;code&gt;javax.servlet.Filter&lt;/code&gt; used to compress
+ * the ServletResponse if it is bigger than a threshold.
+ *
+ * @author Amy Roh
+ * @author Dmitri Valdin
+ * @version $Revision: 267129 $, $Date: 2004-03-18 10:40:35 -0600 (Thu, 18 Mar 2004) $
+ */
+
+public class CompressionFilter implements Filter{
+
+    /**
+     * The filter configuration object we are associated with.  If this value
+     * is null, this filter instance is not currently configured.
+     */
+    private FilterConfig config = null;
+
+    /**
+     * Minimal reasonable threshold
+     */
+    private int minThreshold = 128;
+
+    /**
+     * The threshold number to compress
+     */
+    protected int compressionThreshold;
+
+    /**
+     * Debug level for this filter
+     */
+    private int debug = 0;
+
+    /**
+     * Place this filter into service.
+     *
+     * @param filterConfig The filter configuration object
+     */
+
+    public void init(FilterConfig filterConfig) {
+
+        config = filterConfig;
+        if (filterConfig != null) {
+            String value = filterConfig.getInitParameter("debug");
+            if (value!=null) {
+                debug = Integer.parseInt(value);
+            } else {
+                debug = 0;
+            }
+            String str = filterConfig.getInitParameter("compressionThreshold");
+            if (str!=null) {
+                compressionThreshold = Integer.parseInt(str);
+                if (compressionThreshold != 0 &amp;&amp; compressionThreshold &lt; minThreshold) {
+                    if (debug &gt; 0) {
+                        System.out.println("compressionThreshold should be either 0 - no compression or &gt;= " + minThreshold);
+                        System.out.println("compressionThreshold set to " + minThreshold);
+                    }
+                    compressionThreshold = minThreshold;
+                }
+            } else {
+                compressionThreshold = 0;
+            }
+
+        } else {
+            compressionThreshold = 0;
+        }
+
+    }
+
+    /**
+    * Take this filter out of service.
+    */
+    public void destroy() {
+
+        this.config = null;
+
+    }
+
+    /**
+     * The &lt;code&gt;doFilter&lt;/code&gt; method of the Filter is called by the container
+     * each time a request/response pair is passed through the chain due
+     * to a client request for a resource at the end of the chain.
+     * The FilterChain passed into this method allows the Filter to pass on the
+     * request and response to the next entity in the chain.&lt;p&gt;
+     * This method first examines the request to check whether the client support
+     * compression. &lt;br&gt;
+     * It simply just pass the request and response if there is no support for
+     * compression.&lt;br&gt;
+     * If the compression support is available, it creates a
+     * CompressionServletResponseWrapper object which compresses the content and
+     * modifies the header if the content length is big enough.
+     * It then invokes the next entity in the chain using the FilterChain object
+     * (&lt;code&gt;chain.doFilter()&lt;/code&gt;), &lt;br&gt;
+     **/
+
+    public void doFilter ( ServletRequest request, ServletResponse response,
+                        FilterChain chain ) throws IOException, ServletException {
+
+        if (debug &gt; 0) {
+            System.out.println("================");
+            System.out.println("@doFilter");
+        }
+
+        if (compressionThreshold == 0) {
+            if (debug &gt; 0) {
+                System.out.println("doFilter gets called, but compressionTreshold is set to 0 - no compression");
+            }
+           System.out.println("没有压缩");
+            chain.doFilter(request, response);
+            return;
+        }
+
+        boolean supportCompression = false;
+        if (request instanceof HttpServletRequest) {
+            if (debug &gt; 1) {
+
+                System.out.println("requestURI = " + ((HttpServletRequest)request).getRequestURI());
+            }
+
+            // Are we allowed to compress ?
+            String s = (String) ((HttpServletRequest)request).getParameter("gzip");
+
+            if ("false".equals(s)) {
+                if (debug &gt; 0) {
+                    System.out.println("got parameter gzip=false --&gt; don't compress, just chain filter");
+                }
+
+                chain.doFilter(request, response);
+                return;
+            }
+
+            Enumeration e =
+                ((HttpServletRequest)request).getHeaders("Accept-Encoding");
+            while (e.hasMoreElements()) {
+                String name = (String)e.nextElement();
+                System.out.println(name);
+                if (name.indexOf("gzip") != -1) {
+                    if (debug &gt; 0) {
+                        System.out.println("supports compression");
+                    }
+                    supportCompression = true;
+                } else {
+                    if (debug &gt; 0) {
+                        System.out.println("no support for compresion");
+                    }
+                }
+            }
+        }
+
+        if (!supportCompression) {
+            if (debug &gt; 0) {
+                System.out.println("doFilter gets called wo compression");
+            }
+            chain.doFilter(request, response);
+            return;
+        } else {
+            if (response instanceof HttpServletResponse) {
+                CompressionServletResponseWrapper wrappedResponse =
+                    new CompressionServletResponseWrapper((HttpServletResponse)response);
+                wrappedResponse.setDebugLevel(debug);
+
+                wrappedResponse.setCompressionThreshold(compressionThreshold);
+                if (debug &gt; 0) {
+                    System.out.println("doFilter gets called with compression");
+                }
+                try {
+
+                    chain.doFilter(request, wrappedResponse);
+                } finally {
+                    wrappedResponse.finishResponse();
+                }
+                return;
+            }
+        }
+    }
+
+    /**
+     * Set filter config
+     * This function is equivalent to init. Required by Weblogic 6.1
+     *
+     * @param filterConfig The filter configuration object
+     */
+    public void setFilterConfig(FilterConfig filterConfig) {
+        init(filterConfig);
+    }
+
+    /**
+     * Return filter config
+     * Required by Weblogic 6.1
+     */
+    public FilterConfig getFilterConfig() {
+        return config;
+    }
+
+}</pre> <p> </p> <p>CompressionServletResponseWrapper.java</p> <pre>package name.iaceob.util;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.util.Locale;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.ServletResponse;
+import javax.servlet.ServletResponseWrapper;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
+
+/**
+ * Implementation of &lt;b&gt;HttpServletResponseWrapper&lt;/b&gt; that works with
+ * the CompressionServletResponseStream implementation..
+ *
+ * @author Amy Roh
+ * @author Dmitri Valdin
+ * @version $Revision: 267129 $, $Date: 2004-03-18 10:40:35 -0600 (Thu, 18 Mar 2004) $
+ */
+
+public class CompressionServletResponseWrapper extends HttpServletResponseWrapper {
+
+    // ----------------------------------------------------- Constructor
+
+    /**
+     * Calls the parent constructor which creates a ServletResponse adaptor
+     * wrapping the given response object.
+     */
+
+    public CompressionServletResponseWrapper(HttpServletResponse response) {
+        super(response);
+        origResponse = response;
+        if (debug &gt; 1) {
+            System.out.println("CompressionServletResponseWrapper constructor gets called");
+        }
+    }
+
+    // ----------------------------------------------------- Instance Variables
+
+    /**
+     * Original response
+     */
+
+    protected HttpServletResponse origResponse = null;
+
+    /**
+     * Descriptive information about this Response implementation.
+     */
+
+    protected static final String info = "CompressionServletResponseWrapper";
+
+    /**
+     * The ServletOutputStream that has been returned by
+     * &lt;code&gt;getOutputStream()&lt;/code&gt;, if any.
+     */
+
+    protected ServletOutputStream stream = null;
+
+    /**
+     * The PrintWriter that has been returned by
+     * &lt;code&gt;getWriter()&lt;/code&gt;, if any.
+     */
+
+    protected PrintWriter writer = null;
+
+    /**
+     * The threshold number to compress
+     */
+    protected int threshold = 0;
+
+    /**
+     * Debug level
+     */
+    private int debug = 0;
+
+    /**
+     * Content type
+     */
+    protected String contentType = null;
+
+    // --------------------------------------------------------- Public Methods
+
+    /**
+     * Set content type
+     */
+    public void setContentType(String contentType) {
+        if (debug &gt; 1) {
+            System.out.println("setContentType to "+contentType);
+        }
+        this.contentType = contentType;
+        origResponse.setContentType(contentType);
+    }
+
+    /**
+     * Set threshold number
+     */
+    public void setCompressionThreshold(int threshold) {
+        if (debug &gt; 1) {
+            System.out.println("setCompressionThreshold to " + threshold);
+        }
+        this.threshold = threshold;
+    }
+
+    /**
+     * Set debug level
+     */
+    public void setDebugLevel(int debug) {
+        this.debug = debug;
+    }
+
+    /**
+     * Create and return a ServletOutputStream to write the content
+     * associated with this Response.
+     *
+     * @exception IOException if an input/output error occurs
+     */
+    public ServletOutputStream createOutputStream() throws IOException {
+        if (debug &gt; 1) {
+            System.out.println("createOutputStream gets called");
+        }
+
+        CompressionResponseStream stream = new CompressionResponseStream(origResponse);
+        stream.setDebugLevel(debug);
+        stream.setBuffer(threshold);
+
+        return stream;
+
+    }
+
+    /**
+     * Finish a response.
+     */
+    public void finishResponse() {
+        try {
+            if (writer != null) {
+                writer.close();
+            } else {
+                if (stream != null)
+                    stream.close();
+            }
+        } catch (IOException e) {
+        }
+    }
+
+    // ------------------------------------------------ ServletResponse Methods
+
+    /**
+     * Flush the buffer and commit this response.
+     *
+     * @exception IOException if an input/output error occurs
+     */
+    public void flushBuffer() throws IOException {
+        if (debug &gt; 1) {
+            System.out.println("flush buffer @ CompressionServletResponseWrapper");
+        }
+        ((CompressionResponseStream)stream).flush();
+
+    }
+
+    /**
+     * Return the servlet output stream associated with this Response.
+     *
+     * @exception IllegalStateException if &lt;code&gt;getWriter&lt;/code&gt; has
+     *  already been called for this response
+     * @exception IOException if an input/output error occurs
+     */
+    public ServletOutputStream getOutputStream() throws IOException {
+
+        if (writer != null)
+            throw new IllegalStateException("getWriter() has already been called for this response");
+
+        if (stream == null)
+            stream = createOutputStream();
+        if (debug &gt; 1) {
+            System.out.println("stream is set to "+stream+" in getOutputStream");
+        }
+
+        return (stream);
+
+    }
+
+    /**
+     * Return the writer associated with this Response.
+     *
+     * @exception IllegalStateException if &lt;code&gt;getOutputStream&lt;/code&gt; has
+     *  already been called for this response
+     * @exception IOException if an input/output error occurs
+     */
+    public PrintWriter getWriter() throws IOException {
+
+        if (writer != null)
+            return (writer);
+
+        if (stream != null)
+            throw new IllegalStateException("getOutputStream() has already been called for this response");
+
+        stream = createOutputStream();
+        if (debug &gt; 1) {
+            System.out.println("stream is set to "+stream+" in getWriter");
+        }
+        //String charset = getCharsetFromContentType(contentType);
+        String charEnc = origResponse.getCharacterEncoding();
+        if (debug &gt; 1) {
+            System.out.println("character encoding is " + charEnc);
+        }
+        // HttpServletResponse.getCharacterEncoding() shouldn't return null
+        // according the spec, so feel free to remove that "if"
+        if (charEnc != null) {
+            writer = new PrintWriter(new OutputStreamWriter(stream, charEnc));
+        } else {
+            writer = new PrintWriter(stream);
+        }
+
+        return (writer);
+
+    }
+
+    public void setContentLength(int length) {
+    }
+
+    /**
+     * Returns character from content type. This method was taken from tomcat.
+     * @author rajo
+     */
+    private static String getCharsetFromContentType(String type) {
+
+        if (type == null) {
+            return null;
+        }
+        int semi = type.indexOf(";");
+        if (semi == -1) {
+            return null;
+        }
+        String afterSemi = type.substring(semi + 1);
+        int charsetLocation = afterSemi.indexOf("charset=");
+        if(charsetLocation == -1) {
+            return null;
+        } else {
+            String afterCharset = afterSemi.substring(charsetLocation + 8);
+            String encoding = afterCharset.trim();
+            return encoding;
+        }
+    }
+
+}</pre> <p>CompressionResponseStream.java</p> <pre>package name.iaceob.util; 
+
+import java.io.IOException; 
+import java.io.OutputStream; 
+import java.util.zip.GZIPOutputStream; 
+import javax.servlet.ServletOutputStream; 
+import javax.servlet.http.HttpServletResponse; 
+
+/** 
+ * Implementation of &lt;b&gt;ServletOutputStream&lt;/b&gt; that works with 
+ * the CompressionServletResponseWrapper implementation. 
+ * 
+ * @author Amy Roh 
+ * @author Dmitri Valdin 
+ * @version $Revision: 267129 $, $Date: 2004-03-18 10:40:35 -0600 (Thu, 18 Mar 2004) $ 
+ */ 
+
+public class CompressionResponseStream 
+    extends ServletOutputStream { 
+
+    // ----------------------------------------------------------- Constructors 
+
+    /** 
+     * Construct a servlet output stream associated with the specified Response. 
+     * 
+     * @param response The associated response 
+     */ 
+    public CompressionResponseStream(HttpServletResponse response) throws IOException{ 
+
+        super(); 
+        closed = false; 
+        this.response = response; 
+        this.output = response.getOutputStream(); 
+
+    } 
+
+    // ----------------------------------------------------- Instance Variables 
+
+    /** 
+     * The threshold number which decides to compress or not. 
+     * Users can configure in web.xml to set it to fit their needs. 
+     */ 
+    protected int compressionThreshold = 0; 
+
+    /** 
+     * Debug level 
+     */ 
+    private int debug = 0; 
+
+    /** 
+     * The buffer through which all of our output bytes are passed. 
+     */ 
+    protected byte[] buffer = null; 
+
+    /** 
+     * The number of data bytes currently in the buffer. 
+     */ 
+    protected int bufferCount = 0; 
+
+    /** 
+     * The underlying gzip output stream to which we should write data. 
+     */ 
+    protected GZIPOutputStream gzipstream = null; 
+
+    /** 
+     * Has this stream been closed? 
+     */ 
+    protected boolean closed = false; 
+
+    /** 
+     * The content length past which we will not write, or -1 if there is 
+     * no defined content length. 
+     */ 
+    protected int length = -1; 
+
+    /** 
+     * The response with which this servlet output stream is associated. 
+     */ 
+    protected HttpServletResponse response = null; 
+
+    /** 
+     * The underlying servket output stream to which we should write data. 
+     */ 
+    protected ServletOutputStream output = null; 
+
+    // --------------------------------------------------------- Public Methods 
+
+    /** 
+     * Set debug level 
+     */ 
+    public void setDebugLevel(int debug) { 
+        this.debug = debug; 
+    } 
+
+    /** 
+     * Set the compressionThreshold number and create buffer for this size 
+     */ 
+    protected void setBuffer(int threshold) { 
+        compressionThreshold = threshold; 
+        buffer = new byte[compressionThreshold]; 
+        if (debug &gt; 1) { 
+            System.out.println("buffer is set to "+compressionThreshold); 
+        } 
+    } 
+
+    /** 
+     * Close this output stream, causing any buffered data to be flushed and 
+     * any further output data to throw an IOException. 
+     */ 
+    public void close() throws IOException { 
+
+        if (debug &gt; 1) { 
+            System.out.println("close() @ CompressionResponseStream"); 
+        } 
+        if (closed) 
+            throw new IOException("This output stream has already been closed"); 
+
+        if (gzipstream != null) { 
+            flushToGZip(); 
+            gzipstream.close(); 
+            gzipstream = null; 
+        } else { 
+            if (bufferCount &gt; 0) { 
+                if (debug &gt; 2) { 
+                    System.out.print("output.write("); 
+                    System.out.write(buffer, 0, bufferCount); 
+                    System.out.println(")"); 
+                } 
+                output.write(buffer, 0, bufferCount); 
+                bufferCount = 0; 
+            } 
+        } 
+
+        output.close(); 
+        closed = true; 
+
+    } 
+
+    /** 
+     * Flush any buffered data for this output stream, which also causes the 
+     * response to be committed. 
+     */ 
+    public void flush() throws IOException { 
+
+        if (debug &gt; 1) { 
+            System.out.println("flush() @ CompressionResponseStream"); 
+        } 
+        if (closed) { 
+            throw new IOException("Cannot flush a closed output stream"); 
+        } 
+
+        if (gzipstream != null) { 
+            gzipstream.flush(); 
+        } 
+
+    } 
+
+    public void flushToGZip() throws IOException { 
+
+        if (debug &gt; 1) { 
+            System.out.println("flushToGZip() @ CompressionResponseStream"); 
+        } 
+        if (bufferCount &gt; 0) { 
+            if (debug &gt; 1) { 
+                System.out.println("flushing out to GZipStream, bufferCount = " + bufferCount); 
+            } 
+            writeToGZip(buffer, 0, bufferCount); 
+            bufferCount = 0; 
+        } 
+
+    } 
+
+    /** 
+     * Write the specified byte to our output stream. 
+     * 
+     * @param b The byte to be written 
+     * 
+     * @exception IOException if an input/output error occurs 
+     */ 
+    public void write(int b) throws IOException { 
+
+        if (debug &gt; 1) { 
+            System.out.println("write "+b+" in CompressionResponseStream "); 
+        } 
+        if (closed) 
+            throw new IOException("Cannot write to a closed output stream"); 
+
+        if (bufferCount &gt;= buffer.length) { 
+            flushToGZip(); 
+        } 
+
+        buffer[bufferCount++] = (byte) b; 
+
+    } 
+
+    /** 
+     * Write &lt;code&gt;b.length&lt;/code&gt; bytes from the specified byte array 
+     * to our output stream. 
+     * 
+     * @param b The byte array to be written 
+     * 
+     * @exception IOException if an input/output error occurs 
+     */ 
+    public void write(byte b[]) throws IOException { 
+
+        write(b, 0, b.length); 
+
+    } 
+
+    /** 
+     * Write &lt;code&gt;len&lt;/code&gt; bytes from the specified byte array, starting 
+     * at the specified offset, to our output stream. 
+     * 
+     * @param b The byte array containing the bytes to be written 
+     * @param off Zero-relative starting offset of the bytes to be written 
+     * @param len The number of bytes to be written 
+     * 
+     * @exception IOException if an input/output error occurs 
+     */ 
+    public void write(byte b[], int off, int len) throws IOException { 
+
+        if (debug &gt; 1) { 
+            System.out.println("write, bufferCount = " + bufferCount + " len = " + len + " off = " + off); 
+        } 
+        if (debug &gt; 2) { 
+            System.out.print("write("); 
+            System.out.write(b, off, len); 
+            System.out.println(")"); 
+        } 
+
+        if (closed) 
+            throw new IOException("Cannot write to a closed output stream"); 
+
+        if (len == 0) 
+            return; 
+
+        // Can we write into buffer ? 
+        if (len &lt;= (buffer.length - bufferCount)) { 
+            System.arraycopy(b, off, buffer, bufferCount, len); 
+            bufferCount += len; 
+            return; 
+        } 
+
+        // There is not enough space in buffer. Flush it ... 
+        flushToGZip(); 
+
+        // ... and try again. Note, that bufferCount = 0 here ! 
+        if (len &lt;= (buffer.length - bufferCount)) { 
+            System.arraycopy(b, off, buffer, bufferCount, len); 
+            bufferCount += len; 
+            return; 
+        } 
+
+        // write direct to gzip 
+        writeToGZip(b, off, len); 
+    } 
+
+    public void writeToGZip(byte b[], int off, int len) throws IOException { 
+
+        if (debug &gt; 1) { 
+            System.out.println("writeToGZip, len = " + len); 
+        } 
+        if (debug &gt; 2) { 
+            System.out.print("writeToGZip("); 
+            System.out.write(b, off, len); 
+            System.out.println(")"); 
+        } 
+        if (gzipstream == null) { 
+            if (debug &gt; 1) { 
+                System.out.println("new GZIPOutputStream"); 
+            } 
+            response.addHeader("Content-Encoding", "gzip"); 
+            gzipstream = new GZIPOutputStream(output); 
+        } 
+        gzipstream.write(b, off, len); 
+
+    } 
+
+    // -------------------------------------------------------- Package Methods 
+
+    /** 
+     * Has this response stream been closed? 
+     */ 
+    public boolean closed() { 
+
+        return (this.closed); 
+
+    } 
+
+}</pre> <p> </p> <p>web.xml</p> <pre>     &lt;!-- Gzip 页面压缩  Bug--&gt;
+     &lt;filter&gt;
+         &lt;filter-name&gt;gzipCompression&lt;/filter-name&gt;
+         &lt;filter-class&gt;name.iaceob.filter.CompressionFilter&lt;/filter-class&gt;
+        &lt;init-param&gt;
+          &lt;param-name&gt;compressionThreshold&lt;/param-name&gt;
+          &lt;param-value&gt;512&lt;/param-value&gt;
+        &lt;/init-param&gt;
+        &lt;init-param&gt;
+          &lt;param-name&gt;debug&lt;/param-name&gt;
+          &lt;param-value&gt;0&lt;/param-value&gt;
+        &lt;/init-param&gt;
+     &lt;/filter&gt;
+     &lt;filter-mapping&gt;
+         &lt;filter-name&gt;gzipCompression&lt;/filter-name&gt;
+         &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+     &lt;/filter-mapping&gt;</pre> <p> </p> <p> </p> <p> </p> <p>-----</p> <p>结束 。。。。。</p> <p>最明显的显示 就是 在火狐浏览器 中 右键查看网页信息</p> <p>让之前 20 多k的一个页面 压缩成了 2-3k左右 效果很惊人！！！</p> <p>改天在找找这些资料 这里的代码应该是可以跑起来的</p> <p>错误也是配置的位置问题 要放在一些过滤器 或者其他框架的前面 否则 项目启动可能就会报错。。</p> <p> </p> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/compressor">compressor</a></li> <li><a href="/tag/filter">filter</a></li> <li><a href="/tag/gzip">gzip</a></li> <li><a href="/tag/j2ee">j2ee</a></li> <li><a href="/tag/java">java</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-10-30T02:28:55.000Z">October 30, 2013</time> <h1><a href="/post/j2ee-html-compressor-filter/">j2ee html 压缩过滤器</a></h1> </header> <section class="post-main"><p>说起html压缩相信也很多人都知道</p> <p>html压缩后能更快的被浏览器解释 等等一些好处</p> <p>之前写那个整合框架的时候就想要把html压缩这功能加上去 传到前台浏览器解析的html全部都是一行</p> <p>找了很久都没有任何进展 也大概能想到是怎么实现 可惜。。。慢慢学吧！</p> <p>不负有心人 最近让我给找到了</p> <p>是在下面这篇博文中看到的实现方式</p> <p>http://www.fanyanan.com/note/item/97-jsp-filter-compress-html</p> <p>(表示大神给跪)</p> <p>总体的按照该篇文章实现了html的压缩功能</p> <p>不过也是有问题的 下面说说遇到的问题 (关于怎么实现压缩代码势力那篇文章中也都写过了 这里只把代码贴出来 解释就算了 到那篇文章去看吧)</p> <p>先贴代码</p> <p>HtmlCompressorFilter.java</p> <pre>/*****************
+*
+* 执行压缩html
+*/
+public void doFilter(ServletRequest filterRequest, ServletResponse filterResponse, FilterChain filterChain) throws IOException, ServletException {
+// TODO Auto-generated method stub
+
+HttpServletRequest request = (HttpServletRequest)filterRequest;
+HttpServletResponse response = (HttpServletResponse)filterResponse;
+ServletContext servletContext = null ;
+
+CharResponseWrapper charResponseWrapper = new CharResponseWrapper(response);
+filterChain.doFilter(filterRequest, charResponseWrapper);
+String html = charResponseWrapper.toString();
+
+HtmlCompressor compressor = new HtmlCompressor();
+//        compressor.setEnabled(true); // 如果为false，所有的压缩关闭(默认值是true)
+//        compressor.setRemoveComments(true); // 如果为false保持HTML注释(默认值是true)
+//        compressor.setRemoveMultiSpaces(true);  // 如果为false保持多个空白字符(默认值是true)
+//        compressor.setRemoveIntertagSpaces(true); // 删除迭代标签空白字符
+//        compressor.setRemoveQuotes(true);  // 删除不必要的标签属性报价
+//        compressor.setCompressCss(true); // css 压缩
+//        compressor.setCompressJavaScript(true); //  js压缩
+
+try {
+html=compressor.compress(html);
+} catch (Exception e) {
+e.printStackTrace();
+}
+
+response.getWriter().write(html);
+
+}</pre> <p>HtmlCompressor.java</p> <p>这个类没有使用那篇文章中提到的jar包而是提取出来的java文件，下面给出链接</p> <p>web.xml</p> <pre>    &lt;!-- 统一样式    sitemesh  --&gt;
+    &lt;filter&gt;
+        &lt;filter-name&gt;sitemesh&lt;/filter-name&gt;
+        &lt;filter-class&gt;com.opensymphony.module.sitemesh.filter.PageFilter&lt;/filter-class&gt;
+        &lt;!--&lt;filter-class&gt;org.sitemesh.config.ConfigurableSiteMeshFilter&lt;/filter-class&gt;--&gt;
+    &lt;/filter&gt;
+    &lt;filter-mapping&gt;
+        &lt;filter-name&gt;sitemesh&lt;/filter-name&gt;
+        &lt;url-pattern&gt;*.htm&lt;/url-pattern&gt;
+        &lt;url-pattern&gt;*.html&lt;/url-pattern&gt;
+        &lt;url-pattern&gt;*.do&lt;/url-pattern&gt;
+        &lt;url-pattern&gt;*.action&lt;/url-pattern&gt;
+        &lt;url-pattern&gt;*.jsp&lt;/url-pattern&gt;
+    &lt;/filter-mapping&gt;
+
+..........
+
+     &lt;!-- html 压缩过滤器 --&gt;
+     &lt;filter&gt;
+         &lt;filter-name&gt;htmlCompressorFilter&lt;/filter-name&gt;
+         &lt;filter-class&gt;name.iaceob.filter.HtmlCompressorFilter&lt;/filter-class&gt;
+     &lt;/filter&gt;
+     &lt;filter-mapping&gt;
+         &lt;filter-name&gt;htmlCompressorFilter&lt;/filter-name&gt;
+          &lt;url-pattern&gt;/*&lt;/url-pattern&gt; 
+        &lt;!-- &lt;url-pattern&gt;*.css&lt;/url-pattern&gt;
+         &lt;url-pattern&gt;*.htm&lt;/url-pattern&gt;
+          &lt;url-pattern&gt;*.html&lt;/url-pattern&gt;
+          &lt;url-pattern&gt;*.jsp&lt;/url-pattern&gt;
+         &lt;url-pattern&gt;*.do&lt;/url-pattern&gt;
+         &lt;url-pattern&gt;*.action&lt;/url-pattern&gt; --&gt;
+     &lt;/filter-mapping&gt;</pre> <p>这里只单独列出了 sitemesh 的配置和 html 压缩的配置 因为就是 sitemesh 除了问题 那篇文章中也说到了</p> <p>----------</p> <p>跑起来</p> <p>html 是被压缩了但是压缩的只是部分 也就是 &lt;decorator:body/&gt; 被sitemesh引入的部分 而且url还必须是jsp或者html才能被压缩 struts 或者其他被过滤的链接 都不会被压缩。</p> <p>试了很多方法都不行 仍然是这样 包括 升级了sitemesh 后来想想也就作罢 又时间在看看</p> <p>今天 恰好又有了兴趣 来看看</p> <p>忽然间发现一个问题这个html压缩的过滤器是找到这个页面的uri然后对其进行压缩 在写出 因为sitemesh在前面操作过这个页面 那么到后面的这个html压缩的过滤器 这个时候 uri 不是这个页面的真正uri了 而是被sitemesh过滤后的uri(那篇文章中也有提到)，这么一想 如果让html压缩的过滤器先跑 在去跑sitemesh的过滤器，然后就试了以下，然后果然可以了！！！！！！！</p> <p>----</p> <p>解决方法就是 把html压缩过滤器放到sitemesh的前面就行了</p> <p>原流程 jsp-&gt;sitemesh-&gt;htmlcompressor</p> <p>现流程 jsp-&gt;htmlcompressor-&gt;sitemesh</p> <p>有俩个jsp文件 a.jsp b.jsp</p> <p>a.jsp 是 sitemesh 的模板文件 b.jsp 值 sitemesh 的body文件</p> <p>a.jsp</p> <pre>&lt;html&gt;
+     &lt;head&gt;
+        &lt;title&gt;&lt;decorator:title default="test"/&gt; - sitemesh&lt;/title&gt;
+     &lt;/head&gt;
+     &lt;body&gt;
+       &lt;decorator:body/&gt;
+     &lt;/body&gt;
+&lt;/html&gt;</pre> <p>b.html</p> <pre>&lt;html&gt;
+
+    &lt;head&gt;
+        &lt;title&gt;html compressor&lt;/title&gt;
+    &lt;/head&gt;
+
+     &lt;body&gt;
+           &lt;h1&gt;Hello World !&lt;/h1&gt;
+           &lt;h2&gt;Welcome !&lt;/h2&gt; 
+     &lt;/body&gt;
+&lt;/html&gt;</pre> <p>之前流程</p> <p>sitemesh 先合并 页面</p> <pre>&lt;html&gt;
+     &lt;head&gt;
+        &lt;title&gt;test - sitemesh&lt;/title&gt;
+     &lt;/head&gt;
+     &lt;body&gt;
+        &lt;h1&gt;Hello World !&lt;/h1&gt;
+        &lt;h2&gt;Welcome !&lt;h2&gt;
+     &lt;/body&gt;
+&lt;/html&gt;</pre> <p>html 压缩过滤器 在进行压缩</p> <pre>&lt;html&gt;
+     &lt;head&gt;
+        &lt;title&gt;test - sitemesh&lt;/title&gt;
+     &lt;/head&gt;
+     &lt;body&gt;
+        &lt;h1&gt;Hello World !&lt;/h1&gt;&lt;h2&gt;Welcome !&lt;h2&gt;
+     &lt;/body&gt;
+&lt;/html&gt;</pre> <p> </p> <p>只能压缩 b.jsp 中的内容 而且页面还必须是要访问 b.jsp 才可以</p> <p>第二种</p> <p>html 压缩过滤器 先压缩html</p> <p>a.jsp</p> <pre>&lt;html&gt;&lt;head&gt;&lt;title&gt;&lt;decorator:title default="test"/&gt; - sitemesh&lt;/title&gt;&lt;/head&gt;&lt;body&gt;&lt;decorator:body/&gt;&lt;/body&gt;&lt;/html&gt;</pre> <p>d.jsp</p> <pre>&lt;html&gt;&lt;head&gt;&lt;title&gt;html compressor&lt;/title&gt;&lt;/head&gt;&lt;body&gt;&lt;h1&gt;Hello World !&lt;/h1&gt;&lt;h2&gt;Welcome !&lt;/h2&gt;&lt;/body&gt;&lt;/html&gt;</pre> <p>之后 sitemesh 在合并</p> <pre>&lt;html&gt;&lt;head&gt;&lt;title&gt;html compressor - sitemesh&lt;/title&gt;&lt;/head&gt;&lt;body&gt;&lt;h1&gt;Hello World !&lt;/h1&gt;&lt;h2&gt;Welcome !&lt;/h2&gt;&lt;/body&gt;&lt;/html&gt;</pre> <p>这样 最终 所有的html代码都会被压缩</p> <p> </p> <p>-----</p> <p>修改后的web.xml 如下</p> <pre>     &lt;!-- html 压缩过滤器 --&gt;
+     &lt;filter&gt;
+         &lt;filter-name&gt;htmlCompressorFilter&lt;/filter-name&gt;
+         &lt;filter-class&gt;com.kunda.filter.HtmlCompressorFilter&lt;/filter-class&gt;
+     &lt;/filter&gt;
+     &lt;filter-mapping&gt;
+         &lt;filter-name&gt;htmlCompressorFilter&lt;/filter-name&gt;
+         &lt;url-pattern&gt;/*&lt;/url-pattern&gt; 
+     &lt;!--    &lt;url-pattern&gt;*.css&lt;/url-pattern&gt;
+         &lt;url-pattern&gt;*.htm&lt;/url-pattern&gt;
+          &lt;url-pattern&gt;*.html&lt;/url-pattern&gt;
+          &lt;url-pattern&gt;*.jsp&lt;/url-pattern&gt;
+         &lt;url-pattern&gt;*.do&lt;/url-pattern&gt;
+         &lt;url-pattern&gt;*.action&lt;/url-pattern&gt; --&gt;
+     &lt;/filter-mapping&gt;
+
+......
+
+    &lt;!-- 统一样式    sitemesh  --&gt;
+    &lt;filter&gt;
+        &lt;filter-name&gt;sitemesh&lt;/filter-name&gt;
+        &lt;filter-class&gt;com.opensymphony.module.sitemesh.filter.PageFilter&lt;/filter-class&gt;
+        &lt;!--&lt;filter-class&gt;org.sitemesh.config.ConfigurableSiteMeshFilter&lt;/filter-class&gt;--&gt;
+    &lt;/filter&gt;
+    &lt;filter-mapping&gt;
+        &lt;filter-name&gt;sitemesh&lt;/filter-name&gt;
+        &lt;url-pattern&gt;*.htm&lt;/url-pattern&gt;
+        &lt;url-pattern&gt;*.html&lt;/url-pattern&gt;
+        &lt;url-pattern&gt;*.do&lt;/url-pattern&gt;
+        &lt;url-pattern&gt;*.action&lt;/url-pattern&gt;
+        &lt;url-pattern&gt;*.jsp&lt;/url-pattern&gt;
+    &lt;/filter-mapping&gt;</pre> <p>这样 所有的页面都会被压缩</p> <p> </p> <p>不过又产生了一个问题 。。。。。</p> <p>因为项目中使用了 dwr 这个过滤器也顺便把dwr生成的js给压缩了 。。。</p> <p>导致 dwr 不能使用</p> <p>俩个解决办法</p> <p>一个是把dwr的配置拿到html压缩的配置上面</p> <p>一个是在 html压缩过滤其中 的url-pattern 设置压缩的后缀名 不要写js就不会被压缩</p> <pre>     &lt;!-- html 压缩过滤器 --&gt;
+     &lt;filter&gt;
+         &lt;filter-name&gt;htmlCompressorFilter&lt;/filter-name&gt;
+         &lt;filter-class&gt;com.kunda.filter.HtmlCompressorFilter&lt;/filter-class&gt;
+     &lt;/filter&gt;
+     &lt;filter-mapping&gt;
+         &lt;filter-name&gt;htmlCompressorFilter&lt;/filter-name&gt;
+&lt;!--          &lt;url-pattern&gt;/*&lt;/url-pattern&gt; --&gt;
+         &lt;url-pattern&gt;*.css&lt;/url-pattern&gt;
+         &lt;url-pattern&gt;*.htm&lt;/url-pattern&gt;
+          &lt;url-pattern&gt;*.html&lt;/url-pattern&gt;
+          &lt;url-pattern&gt;*.jsp&lt;/url-pattern&gt;
+         &lt;url-pattern&gt;*.do&lt;/url-pattern&gt;
+         &lt;url-pattern&gt;*.action&lt;/url-pattern&gt;
+     &lt;/filter-mapping&gt;</pre> <p>当然 我没看到自己写的js或者css被压缩 。。。。。。</p> <p> </p> <p>好了 html 压缩的配置就到这了 这样 也就会压缩html了 到前台的html代码就会被压缩成一行</p> <p>html被压缩的站点 最常见的是 google 了 google 的几乎所有页面都是被压缩过的</p> <p> </p> <p>这样 提高了效率 也减慢了效率</p> <p>提高的是浏览器解析的效率 减慢的是服务器的效率</p> <p>就像那篇文章中说的</p> <blockquote> <p> 和起初预想的一样，这个Filter出现了性能问题，使用大量的正则与替换文本影响到了性能。12kb的网页用了40ms才过滤完。</p> </blockquote> <p> </p> <p>服务器的压力会增大 有所的就有所失 。。。。。。</p> <p>只能想想 用其他的办法来优化这个问题了。</p> <p>试个人而选吧。</p> <p> </p> <p><a title="HtmlCompressor" href="http://pan.baidu.com/s/103jL6" target="_blank">HtmlCompressor.zip</a></p> <p>(这个也是在网上找到的 在哪忘了 目测 直接搜 htmlcompressor 就会搜到， 也是一片博文)</p> <p> </p> <p> </p> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/compressor">compressor</a></li> <li><a href="/tag/filter">filter</a></li> <li><a href="/tag/html">html</a></li> <li><a href="/tag/j2ee">j2ee</a></li> <li><a href="/tag/java">java</a></li> </ul> </footer> </article> <menu class="page"> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

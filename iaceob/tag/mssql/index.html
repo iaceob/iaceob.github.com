@@ -1,0 +1,192 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>mssql - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2015-12-24T22:18:01.000Z">December 24, 2015</time> <h1><a href="/post/original-interpretation-sql-group-by-with-rollup/">原文解讀 – SQL GROUP BY WITH ROLLUP</a></h1> </header> <section class="post-main"><p>现有表 test 如下数据:</p> <pre>continent           country                 sales
+------   -------  -----
+North America        Northwest            123237.00
+North America        Northwest             37534.00
+North America        Northwest             48003.00
+North America        Southwest            164232.00
+North America        Southeast             39667.00
+North America        Southeast            105810.00
+Europe               France                74569.00
+Europe               Germany               59456.00
+Pacific              Australia             93403.00
+Europe               United Kingdom        78327.00</pre> <p><strong>需求一: 统计出各洲各国的总销售额</strong></p> <p><em>分析: 总销售额采用 sum(sales) 来获取, 然后使用 group by 来将各个国家合并<br/> </em></p> <pre>select continent, country, sum(sales) as total from test group by continent, country</pre> <p>结果:</p> <pre>continent                country                 total
+------   ------   ------
+Europe               France                74569.00
+Europe               Germany               59456.00
+Europe               United Kingdom        78327.00
+North America        Northwest            208774.00
+North America        Southeast            145477.00
+North America        Southwest            164232.00
+Pacific              Australia             93403.00</pre> <p>满足需求.</p> <p> </p> <p><strong>需求二: 在需求一的基础上, 增加各洲的销售总额, 以及所有国家 (所有州)的销售总额</strong></p> <p><em>分析: 逐个分析, 在需求一中已分析出各国的销售总额, 在计算出各州 以及 所有国家的总销售额, 使用 union 连接</em></p> <pre>select continent, country, sum(sales) as total from test group by continent, country
+union
+
+select continent, null, total from (
+  select continent, sum(sales) as total from test group by continent
+) as cyj
+
+union
+select null, null, total from (
+  select sum(sales) as total from test
+) as ct</pre> <p>结果:</p> <pre>continent                country                 total
+-------  -------  -------
+Europe               France                74569.00
+Europe               Germany               59456.00
+Europe               United Kingdom        78327.00
+North America        Northwest            208774.00
+North America        Southeast            145477.00
+North America        Southwest            164232.00
+Pacific              Australia             93403.00
+Europe               &lt;null&gt;                 212352.00
+North America        &lt;null&gt;                 518483.00
+Pacific              &lt;null&gt;                  93403.00
+&lt;null&gt;                 &lt;null&gt;                 824238.00</pre> <p>满足需求.</p> <p> </p> <p>另一种方案, 也是本文介绍的方案 GROUP BY WITH ROLLUP</p> <pre>select continent, country, sum(sales) as total from test
+group by continent, country
+with rollup</pre> <p>结果</p> <pre>continent                country                 total
+-------  -------  -------
+Europe               France                74569.00
+Europe               Germany               59456.00
+Europe               United Kingdom        78327.00
+Europe               &lt;null&gt;                 212352.00
+North America        Northwest            208774.00
+North America        Southeast            145477.00
+North America        Southwest            164232.00
+North America        &lt;null&gt;                 518483.00
+Pacific              Australia             93403.00
+Pacific              &lt;null&gt;                  93403.00
+&lt;null&gt;                 &lt;null&gt;                 824238.00</pre> <p>满足需求.</p> <p>-</p> <p>到这里, 基本上本文算是完毕了. group by with rollup 其实做的就是上面和 union 出来的结果一样的工作, 只不过更简洁有力.</p> <p>原文中还介绍了 grouping 这么个函数, 这个函数的作用就是判断查询的字段是否是 with rollup 出来的结果, 如果是就返回 1 不是就返回 0, 这样就能够用 case when 来给这个 with rollup 出来的 null 赋予一个期望值, 或者其他操作, 实际上, 这是不必要的, 倒是可用用 grouping 单独做一个字段来供程序判断, 若要给 null 赋值的话, 可以使用 isnull(continent,’xxx’) 这种方式 (MySQL 是 ifnull) 即可. grouping 的使用方式就不写了, 直接去看原文吧.</p> <p> </p> <p> </p> <p>原文链接: http://sqlandme.com/2011/07/07/sql-server-tsql-group-by-with-rollup/</p> <p>测试: http://sqlfiddle.com/#!9/225c3/7</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/database">database</a></li> <li><a href="/tag/groupby">groupby</a></li> <li><a href="/tag/mssql">mssql</a></li> <li><a href="/tag/mysql">mysql</a></li> <li><a href="/tag/rollup">rollup</a></li> <li><a href="/tag/sql">sql</a></li> <li><a href="/tag/with">with</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-11-08T00:26:37.000Z">November 8, 2014</time> <h1><a href="/post/sql-full-join-and-union/">sql 中 full join 于 union</a></h1> </header> <section class="post-main"><p>在 sql 的众多的 join 中存在一个 full join</p> <p>full join 的作用是全关联, 也就是不管俩边的表数据书否被关联上, 都会被一起输出, 未被关联上的那行就是 null<br/> union 的作用是连接俩个/多个查询的结果<br/> 现有表如下</p> <pre>torder
+id  product   price_o    price_c  num   stat
+1   p1            3               3           5         1
+1   p2            41             43         3         1
+1   p3            23             26         1         2
+1   p4            10             15         12       2
+2   p5            20             16         1         2
+2   p6            43             45         4         3
+2   p7            60             65         1         2
+3   p2            55             54         3         2</pre> <p>现要查寻出所有订单的总金额, 当 stat 为 1 的时候取 price_o 的值, 其他状态都取 price_c 的值.</p> <p>总价的计算方式是数量*价格, 但是这里的条件中要求不同的状态取不同的价格,就无法直接计算, 需要先计算出不同状态下不同的总金额, 在相加得出总金额</p> <p>使用 full join 方式</p> <pre>select * from (
+    select  id, product, price_o, num from torder where stat=1
+) as j1 full join (
+    select id, product, price_c, num from torder where stat in (2,3)
+) as j2 on j1.product=j2.product
+</pre> <p>这样查询出来后的结果</p> <table border="1"> <tbody> <tr bgcolor="#CCCCFF"> <th>id</th> <th>product</th> <th>price_o</th> <th>num</th> <th>id</th> <th>product</th> <th>price_c</th> <th>num</th> </tr> <tr> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>1</td> <td>p3</td> <td>26</td> <td>1</td> </tr> <tr> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>1</td> <td>p4</td> <td>15</td> <td>12</td> </tr> <tr> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>2</td> <td>p5</td> <td>16</td> <td>1</td> </tr> <tr> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>2</td> <td>p6</td> <td>45</td> <td>4</td> </tr> <tr> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>2</td> <td>p7</td> <td>65</td> <td>1</td> </tr> <tr> <td>1</td> <td>p2</td> <td>41</td> <td>3</td> <td>3</td> <td>p2</td> <td>54</td> <td>3</td> </tr> <tr> <td>1</td> <td>p1</td> <td>3</td> <td>5</td> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> </tr> </tbody> </table> <p>订单1和3中有相同的p2商品, 被关联到了一起, 而其他没有被关联上的都填null了, 到这一步就可以进行计算了</p> <pre>select
+isnull(j1.product, j2.product) as product,
+isnull(j1.price_o, 0)*isnull(j1.num, 0) +isnull(j2.price_c, 0)*isnull(j2.num, 0) as money
+from (
+    select  id, product, price_o, num from torder where stat=1
+) as j1 full join (
+    select id, product, price_c, num from torder where stat in (2,3)
+) as j2 on j1.product=j2.product
+order by isnull(j1.product, j2.product)</pre> <table border="1"> <tbody> <tr bgcolor="#CCCCFF"> <th>product</th> <th>money</th> </tr> <tr> <td>p1</td> <td>15</td> </tr> <tr> <td>p2</td> <td>285</td> </tr> <tr> <td>p3</td> <td>26</td> </tr> <tr> <td>p4</td> <td>180</td> </tr> <tr> <td>p5</td> <td>16</td> </tr> <tr> <td>p6</td> <td>180</td> </tr> <tr> <td>p7</td> <td>65</td> </tr> </tbody> </table> <p>这一步首先判断是否为空, 左右表中价格和数量是null的全部填0, 然后计算数量*价格就是该商品的金额, 然后加俩个金额相加就是总金额了, 之后在进行一次sum就是所有订单的金额.</p> <p> </p> <p>使用 union 方式</p> <p>相对来说 union 方式会简单很多, 并没有 full join 这么复杂</p> <pre>select product, sum(money) as money from (
+    select product, num*price_o as money from torder where stat=1
+    union
+    select product, num*price_c as money from torder where stat in (2,3)
+) as j
+group by j.product
+order by j.product</pre> <table border="1"> <tbody> <tr bgcolor="#CCCCFF"> <th>product</th> <th>money</th> </tr> <tr> <td>p1</td> <td>15</td> </tr> <tr> <td>p2</td> <td>285</td> </tr> <tr> <td>p3</td> <td>26</td> </tr> <tr> <td>p4</td> <td>180</td> </tr> <tr> <td>p5</td> <td>16</td> </tr> <tr> <td>p6</td> <td>180</td> </tr> <tr> <td>p7</td> <td>65</td> </tr> </tbody> </table> <p>这样就能够实现不同状态取不同的值合并起来了.<br/> 去除 product 字段 sum(money) 就是所有订单总金额.</p> <p> </p> <p>--</p> <p>相对来说 union 写起来较 full join 要方便, 从直觉上判断 union 的效率也比 full join 要高. full join 会产生很多的冗余数据, 需要进行判断, 而 union 则不会.</p> <p>俩着也都有着不友好的地方,</p> <p>full join 相对书写叫麻烦, 另外 full join 在连续使用多次的时候会导致数据错误</p> <pre>select * fom a
+full join b on a.id=b.id
+full join c on a.id=c.id</pre> <p>这个时候 如果 a 的 id 在 b 中被关联到了 在 c 中没有被关联到(具体情况已忘), 最后可能会产生重复数据, 同理用 b 去关联 c 也是如此, 多个 full join 应该利用子查询来进行</p> <pre>select * from (
+select isnull(a.xx,b.xx).... from a
+full join b on a.id=b.id
+) as abj 
+full join c on abj.id=c.id</pre> <p>这样才可以避免俩边数据不对等所造成的重复, 数据不统一的问题</p> <p>而 union 在连接的时候很方便, 但是要对后续的处理很麻烦, 必须要在外部嵌套一个 select 把 union 当作子查询, 外部的 select 来操作这个查询后的表.</p> <p> </p> <p>解决问题的方式并不止一种, 试情况而待.</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/full-join">full join</a></li> <li><a href="/tag/join">join</a></li> <li><a href="/tag/mssql">mssql</a></li> <li><a href="/tag/sql">sql</a></li> <li><a href="/tag/union">union</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-02-23T22:21:23.000Z">February 23, 2014</time> <h1><a href="/post/solve-ubuntu-thinkphp-connect-mssql-chinese-distortion/">ubuntu thinkphp 连接 mssql 中文乱码解决</a></h1> </header> <section class="post-main"><p>thinkphp 版本 3.1.3</p> <p>sqlserver 默认编码是 gb2312 而php或者说thinkphp的默认编码是utf-8那么在数据库中查询出来的数据展示的时候将会乱码</p> <p>在 php.ini 中或者在 freetds.conf 中设置 编码都不能够解决乱码这个问题</p> <p>解决方法是在查询出结果后对数据进行转码</p> <p>找到 ThinkPHP/Lib/Core/Db.class.php</p> <p>在其中添加如下转码函数</p> <pre>public function iconv2utf8($Result) {
+    $Row = array();
+    $key1=array_keys($Result);
+    $key2 = array_keys($Result[$key1[0]]);
+    for($i=0;$i&lt;count($key1);$i++) {
+        for( $j=0; $j&lt;count( $key2 ); $j++ ) {
+            $Row[ $key1[ $i ] ][ $key2[ $j ] ] = iconv( 'gb2312', 'utf-8', $Result[ $key1[ $i ] ][ $key2[ $j ] ] );
+        }
+    }
+    return $Row;
+}</pre> <p>utf8 转 gbk</p> <pre>    public  function iconv2gbk($string) {
+        return iconv( 'utf-8','gb2312' ,$string );
+    }</pre> <p>之后找到 select 函数</p> <p>在</p> <pre>$result   = $this-&gt;query($sql,$this-&gt;parseBind(!empty($options['bind'])?$options['bind']:array()));</pre> <p>行下面添加</p> <pre>if ( C( 'DB_TYPE' ) == 'mssql' ) {
+    $result = self::iconv2utf8($result);
+}</pre> <p>对数据进行转码</p> <p>完整函数如下</p> <pre>    /**
+     * 查找记录
+     * @access public
+     * @param array $options 表达式
+     * @return mixed
+     */
+    public function select($options=array()) {
+        $this-&gt;model  =   $options['model'];
+        $sql    = $this-&gt;buildSelectSql($options);
+        $cache  =  isset($options['cache'])?$options['cache']:false;
+        if($cache) { // 查询缓存检测
+            $key    =  is_string($cache['key'])?$cache['key']:md5($sql);
+            $value  =  S($key,'',$cache);
+            if(false !== $value) {
+                return $value;
+            }
+        }
+        $result   = $this-&gt;query($sql,$this-&gt;parseBind(!empty($options['bind'])?$options['bind']:array()));
+        if ( C( 'DB_TYPE' ) == 'mssql' ) {
+            $result = self::iconv2utf8($result);
+        }
+        if($cache &amp;&amp; false !== $result ) { // 查询缓存写入
+            S($key,$result,$cache);
+        }
+        return $result;
+    }</pre> <p>插入 以及 更新数据乱码解决</p> <p>找到 parseSet 函数</p> <p>在 foreach 循环下添加</p> <pre>   if ( C( 'DB_TYPE' ) == 'mssql' ) {
+        $val = $this-&gt;iconv2gbk( $val );
+   }</pre> <p>完整代码如下:</p> <pre>    /**
+     * set分析
+     * @access protected
+     * @param array $data
+     * @return string
+     */
+    protected function parseSet($data) {
+        foreach ($data as $key=&gt;$val){
+            if ( C( 'DB_TYPE' ) == 'mssql' ) {
+                $val = $this-&gt;iconv2gbk( $val );
+            }
+            if(is_array($val) &amp;&amp; 'exp' == $val[0]){
+                $set[]  =   $this-&gt;parseKey($key).'='.$val[1];
+            }elseif(is_scalar($val) || is_null(($val))) { // 过滤非标量数据
+              if(C('DB_BIND_PARAM') &amp;&amp; 0 !== strpos($val,':')){
+                $name   =   md5($key);
+                $set[]  =   $this-&gt;parseKey($key).'=:'.$name;
+                $this-&gt;bindParam($name,$val);
+              }else{
+                $set[]  =   $this-&gt;parseKey($key).'='.$this-&gt;parseValue($val);
+              }
+            }
+        }
+        return ' SET '.implode(',',$set);
+    }</pre> <p>找到 insert 函数</p> <p>在 foreach 下添加</p> <pre>    if ( C( 'DB_TYPE' ) == 'mssql' ) {
+        $val = $this-&gt;iconv2gbk( $val );    
+    }</pre> <p>完整代码如下:</p> <pre>    /**
+     * 插入记录
+     * @access public
+     * @param mixed $data 数据
+     * @param array $options 参数表达式
+     * @param boolean $replace 是否replace
+     * @return false | integer
+     */
+    public function insert($data,$options=array(),$replace=false) {
+        $values  =  $fields    = array();
+        $this-&gt;model  =   $options['model'];
+        foreach ($data as $key=&gt;$val){
+            if ( C( 'DB_TYPE' ) == 'mssql' ) {
+                $val = $this-&gt;iconv2gbk( $val );    
+            }
+            if(is_array($val) &amp;&amp; 'exp' == $val[0]){
+                $fields[]   =  $this-&gt;parseKey($key);
+                $values[]   =  $val[1];
+            }elseif(is_scalar($val) || is_null(($val))) { // 过滤非标量数据
+              $fields[]   =  $this-&gt;parseKey($key);
+              if(C('DB_BIND_PARAM') &amp;&amp; 0 !== strpos($val,':')){
+                $name       =   md5($key);
+                $values[]   =   ':'.$name;
+                $this-&gt;bindParam($name,$val);
+              }else{
+                $values[]   =  $this-&gt;parseValue($val);
+              }                
+            }
+        }
+        $sql   =  ($replace?'REPLACE':'INSERT').' INTO '.$this-&gt;parseTable($options['table']).' ('.implode(',', $fields).') VALUES ('.implode(',', $values).')';
+        $sql   .= $this-&gt;parseLock(isset($options['lock'])?$options['lock']:false);
+        $sql   .= $this-&gt;parseComment(!empty($options['comment'])?$options['comment']:'');
+        return $this-&gt;execute($sql,$this-&gt;parseBind(!empty($options['bind'])?$options['bind']:array()));
+    }</pre> <p>做完这些 基本上和mssql交互就不会乱码了</p> <p>当然 如果怕动了那源码导致查询出现问题 可以将原Db.class.php 改名为 DbSrc.class.php 并且 修改 class 为</p> <pre>class DbSrc { ... }</pre> <p>然后新建个名为 Db.class.php 的文件 继承 DbSrc 将上述的几个函数放进去就可以了</p> <p>但是效率。。。</p> <p>坑爹。。</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/freetds">freetds</a></li> <li><a href="/tag/mssql">mssql</a></li> <li><a href="/tag/php">php</a></li> <li><a href="/tag/thinkphp">thinkphp</a></li> <li><a href="/tag/ubuntu">ubuntu</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-02-23T19:17:14.000Z">February 23, 2014</time> <h1><a href="/post/ubuntu-php-connect-mssql/">ubuntu php 连接 mssql</a></h1> </header> <section class="post-main"><p>ubuntu 中使用 php 连接 mssql</p> <pre>sudo apt-get install libsybdb5 freetds-common php5-sybase
+
+sudo service apache2 restart</pre> <p>安装完成后重启apache然后查看 phpinfo 中是否有 mssql</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/freetds">freetds</a></li> <li><a href="/tag/mssql">mssql</a></li> <li><a href="/tag/php">php</a></li> <li><a href="/tag/sqlserver">sqlserver</a></li> <li><a href="/tag/ubuntu">ubuntu</a></li> </ul> </footer> </article> <menu class="page"> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

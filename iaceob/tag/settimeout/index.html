@@ -1,0 +1,39 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>setTimeout - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2013-11-21T22:22:27.000Z">November 21, 2013</time> <h1><a href="/post/javascript-useless-settimeout-call-xxxxxxxxx/">useless setTimeout call(xxxxxxxxx ?)</a></h1> </header> <section class="post-main"><p>在js中使用了 setTimeout 定时执行函数，在frirefox中测试弹出了如下错误</p> <pre>useless setTimeout call (missing quotes around argument?)</pre> <p>函数如下</p> <pre>/***
+ * 
+ * 指定时间跳转到制定页面 时间缺省为0
+ * @param url 跳转页面
+ * @param time 等待时间
+ */
+function goUrl(url, time) {
+	var newTime;
+	if (null==time||''==time) newTime = 0; else newTime= time*1000;
+	window.setTimeout(doGoUrl(url), newTime);
+}
+
+/**
+ * 
+ * 执行跳转页面
+ * @param url 跳转的页面
+ */
+function doGoUrl(url) {
+	window.location.href=url;
+}</pre> <p>将 setTimeout 的第一个参数 执行的函数 function 包起来<br/> 修改如下</p> <pre>/***
+ * 
+ * 指定时间跳转到制定页面 时间缺省为0
+ * @param url 跳转页面
+ * @param time 等待时间
+ */
+function goUrl(url, time) {
+	var newTime;
+	if (null==time||''==time) newTime = 0; else newTime= time*1000;
+	window.setTimeout(function(){ doGoUrl(url); }, newTime);
+}
+
+/**
+ * 
+ * 执行跳转页面
+ * @param url 跳转的页面
+ */
+function doGoUrl(url) {
+	window.location.href=url;
+}</pre> <p><code>window.setTimeout(function(){ doGoUrl(url); }, newTime);</code></p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/settimeout">setTimeout</a></li> </ul> </footer> </article> <menu class="page"> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

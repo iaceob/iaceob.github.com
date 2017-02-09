@@ -1,0 +1,257 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>生物烯丙菊 - 达文西手电筒 - 第 6 頁</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2014-02-11T10:38:56.000Z">February 11, 2014</time> <h1><a href="/post/about-write-html/">html 书写相关</a></h1> </header> <section class="post-main"><p>关于html的书写</p> <p>html代码简写法：Emmet和Haml</p> <p>http://www.ruanyifeng.com/blog/2013/06/emmet_and_haml.html</p> <p>html 书写工具 ( Brackets )</p> <p>http://brackets.io/</p> <p>emmet 书写方式编辑器插件</p> <p>http://emmet.io/download/</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/brackets">brackets</a></li> <li><a href="/tag/html">html</a></li> <li><a href="/tag/ideemmet">ideemmet</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-02-04T09:43:53.000Z">February 4, 2014</time> <h1><a href="/post/jquery-top-msg-plugin-message-tip/">jquery top msg 消息提示插件</a></h1> </header> <section class="post-main"><p>一直为页面错误提示纠结，若是在顶部用一个固定的元素中放置错误消息，当页面一长，超出了一屏那错误消息就不能显示了，之前使用bootstrap样式的时候用过sco.js这个插件，可以在顶部弹出消息做到很好的效果，但是现在没用bootcss了这个插件直接放过来就不能用了。然后就根据 sco.message.js 另外找了些资料手写了个。</p> <p> </p> <p>使用方式：</p> <p>首先引入jquery</p> <p>引入 jquery.topmsg.js</p> <pre>&lt;script src="jquery.topmsg.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+$.top_msg( 'message content', $.top_msg.TYPE_OK, {close: 'click'} );
+&lt;/script&gt;</pre> <p>使用 $.top_msg 便可以弹出提示框</p> <p>$.top_msg 有3个参数</p> <p>arg1: 提示内容</p> <p>arg2: 消息类型提供选择的有俩中 <code>$.top_msg.TYPE_OK</code> 和 <code>$.top_msg.TYPE_ERROR</code> 分别表示正确消息和错误消息，区别在于正确消息背景为绿色错误消息背景为红色，也可以使用 boolean 值或数字代替</p> <p>$.top_msg.TYPE_OK == true == 1</p> <p>$.top_msg.TYPE_ERROR == false == 0</p> <p>arg3: 当类型不能满足提示需求的时候或者需要更多的定制性则可以使用第三个参数，对默认的配置覆盖，供修改的项目如下</p> <pre>    background: '#de4343', // 背景色
+    bordercolor: '#fff', // 边框色 // 默认大小1px根据需要修改
+    color: '#000', // 文字颜色
+    height: 70, // 提示框高度
+    fontsize: 20, // 文字大小
+    close: 3000, // 关闭时间 [ms]
+    click: false, // 是否点击关闭 默认false
+    domid: 'JQ_TOP_MSG', // 提示框id</pre> <p>实例：</p> <p>{color: ‘red’, close: 3000} // 提示文字红色 3秒钟消失</p> <p>{fontsize: 12} // 提示文字12px</p> <p>{height: 50} // 提示框高度50px</p> <p>当同时设置了 close 时间 和 click true 那么close的时间是无效的只有点击才会消失</p> <p>代码：</p> <p>https://github.com/iaceob/topmsg</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/jquery">jquery</a></li> <li><a href="/tag/message">message</a></li> <li><a href="/tag/top">top</a></li> <li><a href="/tag/top_msg">top_msg</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-02-02T08:58:26.000Z">February 2, 2014</time> <h1><a href="/post/install-and-setting-redis-with-php/">安装和配置 redis ( php)</a></h1> </header> <section class="post-main"><p>ubuntu 安装 redis</p> <p>redis 网站 http://redis.io</p> <p>基本的安装步骤 下载页面中以说明</p> <p>这里记录下启动方式</p> <p> </p> <p>拷贝文件到指定文件夹：</p> <pre>~$ cp redis-cli /usr/bin/</pre> <p>具体路径根据自己的安装包决定</p> <pre>~$ sudo gedit /usr/share/applications/redis.desktop</pre> <pre>[Desktop Entry]
+Version=2.8.4
+Name=Redis
+GenericName=Database
+
+Exec=/opt/redis/src/redis-server
+Terminal=false
+Icon=/opt/redis/redis_logo.png
+Type=Application
+Categories=Development;Database</pre> <p>添加 redis 托盘启动</p> <p>======</p> <p>完成后启动 redis 在托盘找到 redis 服务 点击后 redis 就启动了</p> <p>然后使用 redis-cli 链接服务</p> <p>图片</p> <p><img alt="redis logo" src="http://developer.rackspace.com/images/2013-04-29-speed-up-with-redis/redis_logo.png"/></p> <p> </p> <p> </p> <p>php配置redis</p> <p> </p> <ul> <li title="Redis详细完整教程-windows下的安装、测试(php+redis+mysql)">http://www.crazyant.net/611.html</li> <li title=" PHP中redis 的安装和使用(2) ">http://blog.csdn.net/think2me/article/details/8226606</li> </ul> <p> </p> <p> </p> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/database">database</a></li> <li><a href="/tag/db">db</a></li> <li><a href="/tag/php">php</a></li> <li><a href="/tag/redis">redis</a></li> <li><a href="/tag/ubuntu">ubuntu</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-02-02T07:02:58.000Z">February 2, 2014</time> <h1><a href="/post/moving-to-openshift/">搬家到openshift</a></h1> </header> <section class="post-main"><p>墙是硬伤</p> <p>算了</p> <p>不用自己机器单机了。。。</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/undefined">undefined</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-02-02T06:43:41.000Z">February 2, 2014</time> <h1><a href="/post/hello-world-4/">Hello world!</a></h1> </header> <section class="post-main"><p>Welcome to WordPress. This is your first post. Edit or delete it, then start blogging!</p></section> <footer class="post-foot"> <ul class="post-tags"> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-01-28T08:51:33.000Z">January 28, 2014</time> <h1><a href="/post/hello-world-4-2/">Hello world!</a></h1> </header> <section class="post-main"><p>Welcome to WordPress. This is your first post. Edit or delete it, then start blogging!</p></section> <footer class="post-foot"> <ul class="post-tags"> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-01-24T22:08:16.000Z">January 24, 2014</time> <h1><a href="/post/long-time/">多长时间了这是 = =</a></h1> </header> <section class="post-main"><p>时隔这多长时间了 = =</p> <p>都没根新文章了</p> <p>ubuntu13.10超蛋疼</p> <p>特别是从13.04升级过去的。。。。</p> <p>apache不能用。。</p> <p>输入法蛋疼</p> <p>好吧</p> <p>先这样。。</p> <p> </p> <p>还有 initboot 还在写 这项目伤的也不清 第三遍了</p> <p> </p> <p>要回家了！！！！！！</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/undefined">undefined</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-12-23T07:28:35.000Z">December 23, 2013</time> <h1><a href="/post/javascript-to-unicode/">javascript to unicode</a></h1> </header> <section class="post-main"><p>to unicode</p> <pre>
+&lt;script&gt;
+     test = "撰写新文章"
+     str = ""
+     for( i=0;    i&lt;test.length; i++ ) {
+      temp = test.charCodeAt(i).toString(16);
+      str    += "u"+ new Array(5-String(temp).length).join("0") +temp;
+     }
+     document.write (str)
+&lt;/script&gt;</pre></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/unicode">unicode</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-12-21T06:13:56.000Z">December 21, 2013</time> <h1><a href="/post/wordpress-json-api/">wordpress json api</a></h1> </header> <section class="post-main"><p>initboot 2.0 已经开工了</p> <p>完全抛弃了1.0所有的逻辑，也并未按照大多wordpress模板遍历文章，而是全站使用json进行ajax展示文章</p> <p>initboot 2.0 依赖插件 JSON API 可以在 wordpress 插件库找到</p> <p>这里先记录下 json api 的使用：</p> <p>默认安装了json api插件 可以访问</p> <p>http://hostname/api/info</p> <p>查看json api的信息(后面这个api是可以修改的在设置-&gt;json api，需要开启php urlwriter)</p> <p>另外还有使用get参数方式(隐式模式)</p> <p>http://hostname/?json=1</p> <p>可以让当前页/文章用 JSON 格式输出</p> <p>例如：</p> <ul> <li>http://hostname/?json=1</li> <li>http://hostname/?p=47&amp;json=1</li> <li>http://hostname/tag/banana/?json=1</li> </ul> <p> </p> <ul> <li>最近的文章 http://hostname/?json=get_recent_posts</li> <li>取回 ID = 47 的文章 http://hostname/?json=get_post&amp;post_id=47</li> <li>取回 tag = banana 的文章 http://hostname/?json=get_tag_posts&amp;tag_slug=banana</li> </ul> <p>链接 http://hostname/?json=1 返回的json如下方</p> <pre>    {
+      "status": "ok",
+      "count": 1,
+      "count_total": 1,
+      "pages": 1,
+      "posts": [
+        {
+          "id": 1,
+          "type": "post",
+          "slug": "hello-world",
+          "url": "http://localhost/wordpress/?p=1",
+          "title": "Hello world!",
+          "title_plain": "Hello world!",
+          "content": "&lt;p&gt;Welcome to WordPress. This is your first post. Edit or delete it, then start blogging!&lt;/p&gt;n",
+          "excerpt": "Welcome to WordPress. This is your first post. Edit or delete it, then start blogging!n",
+          "date": "2009-11-11 12:50:19",
+          "modified": "2009-11-11 12:50:19",
+          "categories": [],
+          "tags": [],
+          "author": {
+            "id": 1,
+            "slug": "admin",
+            "name": "admin",
+            "first_name": "",
+            "last_name": "",
+            "nickname": "",
+            "url": "",
+            "description": ""
+          },
+          "comments": [
+            {
+              "id": 1,
+              "name": "Mr WordPress",
+              "url": "http://wordpress.org/",
+              "date": "2009-11-11 12:50:19",
+              "content": "&lt;p&gt;Hi, this is a comment.&amp;ltbr /&gt;To delete a comment, just log in and view the post's comments. There you will have the option to edit or delete them.&lt;/p&gt;n",
+              "parent": 0
+            }
+          ],
+          "comment_count": 1,
+          "comment_status": "open"
+        }
+      ]
+    }</pre> <p>count count_total pages<br/> 返回了 1 篇文章，目前显示 1 篇，一共有 1 页</p> <p>一些参数信息：</p> <h2>get_posts</h2> <p>可选参数</p> <p>count 每页显示的文章数量</p> <p>page 当前页码</p> <p>post_type 文章类型(....)</p> <p>获取文章列表 默认每页10篇文章</p> <pre>    http://hostname/?json=get_posts&amp;count=1&amp;page=2&amp;post_type=post
+
+    {
+      "status": "ok",
+      "count": 1,
+      "posts": [
+        { ... }
+      ]
+    }</pre> <h2>get_recent_posts</h2> <p>与 get_posts 相同</p> <h2>get_post</h2> <p>下面俩个参数必须要有一个</p> <p>id 或者 post_id 设置文章id</p> <p>slug 或者 post_slug 设置文章固定链接</p> <p>可选参数</p> <p>post_type 文章类型</p> <p>返回指定id或者指定url的文章 (url 为固定链接)</p> <pre>    http://hostname/?json=get_post&amp;id=10
+
+http://hostname/?json=get_post&amp;post_id=10
+
+
+http://hostname/?json=get_post&amp;slug=wordpress-json-api
+
+
+http://hostname/?json=get_post&amp;post_slug=wordpress-json-api
+
+    {
+      "status": "ok",
+      "post": { ... }
+    }</pre> <h2>get_page</h2> <p>同 get_psot 作用相同 返回单一的文章内容</p> <p>多了一个可选参数 children ...</p> <pre>    http://hostname/?json=get_page&amp;id=10
+
+http://hostname/?json=get_page&amp;page_id=10
+
+
+http://hostname/?json=get_page&amp;slug=wordpress-json-api
+
+
+http://hostname/?json=get_page&amp;post_slug=wordpress-json-api
+
+    {
+      "status": "ok",
+      "post": { ... }
+    }</pre> <h2>get_date_posts</h2> <p>返回指定日期文章 默认显示10篇文章</p> <p>data 必填参数 指定日期 日期格式 yyyy-mm-dd yyyymmdd yyyy/mm/dd yyyy-mm 都是可行的还有其他方式</p> <p>可选参数</p> <p>count</p> <p>page</p> <p>post_type</p> <pre>    http://hostname/?json=get_date_posts&amp;date=2013/05
+
+http://hostname/?json=get_date_posts&amp;date=2013-05
+
+
+http://hostname/?json=get_date_posts&amp;date=201305
+
+    {
+      "status": "ok",
+      "count": 10,
+      "count_total": 79,
+      "pages": 7,
+      "posts": [
+        { ... },
+        { ... },
+        ...
+      ]
+    }</pre> <h2>get_category_posts</h2> <p>返回指定分类文章</p> <p>比选参数(其一)</p> <p>id 或者 category_id 设置分类id</p> <p>slug 或者 category_slug 设置分类固定链接</p> <p>可选参数</p> <p>count</p> <p>page</p> <p>post_type</p> <pre>    http://hostname/?json=get_category_posts&amp;id=1
+
+http://hostname/?json=get_category_posts&amp;category_id=1
+
+
+http://hostname/?json=get_category_posts&amp;slug=wordpress
+
+
+http://hostname/?json=get_category_posts&amp;category_slug=wordpress
+
+    {
+      "status": "ok",
+      "count": 10,
+      "count_total": 79,
+      "pages": 7,
+      "category": { ... }
+      "posts": [
+        { ... },
+        { ... },
+        ...
+      ]
+    }</pre> <h2>get_tag_posts</h2> <p>返回指定标签文章</p> <p>比选参数(其一)</p> <p>id 或者 tag_id 设置分类id</p> <p>slug 或者 tag_slug 设置标签固定链接</p> <p>可选参数</p> <p>count</p> <p>page</p> <p>post_type</p> <pre>    http://localhost/app/wordpress/?json=get_category_posts&amp;id=1
+
+http://hostname/?json=get_category_posts&amp;tag_id=1
+
+
+http://hostname/?json=get_category_posts&amp;slug=wordpress
+
+
+http://hostname/?json=get_category_posts&amp;tag_slug=wordpress
+
+    {
+      "status": "ok",
+      "count": 10,
+      "count_total": 79,
+      "pages": 7,
+      "tag": { ... }
+      "posts": [
+        { ... },
+        { ... },
+        ...
+      ]
+    }</pre> <h2>get_author_posts</h2> <p>返回指定用户文章</p> <p>比选参数(其一)</p> <p>id 或者 author_id 设置分类id</p> <p>slug 或者 author_slug 设置用户名</p> <p>可选参数</p> <p>count</p> <p>page</p> <p>post_type</p> <pre>    http://localhost/app/wordpress/?json=get_category_posts&amp;id=1
+
+http://hostname/?json=get_category_posts&amp;author_id=1
+
+
+http://hostname/?json=get_category_posts&amp;slug=username
+
+
+http://hostname/?json=get_category_posts&amp;author_slug=username
+
+    {
+      "status": "ok",
+      "count": 10,
+      "count_total": 79,
+      "pages": 7,
+      "author": { ... }
+      "posts": [
+        { ... },
+        { ... },
+        ...
+      ]
+    }</pre> <h2>get_search_results</h2> <p>然会搜索结果</p> <p>search 必填参数 搜索内容</p> <p>可选参数</p> <p>count</p> <p>page</p> <p>post_type</p> <pre>    http://hostname/?json=get_search_results&amp;search=wordpress
+    {
+      "status": "ok",
+      "count": 10,
+      "count_total": 79,
+      "pages": 7,
+      "posts": [
+        { ... },
+        { ... },
+        ...
+      ]
+    }</pre> <h2>get_date_index</h2> <p>返回日期归档</p> <pre>    {
+      "status": "ok",
+      "permalinks": [
+        "...",
+        "...",
+        "..."
+      ],
+      "tree": {
+        "2009": {
+          "09": 17,
+          "10": 20,
+          "11": 7
+        }
+      }</pre> <p>返回的数据结构是 response.tree.[year].[month].[number of posts]</p> <h2>get_category_index</h2> <p>返回分类目录</p> <p>可选参数</p> <p>parent 子目录 如果填写了该参数 那么返回的值是 当前这个目录包括所有子目录的结果<br/> 比如目录</p> <pre>/--+
+   |--web(id:1)
+       |--html
+       |--css
+   |--os(id:2)
+       |--windows
+       |--liunx
+   |--app(id:3)</pre> <p>那么没有parent参数 所有的分类都会返回 如果 parent=1 只返回 web html css 三个目录</p> <pre>    http://hostname/?json=get_category_index
+
+http://hostname/?json=get_category_index&amp;parent=13
+
+    {
+      "status": "ok",
+      "count": 3,
+      "categories": [
+        { ... },
+        { ... },
+        { ... }
+      ]
+    }</pre> <h2>get_tag_index</h2> <p>返回所有标签数据</p> <pre>    {
+      "status": "ok",
+      "count": 3
+      "tags": [
+        { ... },
+        { ... },
+        { ... }
+      ]
+    }</pre> <h2>get_author_index</h2> <p>返回所有用户数据</p> <pre>    {
+      "status": "ok",
+      "count": 3,
+      "authors": [
+        { ... },
+        { ... },
+        { ... }
+      ]
+    }</pre> <h2>get_page_index</h2> <p>.......</p> <pre>    {
+      "status": "ok",
+      "pages": [
+        { ... },
+        { ... },
+        { ... }
+      ]
+    }</pre> <h2>get_nonce</h2> <p>Returns a WordPress nonce value, required to call some data manipulation methods.</p> <p>必须有这俩个参数。。。</p> <p>controller - the JSON API controller for the method you will use the nonce for<br/> method` - the method you wish to call (currently `create_post` is the only method that requires a nonce)</p> <pre>    {
+      "status": "ok",
+      "controller": "posts",
+      "method": "create_post",
+      "nonce": "cefe01efd4"
+    }</pre> <h2>submit_comment</h2> <p>提交评论</p> <p>必须参数</p> <p>post_id 文章id<br/> name 评论人姓名<br/> email 评论人邮箱<br/> content 评论内容</p> <p>选则参数<br/> redirect 重定向<br/> redirect_ok 重定向成功 url 地址<br/> redirect_error 重定向失败url地址<br/> redirect_pending 重定向指定地址</p> <h2>get_sidebar</h2> <p>返回侧栏小工具</p> <p>sidebar_id 必须参数 小工具id</p> <p> </p> <p>========</p> <p>callback</p> <p>http://hostname/api/get_recent_posts/?callback=show_posts_widget&amp;read_more=More&amp;count=3</p> <p>http://hostname/?get_recent_posts&amp;callback=show_posts_widget&amp;read_more=More&amp;count=3</p> <p>返回近期文章放入到 show_posts_widget 输出 JSONP</p> <p>http://hostname/api/posts/create_post/?callback_error=http%3A%2F%2Fwww.example.org%2Fhelp.html</p> <p>指定操作失败跳转的页面</p> <p> </p> <p>=======</p> <pre>id, type, slug, url, title, title_plain, content, excerpt, date, modified, categories, tags, author, comments, attachments, comment_count, comment_status, thumnail, custom_fields....</pre> <p>可以用 include 或者 exclude 这些请求参数来限制一下返回的资料。究竟什么内容能 inlcude 或者 exclude，可以查看<a href="http://wordpress.org/plugins/json-api/other_notes/#4.1.-Post-response-object" target="_blank">插件官方文件 - 响应对象</a></p> <pre>http://hostname/?json=get_recent_posts/?include=title,url</pre> <p> </p> <p> </p> <p>有点乱。。。</p> <p>不过大概这么些内容</p> <p>详细的内容 下载插件 查看 readme.txt 文档</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/initboot">initboot</a></li> <li><a href="/tag/json">json</a></li> <li><a href="/tag/json-api">json-api</a></li> <li><a href="/tag/wordpress">wordpress</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-12-20T10:59:12.000Z">December 20, 2013</time> <h1><a href="/post/easing-functions/">Easing Functions</a></h1> </header> <section class="post-main"><p> </p> <p>缓动函数指定动画效果在执行时的速度，使其看起来更加真实。</p> <p>现实物体照着一定节奏移动，并不是一开始就移动很快的。当我们打开抽屉时，首先会让它加速，然后慢下来。当某个东西往下掉时，首先是越掉越快，撞到地上后回弹，最终才又碰触地板。</p> <p>本页可以在每次你需要时，帮助你找到想要的缓动函数。</p> <p> </p> <ul> <li>http://easings.net/zh-cn</li> </ul></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/easing">easing</a></li> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/jquery">jquery</a></li> </ul> </footer> </article> <menu class="page"> <li class="page-prev"> <a href="/page/5" title="Previous">Prev</a> </li> <li class="page-next"> <a href="/page/7" title="Next">Next</a> </li> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

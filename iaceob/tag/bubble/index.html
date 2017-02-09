@@ -1,0 +1,113 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>bubble - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2013-12-12T14:11:34.000Z">December 12, 2013</time> <h1><a href="/post/java-direct-insertion-bubble-sort-algorithm-etc/">Java 直接插入、冒泡 等 排序算法</a></h1> </header> <section class="post-main"><p>排序算法</p> <pre> 希尔排序：
+public class shellSort {  
+public  shellSort(){  
+    int a[]={1,54,6,3,78,34,12,45,56,100};  
+    double d1=a.length;  
+    int temp=0;  
+    while(true){  
+        d1= Math.ceil(d1/2);  
+        int d=(int) d1;  
+        for(int x=0;x&lt;d;x++){  
+            for(int i=x+d;i&lt;a.length;i+=d){  
+                int j=i-d;  
+                temp=a[i];  
+                for(;j&gt;=0&amp;&amp;temp&lt;a[j];j-=d){  
+                a[j+d]=a[j];  
+                }  
+                a[j+d]=temp;  
+            }  
+        }  
+        if(d==1)  
+            break;  
+    }  
+    for(int i=0;i&lt;a.length;i++)  
+        System.out.println(a[i]);  
+}  
+}  
+
+/******************************************************************/
+简单选择排序:
+public class selectSort {  
+    public selectSort(){  
+        int a[]={1,54,6,3,78,34,12,45};  
+        int position=0;  
+        for(int i=0;i&lt;a.length;i++){  
+
+            int j=i+1;  
+            position=i;  
+            int temp=a[i];  
+            for(;j&lt;a.length;j++){  
+            if(a[j]&lt;temp){  
+                temp=a[j];  
+                position=j;  
+            }  
+            }  
+            a[position]=a[i];  
+            a[i]=temp;  
+        }  
+        for(int i=0;i&lt;a.length;i++)  
+            System.out.println(a[i]);  
+    }  
+}  
+
+/*****************************************************************/
+堆排序 :
+import java.util.Arrays;  
+
+public class HeapSort {  
+     int a[]={49,38,65,97,76,13,27,49,78,34,12,64,5,4,62,99,98,54,56,17,18,23,34,15,35,25,53,51};  
+    public  HeapSort(){  
+        heapSort(a);  
+    }  
+    public  void heapSort(int[] a){  
+        System.out.println("开始排序");  
+        int arrayLength=a.length;  
+        //循环建堆  
+        for(int i=0;i= 0;i--){  
+            //k保存正在判断的节点  
+            int k=i;  
+            //如果当前k节点的子节点存在  
+            while(k*2+1&lt;=lastIndex){  
+                //k节点的左子节点的索引  
+                int biggerIndex=2*k+1;  
+                //如果biggerIndex小于lastIndex，即biggerIndex+1代表的k节点的右子节点存在  
+                if(biggerIndex &lt; lastIndex){  
+                    //若果右子节点的值较大  
+                    if(data[biggerIndex] &lt; data[biggerIndex+1]){  
+                        //biggerIndex总是记录较大子节点的索引  
+                        biggerIndex++;  
+                    }  
+                }  
+                //如果k节点的值小于其较大的子节点的值  
+                if(data[k] &lt; data[biggerIndex]){  
+                    //交换他们  
+                    swap(data,k,biggerIndex);  
+                    //将biggerIndex赋予k，开始while循环的下一次循环，重新保证k节点的值大于其左右子节点的值  
+                    k=biggerIndex;  
+                }else{  
+                    break;  
+                }  
+            }
+                }
+        }
+}
+
+/**************************************************************************/
+冒泡排序:
+public class bubbleSort {  
+public  bubbleSort(){  
+     int a[]={49,38,65,97,76,13,27,49,78,34,12,64,5,4,62,99,98,54,56,17,18,23,34,15,35,25,53,51};  
+    int temp=0;  
+    for(int i=0;i&lt;a.length-1;i++){  
+        for(int j=0;j&lt;a.length-1-i;j++){  
+        if(a[j]&gt;a[j+1]){  
+            temp=a[j];  
+            a[j]=a[j+1];  
+            a[j+1]=temp;  
+        }  
+        }  
+    }  
+    for(int i=0;i&lt;a.length;i++)  
+    System.out.println(a[i]);     
+}  
+}</pre> <ul> <li> <p title="Java 语言实现的直接插入、冒泡等几个经典排序算法">http://www.oschina.net/code/snippet_1262919_26838</p> </li> </ul></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/algorithm">algorithm</a></li> <li><a href="/tag/bubble">bubble</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/sort">sort</a></li> </ul> </footer> </article> <menu class="page"> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

@@ -1,0 +1,29 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>apply - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2015-04-15T15:25:41.000Z">April 15, 2015</time> <h1><a href="/post/javascript-call-apply/">javascript call apply</a></h1> </header> <section class="post-main"><p>javascript 中 call 于 apply 都作用都是去调用某个函数, 区别在于 call 在调用的时候参数是需要一一带入, 而 apply 只需要传递一个参数数组即可, 同时 apply 也可以将 arguments 作为参数传递给将调用的方法</p> <pre>fun1.call(fun2, 'a', 'b', 'c')
+fun1.apply(func2, ['a', 'b', 'c'])</pre> <p>例如如下用法</p> <pre>(function(){
+
+  function test(){};
+  
+  function a(){
+    // 当执行 a 的时候, 调用 a2 函数并将当前函数的 arguments 传递于 a2 
+    a2.apply(this, arguments);
+  };
+  
+  function a2(){
+    console.log(arguments);
+  };
+
+  kit.prototype = {
+    a: a,
+    a2: a2
+  }
+  window.k = new test();
+})();
+
+k.a(1111, 3,22)</pre> <p>如果是使用 call 调用</p> <pre>a2.call(this, arguments[0], arguments[1], ..);</pre> <p>apply 可以以数组的方式传参, 因此也可以继续对 arguments 进行封装, 供 a2 使用.</p> <pre>function a(){
+ var para = [];
+ for(var i=0; i&lt;arguments.length; i++) para.push(arguments[i]);
+ para.push(1);
+ para.push(true);
+ //...
+ a2.apply(this, para);
+};</pre> <p>a2 就可以根据这些不同的参数进行不同的逻辑处理.</p> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/apply">apply</a></li> <li><a href="/tag/arguments">arguments</a></li> <li><a href="/tag/call">call</a></li> <li><a href="/tag/javascript">javascript</a></li> </ul> </footer> </article> <menu class="page"> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

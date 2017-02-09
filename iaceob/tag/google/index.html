@@ -1,0 +1,35 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>google - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2014-11-22T21:44:08.000Z">November 22, 2014</time> <h1><a href="/post/wordpress-disabled-google-fonts/">wordpress 禁用 google 字体</a></h1> </header> <section class="post-main"><p>我大天朝把 google 给封了, 然后打开各种慢= =.</p> <p>基本上都打不开, 还是把 google 字体给封了吧... 万恶的 GFW .</p> <p>各种折腾, 还把 twentyfourteen 给玩坏了 = =</p> <p>封印方式:</p> <p>在模板函数文件中追加如下内容</p> <pre>add_filter('gettext_with_context', 'disable_open_sans', 888, 4 );
+function disable_open_sans( $translations, $text, $context, $domain ) {
+    if ( 'Open Sans font: on or off' == $context &amp;&amp; 'on' == $text ) $translations = 'off';
+    return $translations;
+}</pre> <p>去除后可以在模板的样式文件中修改字体.</p> <p>要不改天还是把之前那模板给写起来吧.</p> <p>另外 google 的统计代码也是如此</p> <p>不可以将统计代码放在 head 中, 一被墙 整站都打不开了.</p> <p>虽然放在底部也并不能完全解决问题, 但总比放头部阻止页面渲染的要好.</p> <p>祝病魔早日战胜方校长!!!</p> <p>- 2014-12-17</p> <p>更新补, 在functions.php中添加如下函数禁止 Twenty Fourteen 模板google字体</p> <pre>// Remove Lato Font
+function qot_dequeue_fonts() {
+wp_dequeue_style( 'twentyfourteen-lato' );
+}
+add_action( 'wp_enqueue_scripts', 'qot_dequeue_fonts', 11 );</pre> <p>多提交几次</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/fonts">fonts</a></li> <li><a href="/tag/google">google</a></li> <li><a href="/tag/twentyfourteen">TwentyFourteen</a></li> <li><a href="/tag/wordpress">wordpress</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-12-04T19:17:38.000Z">December 4, 2013</time> <h1><a href="/post/ubuntu-goagent/">阿根廷 。。。。。</a></h1> </header> <section class="post-main"><p>goagent</p> <p>https://code.google.com/p/goagent</p> <p>下载aoagent解压到 /opt</p> <pre>~$ sudo unzip ~/download/goagent-goagent-v3.0.8-61-g1246c9c.zip -D /opt</pre> <p>https://developers.google.com/appengine/downloads</p> <p>下载 <code>Google App Engine SDK for Python</code> 解压到 /opt</p> <pre>~$ sudo unzip ~/download/google_appengine_1.8.8.zip -D /opt</pre> <p>在gogent/server/python目录下有文件 app.yaml 文件，打开进行编辑，输入创建的appid</p> <pre>~$ sudo gedit /opt/goagent/server/python/app.yaml</pre> <pre>application: yourappid
+version: 1
+runtime: python27
+api_version: 1
+threadsafe: true</pre> <p>版本默认是1</p> <p>将goagent提交的gae中</p> <pre>~$ sudo python /opt/google_engine/appcfg.py update /opt/goagent/server/python</pre> <p>输入 email 和 password 提交</p> <p>======</p> <p>客户端使用</p> <p><code>/opt/goagent/local</code> 目录下有文件 <code>proxy.ini</code></p> <p>打开修改appid</p> <p>(从别处得知需要将profile改成 google_hk，如果是 google_cn 还是不能用)</p> <pre>[gae]
+appid = yourappid
+password = 
+path = /2
+profile = google_hk
+mode = https
+hosts = [google_hk]hosts</pre> <p>运行 proxy.py 就可以去阿根廷</p> <p> </p> <p>创建快捷方式</p> <pre>sudo gedit /usr/share/applications/goagent.desktop</pre> <pre>[Desktop Entry] 
+Name = goagent
+Comment = a proxy tool
+Exec = /opt/goagent/local/proxy.py
+Icon = /opt/goagent/local/goagent.png 
+Terminal = true
+Type = Application
+Categories = Application;Development;</pre> <p>现在需要给快捷方式以sudo超级用户方式运行，否则点击会一闪而过。当然你也可以不让他在终端显示，只需要将Terminal=true改成Terminal=false</p> <pre>sudo chmod 777 /opt/goagent/local/proxy.py</pre> <p>关于switchy等配置 。。。<br/> goagent 包中已经有 switchy google浏览器插件 直接托放<br/> go google ...</p> <ul> <li>https://code.google.com/p/goagent/</li> <li>https://appengine.google.com/</li> <li>https://developers.google.com/appengine/downloads</li> <li>http://www.samabox.com/projects/chrome/switchy</li> <li>http://equation85.github.io/blog/goagent-config/</li> </ul></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/gae">gae</a></li> <li><a href="/tag/goagent">goagent</a></li> <li><a href="/tag/google">google</a></li> <li><a href="/tag/python">python</a></li> <li><a href="/tag/ubuntu">ubuntu</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-12-02T16:08:42.000Z">December 2, 2013</time> <h1><a href="/post/google-image-proxy/">Google 图片代理</a></h1> </header> <section class="post-main"><p>谷歌图片代理</p> <p>现在目测还用不上 先留着(目测能绕过各个网站的图片盗链!目测还能是墙外！)<br/> <img src="/img/css-gaussian-blur/1.png"></p> <p><img alt="" src="http://images2-focus-opensocial.googleusercontent.com/gadgets/proxy?url=https://lh6.googleusercontent.com/-t5G3Q-eKBT4/AAAAAAAAAAI/AAAAAAAAABI/_y1qBwmc_GA/s265-c-k-no/photo.jpg&amp;container=focus&amp;gadget=a&amp;rewriteMime=image/*&amp;refresh=31536000&amp;resize_h=150&amp;resize_w=150&amp;no_expand=1&amp;google+.gif"/><br/> 图片地址：</p> <pre>&lt;img alt="" src="http://images2-focus-opensocial.googleusercontent.com/gadgets/proxy?url=https://www.google.com/images/srpr/logo11w.png&amp;amp;container=focus&amp;amp;gadget=a&amp;amp;rewriteMime=image/*&amp;amp;refresh=31536000&amp;amp;resize_h=150&amp;amp;resize_w=150&amp;amp;no_expand=1&amp;amp;google.gif" /&gt;</pre> <pre>&lt;img alt="" src="http://images2-focus-opensocial.googleusercontent.com/gadgets/proxy?url=https://lh6.googleusercontent.com/-t5G3Q-eKBT4/AAAAAAAAAAI/AAAAAAAAABI/_y1qBwmc_GA/s265-c-k-no/photo.jpg&amp;amp;container=focus&amp;amp;gadget=a&amp;amp;rewriteMime=image/*&amp;amp;refresh=31536000&amp;amp;resize_h=150&amp;amp;resize_w=150&amp;amp;no_expand=1&amp;amp;google+.gif" /&gt;</pre> <p>并非用图片的原始地址，也不是用 css 来缩小的，也就是 Google 自己去原始地址抓取后，缩放一下再传过来。看到地址里有两个参数值得注意</p> <ul> <li>一个是 <code>url</code>，看样子原始图片地址了，我随便找其它的图片地址替换一下，结果提示下载 p.txt的文件，保存，改扩展名为 jpg，果然是张图片。</li> <li>还有把 <code>resize_h</code>，看来是缩放图片的宽度，改为 0 试试，再下载，果然表示不缩放，对比一下原始图片的 md5，一样的。</li> </ul> <p> </p> <p> </p> <p>js 将页面图片通过google代理</p> <pre>javascript:(function(){
+              prefix = "https://images2-focus-opensocial.googleusercontent.com/gadgets/proxy?url="; 
+              suffix = "&amp;container=focus&amp;gadget=a&amp;no_expand=1&amp;resize_h=0&amp;rewriteMime=image%2F*"; 
+              images = document.getElementsByTagName("img"); 
+              for (var i = 0; i &lt; images.length; i++) {     
+                    if (images[i].src.indexOf(prefix) == -1) {         
+                         images[i].src = prefix + encodeURIComponent(images[i].src) + suffix;     
+                    } 
+              }
+            })();</pre> <p>链接：</p> <ul> <li>http://qixinglu.com/post/google_image_proxy.html</li> </ul></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/google">google</a></li> <li><a href="/tag/images">images</a></li> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/proxy">proxy</a></li> </ul> </footer> </article> <menu class="page"> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

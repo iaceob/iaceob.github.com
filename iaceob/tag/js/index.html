@@ -1,0 +1,298 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>js - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2015-07-01T01:08:17.000Z">July 1, 2015</time> <h1><a href="/post/re-coding-jquery-jskit/">重造轮(和谐)子之 jQuery [base]</a></h1> </header> <section class="post-main"><p>因为最近在做一些重造轮子的事情, 所以了, 索性把 jQuery 重新造一遍, 当然, 不可能全部都重造出来...</p> <p>重造 jQuery 主要是因为想要一个 js 的工具包, 然而了 jQuery 实在太大了, 而那些现成的做好的精简包, 比如 <a title="Zepto.js: the aerogel-weight jQuery-compatible JavaScript library" href="http://zeptojs.com/" target="_blank">zepto</a> , 又有些东西是不需要的, 所以就重造一个.</p> <p>好吧, 这里主要说说实现的方法.</p> <p>首先定义一个类, 也就是闭包的函数, 作为主方法, 并提供 prototype 供外部扩展函数, 并且主方法作为入口, 做出类似于 jQuery 的选择器入口.</p> <p>所以有如下代码</p> <pre>!(function(window, undefined){
+    'use strict';
+    function kit(select){
+        try {
+            return self.selector(select);
+        } catch (e) {
+            return null;
+        }
+    };
+    var self = kit.fn = kit.prototype = Object.create(Array.prototype);
+    window.jsKit = kit;
+})(window);
+</pre> <p>那么来分析下这段主方法的代码.</p> <p>首先是建一个闭包, 这里面有个 kit 的函数, 为入口函数, 并且将 kit 赋于 window 的 jsKit 变量上.</p> <p>先来看原型赋值这</p> <pre>    var self = kit.fn = kit.prototype = Object.create(Array.prototype);</pre> <p>这段的意思了, 就是将 kit 的原型设置为 类数组对象 然后将 kit 的原型赋予 kit.fn 接着继续赋给 self;</p> <p>关于类数组对象, 这个是 让 kit 的 prototype 带有数组的特性, 也就是 js 中的 Array like Object, 详细的这个分析这里就不描述了, 看以后在能不能写点这, 详细来分析.</p> <p>这个原型分配好了之后了, 其中 self 只是在当前闭包中使用 kit.fn 是外部使用的.</p> <p>再来看 kit 函数, 这里面只做了一件事</p> <pre> return self.selector(select);</pre> <p>self.selector 也就是选择器了.</p> <p>所以就在新建一个类(闭包)专门做选择器的实现, 然后作为扩展添加到这个主方法中.</p> <p>selector 实现就如下</p> <pre>!(function(window, kit, undefined){
+    'use strict';
+    var document = window.document;
+    var self = kit.fn;
+    function selector(select){
+        self.splice(0, self.length);
+        var allDom = document.querySelectorAll(select);
+        for(var i=allDom.length; i--&gt;0;)
+            self.push(allDom[i]);
+        return self;
+    };
+    self.selector = selector;
+})(window, jsKit);</pre> <p>一个非常简单的实现方式, 首先引入 jsKit , 使用 jsKit.fn 注册一个 selector 的函数, 函数的实现就是当前这个闭包中的 selector 函数.</p> <p>当然这个选择器偷懒直接使用了 document.querySelectorAll 方法了, 不够这个方法也基本上能满足大多数的需求了.</p> <p>query 出来的结果是一个 NodeList 的数据类型, 是不能够直接操作的, 因此就需要将这个 NodeList 数据转化为这里的 jsKit 类, 前面也说了 jsKit 的原型被设置未 类数组的对象, 所以能够使用数组的相关特性,因此这里直接对 NodeList 遍历, 并且 push 到 jsKit 中. 然后 return self; 也就是返回 jsKit 类, 这样做的目的就是为了实现原型链, 能够进行链式调用.</p> <p>需要注意的是 这里加了一行</p> <pre>self.splice(0, self.length);</pre> <p>这个的作用是清空数组, 这里也就是清空 jsKit, 因为 jsKit 在 push 后不释放的话, 在执行一次, 第二次会累加, 这也是 Array 的特性.</p> <p>所以一个简单的类似于 jQuery 的选择器就实现了.</p> <p>接下来可以进行 jQuery 和 jsKit 的简单测试了.</p> <p>比如</p> <pre>jQuery('li'); // Object[li, li, li]
+jsKit('li'); // Object[li, li, li]</pre> <p>返回的结果都是一样的.</p> <p>所以前提条件都有了, 接下来只要对 jsKit.fn 进行扩充就行了.</p> <p>像是 addClass</p> <pre>jsKit.fn.addClass = function(){
+  this.forEach(function(target){
+    console.log(target);
+  });
+};</pre> <p>调用的使用通过和 jQuery 一样的原型链方式</p> <pre>jsKit('li').addClass('test');</pre> <p> </p> <p>话就到这</p> <p>当然这只是一个非常简单的模拟啦, jQuery 很强大了, 代码写的很高深, 只是阅读就很复杂了, 比如这里的选择器实现只是简单的 querySelectAll , 而 jQuery 则提供了更多实用的功能, 而且 jQuery() 还支持对象等作为选择器, 因此这个还是需要完善的.</p> <p>jQuery 是很好使, 但是就是臃肿了点, 现在很多用 jQuery 的地方其实根本可以不需要, 只是用了 jQuery 的很少几个功能.</p> <p> </p> <p>所以 jsKit 继续优化吧.</p> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/harmony">harmony</a></li> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/jquery">jquery</a></li> <li><a href="/tag/js">js</a></li> <li><a href="/tag/recoding">recoding</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-12-27T20:45:28.000Z">December 27, 2014</time> <h1><a href="/post/audio-js-toss/">audio.js 折腾</a></h1> </header> <section class="post-main"><p>恩 要做一个不得了的东西, 有音频要播放, 为了更加快速了(其实不会)就找了一个音频播放的工具.也就是 audo.js 了</p> <p>主页: http://kolber.github.com/audiojs/</p> <p>这东西叻在遇到支持 html5 的浏览器就使用 html5 的方式播放, 不支持的就使用 flash 播放, 所有浏览器的界面都是统一的.</p> <p>上述的几个优点了看着很好, 其实都是问题....</p> <p>比如不想用那原始的界面, 没错, audiojs 的样式是可以自己定义的, 只要添加样式把原始的样式覆盖掉就成了, 但是! 事实是你所想要的html的结构并不是 audiojs 所给出的那样, 这样只会让你写起来更复杂, 为了 audiojs 所给出的标签结构来美化, 而并不是自己所想要的结构.</p> <p>上述说的遇到支持 html5 的浏览器了也并不全面, 事实情况是, 如果浏览器支持 html5 的 audio 标签但是不支持 mp3 格式的音频都会以 flash 方式播放.</p> <p>那么 进入正文吧</p> <p>首先初始化页面中的所有 audio , 音频了就使用 audio 标签加载就行了. 然后执行 audiojs 的初始化, 播放器了就自己用 html 拼一个出来就是. 主要说说 audiojs 所提供的参数以及函数吧.</p> <pre>    var asall = audiojs.createAll();
+    var as = asall[0];</pre> <p>然后打开浏览器控制台查看 as 变量有如下的参数</p> <pre>duration                      284.029387755102
+loadStartedCalled      false
+loadedPercent           1
+mp3                            "/well/music/a.mp3?v=2"
+playing                       false
+settings                      Object { autoplay=true, loop=false, preload=true, more...}
+source                       audio
+swfReady                   true
+wrapper                     div#audiojs_wrapper0.audiojs
+element                     embed
+init                             function()
+load                           function(c)
+loadError                  function()
+loadProgress           function(percent, duration)
+loadStarted              function()
+pause                       function()
+play                          function()
+playPause                 function()
+setVolume               function(c)
+skipTo                     function(c)
+trackEnded             function()
+updatePlayhead     function(percent)</pre> <p>几个用到的描述下</p> <p>duration 是文件的长度 恩差不多</p> <p>playing 是否正在播放</p> <p>settings audiojs 相关设置</p> <p>element 播放音频的对象</p> <p>loadError 载入音频失败回调</p> <p>loadProgress 载入音频的过程回调</p> <p>play 播放音频</p> <p>pause 暂停播放</p> <p>swfReady swf 加载完毕</p> <p>setVolume 设置音量</p> <p>skipTo 音频跳转到指定位置</p> <p>trackEnded 音乐播放结束后回调</p> <p>updatePlayhead 音乐正在播放中的回调</p> <p>然后就开始自定义吧</p> <p>====</p> <pre>function isFlash(as){
+     /*
+      判断audiojs是否通过flash加载的,
+      settings 中提供了 hasFlash 但是我测试后发现不管是 flash 还是 audio 都是 true 可能另有作用 详细的没看, swfReady 发现 在flash 播放的时候 为true 而 audio 播放的时候是没有这个参数的
+     */
+     return as.swfReady;
+};
+    /*
+     获取播放的时间值  
+     直接 copy audiojs 代码的
+      这里有个区别就是  如果是获取总时间 percent 是不需要的
+      percent 只有在 获取当前进度的时候才需要
+   */
+    function parseTime(duration, percent){
+        var p = 0;
+        if (percent) p = duration * percent; else p = duration;
+        var m = Math.floor(p / 60),
+            s = Math.floor(p % 60);
+        return ((m&lt;10?'0':'')+m+':'+(s&lt;10?'0':'')+s);
+    };
+
+   /*
+    没发现或者说没理解是什么作用
+   不过 看到 audiojs 的进度以及音量调节中是有获取这个值的
+   */
+    function leftPos(elem) {
+        var curleft = 0;
+        if (elem.offsetParent)
+            do { curleft += elem.offsetLeft; } while (elem = elem.offsetParent);
+        return curleft;
+    };
+
+
+// 播放结束回调
+as.trackEnded = function(){
+    nextMusic(); // 预先定义切换下一首函数
+};
+
+// 音频缓冲中的处理
+// 这一步 主要是获取 audiojs 正在缓冲音乐的时候相关参数来做些效果处理
+// 比如 缓冲的时候 的一个滚动条
+as.loadProgress = function(percent, duration){
+      var self = this;
+      // 这里要分俩中状态处理, 就是 flash 和 audio 分别对待
+      // 只有在 flash 方式的时候回调函数提供了 percent 和 duration 这俩个参数, audio 方式 回调是没有返回参数的, 需要自己获取
+      if (isFlash(as)) {
+        // ==== 这些一定要带上, 这些参数会传递到供后面的函数使用,如果不带后面的函数将获取不到这些数据, 具体去看 audiojs 的源码
+        as.loadedPercent = percent;
+        as.duration = duration;
+        as.settings.loadStarted.apply(as);
+        as.settings.loadProgress.apply(as, [percent]);
+       // ==========================================
+       //  后面就可以加入自己的代码了 控制自己定义的样式
+        $('.progress-load').style.width = (percent*100)+'%';
+        $('#time-tol').innerHTML = parseTime(duration);
+          return;
+       }
+      // audio 方式处理
+      // 这里也是直接把 audiojs 中的代码拿出来的. 这些都是必须得加上的, 否则会导致后面的函数无法获取到值
+        if (self.element.buffered != null &amp;&amp; self.element.buffered.length) {
+            if (!self.loadStartedCalled) {
+                self.loadStartedCalled = self.loadStarted();
+            }
+            var durationLoaded = self.element.buffered.end(self.element.buffered.length - 1);
+            self.loadedPercent = durationLoaded / self.duration;
+
+            self.settings.loadProgress.apply(self, [self.loadedPercent]);
+             
+            // 下方就可以加入自己的控制代码
+            $('.progress-load').style.width = (self.loadedPercent*100)+'%';
+            $('#time-tol').innerHTML = parseTime(audio.duration);
+        }
+};
+
+       /// 正在播放音乐的处理
+       /// 获取正在播放中的相关参数 进行自己的效果处理
+       // 只有flash方式才会有 percent 参数
+      as.updatePlayhead = function(percent){
+            // 同样区分 flash 和 audio 俩中方式
+            var self = this;
+            if (isFlash(as)) {
+                  $('.progress-cur').style.width = (percent*100)+'%';
+                  $('#time-cur').innerHTML = parseTime(self.duration, percent);
+                return;
+            }
+            // == 这里是 audiojs 源码中拿出来的因为 audio 方式回调是没有当前播放进度的, 所以得自己获取
+            var percent = self.element.currentTime / self.duration;
+            self.settings.updatePlayhead.apply(self, [percent]);
+            // ===========
+            // 获取了之后加入自己的一些处理
+            $('.progress-cur').style.width = (percent*100)+'%';
+            $('#time-cur').innerHTML = parseTime(self.duration, percent);
+            return;
+        };
+
+
+   /*
+     主要的就是重写上方的俩个函数, 那控制 诸如 播放进度 当前播放的时间这些信息, 然后其他的 比如 暂停 下一首 这些 可以直接对自己的按钮绑定事件即可
+   */
+    $('#btn_switch').bind('click', function(){
+         // 点击 btn_switch 如果音频真正播放 就暂停  否则就开始播放
+         !as.playing ? as.play() : as.pause();
+    });
+ /// 其他的绑定也是如此</pre> <p>基本上了处理代码就如上方这样.</p> <p>后面绑定的事件中有俩个需要注意的是 点击调整音量和点击进度条跳转音频播放的时间</p> <pre>/*
+音频播放进去点击事件, 这里的事件触发都是从audiojs里拿出来的,
+只是将这个绑定放到自己定义的进度条上进行触发
+*/
+$('.guess-progress').bind('click', function(event){
+    var self = this;
+    if (!as.playing) as.play();
+    var i = (event.clientX-leftPos(self))/self.offsetWidth;
+    // 同样的 也需要判断 flash 和 audio 二者的处理方式是不同的
+    if (isFlash(as)) {
+        audio.updatePlayhead.call(as, [i]);
+        audio.element.skipTo(i);
+        return;
+    }
+    as.skipTo(i);
+    return;
+});
+
+/*
+绑定音量点击事件
+*/
+$('.ctrl-volume').bind('click', function(e){
+       var i = (e.clientX-leftPos(this))/this.offsetWidth;
+       $('.volume-cur').style.width = (i*100)+'%';
+       as.setVolume(i);
+});</pre> <p>特别需要注意 setVolume 这个函数, 或者说需要注意的并不是这个函数, 怎么说了, 就是 audiojs 在使用 flash 方式进行播放的时候了, setVolume 这个函数是无效的, 亦或者说, 是 audiojs 所提供的 swf 文件是不提供这个 setVolume 函数的, 所以 会看到控制台有提示说 setVolumen is not function, 详细见 audio issue</p> <p><a title=" IE8 stops on a.element.setVolume(c)}; #51 " href="https://github.com/kolber/audiojs/issues/51" target="_blank">IE8 stops on a.element.setVolume(c)}; #51</a></p> <p>解决方式叻.这个 issue 中</p> <p>https://github.com/kolber/audiojs/issues/51#issuecomment-9720606</p> <p>有个演示页</p> <p>http://demo.svnlabs.com/html5player/volume-control/</p> <p>这个页面的测试 音量是可以调节的, 起初一直以为是 js 或者什么配置有问题, 原来是 swf 有问题= =.</p> <p>把那个演示页的 swf 下载了, 覆盖掉自己的就行了.</p> <p>另外, 自动播放, 按照 audiojs 网页中所说的给 audio 标签加个 autoplay 属性, 是可以自动播放, 测试中发现 使用 audiojs 中默认的是可以, 但是经我这么一修改 发现有问题,</p> <p>linux firefox devliper edition 可以正常使用</p> <p>window firefox DE || chrome 可以自动播放, 但是貌似被播放了俩遍</p> <p>不知道是我哪里写错了.</p> <p>然后有测试过 在 create 之后执行 as.play() 在flash 方式中会报错 说 pplay not function</p> <p>= =</p> <p>所以.. 最后又被我发现 settings 中有 autoplay 这个配置,</p> <p>对 create 之后</p> <pre>as.settings.autoplay = true;</pre> <p>我就是这么解决的.</p> <p>======</p> <p>好吧 修修补补 也算是完成了, 恩, 基本上就这样.</p> <p>图叻就先不放了, 不就这个就能发布了, 域名的话 就先 guess.iaceob.name 好了</p> <p>对, 没错 是个电台!</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/audiojs">audiojs</a></li> <li><a href="/tag/fm">fm</a></li> <li><a href="/tag/js">js</a></li> <li><a href="/tag/toss">toss</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-06-13T23:37:17.000Z">June 13, 2013</time> <h1><a href="/post/dwr-use-mode-2/">dwr 使用方法-返回javabean数据</a></h1> </header> <section class="post-main"><p>dwr 入门篇 <a href="/post/dwr-use-mode-1/">dwr 使用方法-初步</a>这段时间在使用的时候遇到了些问题，不过最后也解决了，详细说说dwr使用的步骤和方法。dwr.xml的配置</p> <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE dwr PUBLIC 
+    "-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN" 
+    "http://www.getahead.ltd.uk/dwr/dwr20.dtd"&gt;    
+	&lt;dwr&gt;			
+		&lt;allow&gt;
+			&lt;!-- creator为spring表示根据spring创建一个方法，JavaScript属性表示页面引用时的脚本对象名 --&gt;
+			&lt;create creator="spring" javascript="About"&gt;
+				&lt;!--这里的value值与spring中id="userBIZ"是同一个值 --&gt;
+				&lt;param name="beanName" value="aboutAction" /&gt;
+			&lt;/create&gt;
+			&lt;!--方法具有实体类返回值，那么就要为其创建一个bean，这个类就要根据match所指向的实体类进行创建 --&gt;
+			&lt;convert match="com.iaceob.entity.About" converter="bean"&gt;&lt;/convert&gt;
+		&lt;/allow&gt;	
+	&lt;/dwr&gt;</pre> <p> </p> <p>这里和之前写的不同的地方就是这里将事物交给spring管理了，就不必在写具体的类的地址了，写相应的类交给spring的id，这里就能或者类的地址找到相应的方法。</p> <p>这里dwr所找的是aboutAction也就对应着我项目中的com.iceob.action.AboutAction 所以到里面看看相应的方法，这里也可以不是action，直接指向dao就能直接操作数据库了，这里使用的是action，根据情况而定</p> <pre>	/**
+	 * 用于dwr访问数据action
+	 * @return About
+	 * @throws Exception
+	 * @author 生物烯丙菊
+	 */
+	public About getAboutData() throws Exception {
+		this.about = this.aboutService.getAboutData(1);
+		return this.about;
+	}</pre> <p> </p> <p>这里只使用了getAboutData方法，写这个方法要注意的是这个方法返回的是about这个实体类(之前有实例化)，因为这里查询的数据是是放到这个实体类，然后让前台去调用的，dwr也可以直接调用action的方法，不过通常action返回的是一个字符串然后交给struts2的配置文件去选择显示什么页面，也就不能让dwr显示数据。</p> <p>这个时候如果dwr的调试模式开启的话，就可以到调试页面去查看了，如下图</p> <p><img src="/img/dwr-use-mode-2/1.png"></p> <p> </p> <p>可以看到有 getAbout() Us() getAboutData() 这三个方法，</p> <p>getAbout() 实例化的about实体类的get方法</p> <p>us() 前台页面action方法</p> <p>getAboutData() 新建的dwr查找数据的方法</p> <p>这个时候如果点击getAbout() 后面的按钮的话返回的肯定是null</p> <p><img src="/img/dwr-use-mode-2/2.png"></p> <p>是因为这里about实体类还没有赋值，查询出来的当然是空<br/> 现在点击us方法</p> <p><img src="/img/dwr-use-mode-2/3.png"></p> <p>返回的是success，因为这里是前台使用的action方法，返回的string类型的字符串。</p> <p>这个时候在来点击getAbout() 后面的按钮</p> <p><img src="/img/dwr-use-mode-2/4.png"></p> <p>可以看到这个时候点击就有值了，是因为之前点击了us方法，us方法中将值赋给了about实体类，但是因为us是返回的string类型，就没有弹出窗口显示值了，现在在点击getabout的时候就有值了，同样点击getaboutdata方法之后getaboutdata也会有值，但是因为getaboutdata方法返回的就是about实体类，所以会直接弹出窗口显示值。</p> <p><img src="/img/dwr-use-mode-2/5.png"></p> <p> <br/> 上面说的可能有点饶了，要根据自己的代码环境去理解吧，不同环境不同对待。</p> <p>测试通过了接下来解释在网页显示的问题了</p> <p>页面中手先需要导入js js的地址在测试页面中都有给出， 分别是 util.js engine.js xxx.js // 最后一个js是名称是根据你在dwr.xml中的配置而得来的。</p> <p>导入js文件之后</p> <p>html中写代码如下</p> <pre>                            &lt;script type="text/javascript"&gt;
+                       	     &lt;!--
+                            	$(function(){
+                            		  About.getAboutData(callBackMenthod);    
+                            	});	                           	
+                            	
+                            	function callBackMenthod(data) {                            	                            	
+					document.getElementById("HomeAbout").innerHTML=data.content;									 
+                            	}                            	
+                            //--&gt;
+                            &lt;/script&gt;
+                            &lt;div id="HomeAbout"&gt;&lt;/div&gt;</pre> <p> </p> <p>上面的js流程就是</p> <p>$(function(){ }); // 让页面加载的时候自动运行使用了jquery</p> <p>About.getAboutData(callBackMenthod); // About便是那个自动生成的js的文件名 .getAboutData 是需要使用的方法callBackMenthod 是回调函数 这样就执行了dwr去调用java的方法去查询数据库，然后将至回调给指定的函数，让该函数去完成相应的事物</p> <p>function callBVackMenthod(data){ } // 回调函数，dwr 执行后会将值交给这个函数，执行相关操作<br/> document.getElementById("HomeAbout").innerHTML=data.content; // 将data中的content的内容写入到id为HomeAbout的标签中去<br/> </p> <p>这里说一下data</p> <p>data 就是dwr查询后的值，这里alert(data); 会发现弹出的窗口是一个object，因为返回的是json类型的数据</p> <p>{aboid:1,content:"u8FD9u91CCu662Fu5185u5BB9″,createtime:1371057600}</p> <p>需要使用返回值的时候</p> <pre>//其中data接收方法的返回值
+
+//对于JavaBean返回值，有两种方式处理
+
+//不知道属性名称时，使用如下方法
+
+for(var property in data){
+       alert("property:"+property);
+       alert(property+":"+data[property]);
+}
+
+//知道属性名称时，使用如下方法
+
+alert(data.username);
+alert(data.password);</pre> <p> </p> <p> </p> <p>返回javabean的方式使用方法就如上所述，具体使用的使用要具体对待，代码这东西不是一成不变的，dwr还有一种是返回list形式的，后面也会用到，等用到的时候在来写吧。</p> <p> </p> <p>dwr 的百科目录上介绍的就很好，建议去看看http://baike.baidu.com/view/73492.htm</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/ajax">ajax</a></li> <li><a href="/tag/dwr">dwr</a></li> <li><a href="/tag/j2ee">j2ee</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/jquery">jquery</a></li> <li><a href="/tag/js">js</a></li> <li><a href="/tag/spring">spring</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-04-29T17:43:48.000Z">April 29, 2013</time> <h1><a href="/post/national-three-drop-down-navigation/">全国省市县三级下拉导航</a></h1> </header> <section class="post-main"><p>全国省市县三级下拉导航</p> <p>在使用的时候直接把js拿去就成了。</p> <pre>&lt;html&gt;
+	&lt;head&gt;
+		&lt;style&gt;
+			body,select {
+				font-size: 9pt;
+				font-family: Verdana;
+			}
+			a {
+				color: red;
+				text-decoration: none;
+			}
+			a:hover {
+				text-decoration: underline;
+			}
+		&lt;/style&gt;
+	
+		&lt;SCRIPT LANGUAGE="JavaScript"&gt;
+			function Dsy(){
+			   this.Items={};}
+			Dsy.prototype.add=function(id,iArray){
+			   this.Items[id]=iArray;}
+			Dsy.prototype.Exists=function(id){
+			   if(typeof(this.Items[id])=="undefined"){
+			       return false;}
+			   return true;}
+			function change(v){
+			   var str="0";
+			   for(i=0;i&lt;v;i++){
+			       str+=("_"+(document.getElementById(s[i]).selectedIndex-1));};
+			   var ss=document.getElementById(s[v]);
+			   with(ss){
+			       length=0;
+			       options[0]=new Option(opt0[v],opt0[v]);
+			       if(v&amp;&amp;document.getElementById(s[v-1]).selectedIndex&gt;0||!v){
+			           if(dsy.Exists(str)){
+			               ar=dsy.Items[str];
+			               for(i=0;i&lt;ar.length;i++){
+			                   options[length]=new Option(ar[i],ar[i]);}
+			               if(v){
+			                   options[1].selected=true;}}}
+			       if(++v&lt;s.length){
+			           change(v);}}}
+			var dsy=new Dsy();
+			dsy.add("0",["安徽","北京","福建","甘肃","广东","广西","贵州","海南","河北","河南","黑龙江","湖北","湖南","吉林","江苏","江西","辽宁","内蒙古","宁夏","青海","山东","山西","陕西","上海","四川","天津","西藏","新疆","云南","浙江","重庆"]);
+                         // 不占屏幕了...
+		&lt;/SCRIPT&gt;
+		&lt;SCRIPT LANGUAGE=JavaScript&gt;
+		var s=["s1","s2","s3"];
+		var opt0=["省份","地级市","市、县级市、县"];
+		function setup(){
+		   for(i=0;i&lt;s.length-1;i++){
+		       document.getElementById(s[i]).onchange=new Function("change("+(i+1)+")");}
+		   change(0);
+		}
+		&lt;/SCRIPT&gt;
+	&lt;/head&gt;
+	&lt;body bgcolor="#E0E0E0" onLoad="setup()"&gt;
+	&lt;form name="frm"&gt;
+		&lt;select id="s1"&gt;
+			&lt;option&gt;省份&lt;/option&gt;
+		&lt;/select&gt; 
+		&lt;select id="s2"&gt;
+			&lt;option&gt;地级市&lt;/option&gt;
+		&lt;/select&gt; 
+		&lt;select id="s3"&gt;
+			&lt;option&gt;市、县级市、县&lt;/option&gt;
+		&lt;/select&gt;
+	&lt;/form&gt;
+	&lt;/body&gt;
+&lt;/html&gt;
+</pre> <p> </p> <p> </p> <p><a href="http://pan.baidu.com/share/link?shareid=443197&amp;uk=1409985539" target="_blank">下载</a></p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/js">js</a></li> <li><a href="/tag/三级下拉">三级下拉</a></li> <li><a href="/tag/城市">城市</a></li> <li><a href="/tag/导航">导航</a></li> </ul> </footer> </article> <menu class="page"> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

@@ -1,0 +1,103 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>freetds - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2014-02-23T22:21:23.000Z">February 23, 2014</time> <h1><a href="/post/solve-ubuntu-thinkphp-connect-mssql-chinese-distortion/">ubuntu thinkphp 连接 mssql 中文乱码解决</a></h1> </header> <section class="post-main"><p>thinkphp 版本 3.1.3</p> <p>sqlserver 默认编码是 gb2312 而php或者说thinkphp的默认编码是utf-8那么在数据库中查询出来的数据展示的时候将会乱码</p> <p>在 php.ini 中或者在 freetds.conf 中设置 编码都不能够解决乱码这个问题</p> <p>解决方法是在查询出结果后对数据进行转码</p> <p>找到 ThinkPHP/Lib/Core/Db.class.php</p> <p>在其中添加如下转码函数</p> <pre>public function iconv2utf8($Result) {
+    $Row = array();
+    $key1=array_keys($Result);
+    $key2 = array_keys($Result[$key1[0]]);
+    for($i=0;$i&lt;count($key1);$i++) {
+        for( $j=0; $j&lt;count( $key2 ); $j++ ) {
+            $Row[ $key1[ $i ] ][ $key2[ $j ] ] = iconv( 'gb2312', 'utf-8', $Result[ $key1[ $i ] ][ $key2[ $j ] ] );
+        }
+    }
+    return $Row;
+}</pre> <p>utf8 转 gbk</p> <pre>    public  function iconv2gbk($string) {
+        return iconv( 'utf-8','gb2312' ,$string );
+    }</pre> <p>之后找到 select 函数</p> <p>在</p> <pre>$result   = $this-&gt;query($sql,$this-&gt;parseBind(!empty($options['bind'])?$options['bind']:array()));</pre> <p>行下面添加</p> <pre>if ( C( 'DB_TYPE' ) == 'mssql' ) {
+    $result = self::iconv2utf8($result);
+}</pre> <p>对数据进行转码</p> <p>完整函数如下</p> <pre>    /**
+     * 查找记录
+     * @access public
+     * @param array $options 表达式
+     * @return mixed
+     */
+    public function select($options=array()) {
+        $this-&gt;model  =   $options['model'];
+        $sql    = $this-&gt;buildSelectSql($options);
+        $cache  =  isset($options['cache'])?$options['cache']:false;
+        if($cache) { // 查询缓存检测
+            $key    =  is_string($cache['key'])?$cache['key']:md5($sql);
+            $value  =  S($key,'',$cache);
+            if(false !== $value) {
+                return $value;
+            }
+        }
+        $result   = $this-&gt;query($sql,$this-&gt;parseBind(!empty($options['bind'])?$options['bind']:array()));
+        if ( C( 'DB_TYPE' ) == 'mssql' ) {
+            $result = self::iconv2utf8($result);
+        }
+        if($cache &amp;&amp; false !== $result ) { // 查询缓存写入
+            S($key,$result,$cache);
+        }
+        return $result;
+    }</pre> <p>插入 以及 更新数据乱码解决</p> <p>找到 parseSet 函数</p> <p>在 foreach 循环下添加</p> <pre>   if ( C( 'DB_TYPE' ) == 'mssql' ) {
+        $val = $this-&gt;iconv2gbk( $val );
+   }</pre> <p>完整代码如下:</p> <pre>    /**
+     * set分析
+     * @access protected
+     * @param array $data
+     * @return string
+     */
+    protected function parseSet($data) {
+        foreach ($data as $key=&gt;$val){
+            if ( C( 'DB_TYPE' ) == 'mssql' ) {
+                $val = $this-&gt;iconv2gbk( $val );
+            }
+            if(is_array($val) &amp;&amp; 'exp' == $val[0]){
+                $set[]  =   $this-&gt;parseKey($key).'='.$val[1];
+            }elseif(is_scalar($val) || is_null(($val))) { // 过滤非标量数据
+              if(C('DB_BIND_PARAM') &amp;&amp; 0 !== strpos($val,':')){
+                $name   =   md5($key);
+                $set[]  =   $this-&gt;parseKey($key).'=:'.$name;
+                $this-&gt;bindParam($name,$val);
+              }else{
+                $set[]  =   $this-&gt;parseKey($key).'='.$this-&gt;parseValue($val);
+              }
+            }
+        }
+        return ' SET '.implode(',',$set);
+    }</pre> <p>找到 insert 函数</p> <p>在 foreach 下添加</p> <pre>    if ( C( 'DB_TYPE' ) == 'mssql' ) {
+        $val = $this-&gt;iconv2gbk( $val );    
+    }</pre> <p>完整代码如下:</p> <pre>    /**
+     * 插入记录
+     * @access public
+     * @param mixed $data 数据
+     * @param array $options 参数表达式
+     * @param boolean $replace 是否replace
+     * @return false | integer
+     */
+    public function insert($data,$options=array(),$replace=false) {
+        $values  =  $fields    = array();
+        $this-&gt;model  =   $options['model'];
+        foreach ($data as $key=&gt;$val){
+            if ( C( 'DB_TYPE' ) == 'mssql' ) {
+                $val = $this-&gt;iconv2gbk( $val );    
+            }
+            if(is_array($val) &amp;&amp; 'exp' == $val[0]){
+                $fields[]   =  $this-&gt;parseKey($key);
+                $values[]   =  $val[1];
+            }elseif(is_scalar($val) || is_null(($val))) { // 过滤非标量数据
+              $fields[]   =  $this-&gt;parseKey($key);
+              if(C('DB_BIND_PARAM') &amp;&amp; 0 !== strpos($val,':')){
+                $name       =   md5($key);
+                $values[]   =   ':'.$name;
+                $this-&gt;bindParam($name,$val);
+              }else{
+                $values[]   =  $this-&gt;parseValue($val);
+              }                
+            }
+        }
+        $sql   =  ($replace?'REPLACE':'INSERT').' INTO '.$this-&gt;parseTable($options['table']).' ('.implode(',', $fields).') VALUES ('.implode(',', $values).')';
+        $sql   .= $this-&gt;parseLock(isset($options['lock'])?$options['lock']:false);
+        $sql   .= $this-&gt;parseComment(!empty($options['comment'])?$options['comment']:'');
+        return $this-&gt;execute($sql,$this-&gt;parseBind(!empty($options['bind'])?$options['bind']:array()));
+    }</pre> <p>做完这些 基本上和mssql交互就不会乱码了</p> <p>当然 如果怕动了那源码导致查询出现问题 可以将原Db.class.php 改名为 DbSrc.class.php 并且 修改 class 为</p> <pre>class DbSrc { ... }</pre> <p>然后新建个名为 Db.class.php 的文件 继承 DbSrc 将上述的几个函数放进去就可以了</p> <p>但是效率。。。</p> <p>坑爹。。</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/freetds">freetds</a></li> <li><a href="/tag/mssql">mssql</a></li> <li><a href="/tag/php">php</a></li> <li><a href="/tag/thinkphp">thinkphp</a></li> <li><a href="/tag/ubuntu">ubuntu</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-02-23T19:17:14.000Z">February 23, 2014</time> <h1><a href="/post/ubuntu-php-connect-mssql/">ubuntu php 连接 mssql</a></h1> </header> <section class="post-main"><p>ubuntu 中使用 php 连接 mssql</p> <pre>sudo apt-get install libsybdb5 freetds-common php5-sybase
+
+sudo service apache2 restart</pre> <p>安装完成后重启apache然后查看 phpinfo 中是否有 mssql</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/freetds">freetds</a></li> <li><a href="/tag/mssql">mssql</a></li> <li><a href="/tag/php">php</a></li> <li><a href="/tag/sqlserver">sqlserver</a></li> <li><a href="/tag/ubuntu">ubuntu</a></li> </ul> </footer> </article> <menu class="page"> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

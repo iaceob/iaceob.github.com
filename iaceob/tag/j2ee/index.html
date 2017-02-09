@@ -1,0 +1,1246 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>j2ee - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2013-11-13T15:11:05.000Z">November 13, 2013</time> <h1><a href="/post/eclipse-dev-java-web-project-automatically-restart-the-tomat-server/">eclipse 开发 java web 自动重启 tomcat 服务器</a></h1> </header> <section class="post-main"><p>eclipse 开发 java web 项目的时候, 每次一保存 java 文件 就会自动重启 tomcat 服务器</p> <p> </p> <p>解决方法:</p> <p>修改对应tomcat目录config下的server.xml文件</p> <blockquote> <p>reloadable="false"</p> </blockquote> <p>&lt;Context docBase="projectName" path="/projectName" reloadable="false" source="org.eclipse.jst.jee.server:projectName"/&gt;&lt;/Host&gt;</p> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/eclipse">eclipse</a></li> <li><a href="/tag/j2ee">j2ee</a></li> <li><a href="/tag/server-xml">server.xml</a></li> <li><a href="/tag/tomcat">tomcat</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-10-30T02:41:07.000Z">October 30, 2013</time> <h1><a href="/post/j2ee-gzip-compress/">j2ee gzip 压缩</a></h1> </header> <section class="post-main"><p>又是压缩！！！</p> <p> </p> <p>又是在别出找的。。。。</p> <p> </p> <p>不过 效率还是很好的</p> <p> </p> <p>已经忘了 是在哪找到的了 同样和 之前的html压缩一样 因为出了问题 (和那是一样的问题)这里只把代码贴出来</p> <p> </p> <p>CompressionFilter.java</p> <pre>package name.iaceob.filter;
+
+import java.io.IOException;
+import java.util.Enumeration;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import name.iaceob.util.CompressionServletResponseWrapper;
+
+/**
+ * Implementation of &lt;code&gt;javax.servlet.Filter&lt;/code&gt; used to compress
+ * the ServletResponse if it is bigger than a threshold.
+ *
+ * @author Amy Roh
+ * @author Dmitri Valdin
+ * @version $Revision: 267129 $, $Date: 2004-03-18 10:40:35 -0600 (Thu, 18 Mar 2004) $
+ */
+
+public class CompressionFilter implements Filter{
+
+    /**
+     * The filter configuration object we are associated with.  If this value
+     * is null, this filter instance is not currently configured.
+     */
+    private FilterConfig config = null;
+
+    /**
+     * Minimal reasonable threshold
+     */
+    private int minThreshold = 128;
+
+    /**
+     * The threshold number to compress
+     */
+    protected int compressionThreshold;
+
+    /**
+     * Debug level for this filter
+     */
+    private int debug = 0;
+
+    /**
+     * Place this filter into service.
+     *
+     * @param filterConfig The filter configuration object
+     */
+
+    public void init(FilterConfig filterConfig) {
+
+        config = filterConfig;
+        if (filterConfig != null) {
+            String value = filterConfig.getInitParameter("debug");
+            if (value!=null) {
+                debug = Integer.parseInt(value);
+            } else {
+                debug = 0;
+            }
+            String str = filterConfig.getInitParameter("compressionThreshold");
+            if (str!=null) {
+                compressionThreshold = Integer.parseInt(str);
+                if (compressionThreshold != 0 &amp;&amp; compressionThreshold &lt; minThreshold) {
+                    if (debug &gt; 0) {
+                        System.out.println("compressionThreshold should be either 0 - no compression or &gt;= " + minThreshold);
+                        System.out.println("compressionThreshold set to " + minThreshold);
+                    }
+                    compressionThreshold = minThreshold;
+                }
+            } else {
+                compressionThreshold = 0;
+            }
+
+        } else {
+            compressionThreshold = 0;
+        }
+
+    }
+
+    /**
+    * Take this filter out of service.
+    */
+    public void destroy() {
+
+        this.config = null;
+
+    }
+
+    /**
+     * The &lt;code&gt;doFilter&lt;/code&gt; method of the Filter is called by the container
+     * each time a request/response pair is passed through the chain due
+     * to a client request for a resource at the end of the chain.
+     * The FilterChain passed into this method allows the Filter to pass on the
+     * request and response to the next entity in the chain.&lt;p&gt;
+     * This method first examines the request to check whether the client support
+     * compression. &lt;br&gt;
+     * It simply just pass the request and response if there is no support for
+     * compression.&lt;br&gt;
+     * If the compression support is available, it creates a
+     * CompressionServletResponseWrapper object which compresses the content and
+     * modifies the header if the content length is big enough.
+     * It then invokes the next entity in the chain using the FilterChain object
+     * (&lt;code&gt;chain.doFilter()&lt;/code&gt;), &lt;br&gt;
+     **/
+
+    public void doFilter ( ServletRequest request, ServletResponse response,
+                        FilterChain chain ) throws IOException, ServletException {
+
+        if (debug &gt; 0) {
+            System.out.println("================");
+            System.out.println("@doFilter");
+        }
+
+        if (compressionThreshold == 0) {
+            if (debug &gt; 0) {
+                System.out.println("doFilter gets called, but compressionTreshold is set to 0 - no compression");
+            }
+           System.out.println("没有压缩");
+            chain.doFilter(request, response);
+            return;
+        }
+
+        boolean supportCompression = false;
+        if (request instanceof HttpServletRequest) {
+            if (debug &gt; 1) {
+
+                System.out.println("requestURI = " + ((HttpServletRequest)request).getRequestURI());
+            }
+
+            // Are we allowed to compress ?
+            String s = (String) ((HttpServletRequest)request).getParameter("gzip");
+
+            if ("false".equals(s)) {
+                if (debug &gt; 0) {
+                    System.out.println("got parameter gzip=false --&gt; don't compress, just chain filter");
+                }
+
+                chain.doFilter(request, response);
+                return;
+            }
+
+            Enumeration e =
+                ((HttpServletRequest)request).getHeaders("Accept-Encoding");
+            while (e.hasMoreElements()) {
+                String name = (String)e.nextElement();
+                System.out.println(name);
+                if (name.indexOf("gzip") != -1) {
+                    if (debug &gt; 0) {
+                        System.out.println("supports compression");
+                    }
+                    supportCompression = true;
+                } else {
+                    if (debug &gt; 0) {
+                        System.out.println("no support for compresion");
+                    }
+                }
+            }
+        }
+
+        if (!supportCompression) {
+            if (debug &gt; 0) {
+                System.out.println("doFilter gets called wo compression");
+            }
+            chain.doFilter(request, response);
+            return;
+        } else {
+            if (response instanceof HttpServletResponse) {
+                CompressionServletResponseWrapper wrappedResponse =
+                    new CompressionServletResponseWrapper((HttpServletResponse)response);
+                wrappedResponse.setDebugLevel(debug);
+
+                wrappedResponse.setCompressionThreshold(compressionThreshold);
+                if (debug &gt; 0) {
+                    System.out.println("doFilter gets called with compression");
+                }
+                try {
+
+                    chain.doFilter(request, wrappedResponse);
+                } finally {
+                    wrappedResponse.finishResponse();
+                }
+                return;
+            }
+        }
+    }
+
+    /**
+     * Set filter config
+     * This function is equivalent to init. Required by Weblogic 6.1
+     *
+     * @param filterConfig The filter configuration object
+     */
+    public void setFilterConfig(FilterConfig filterConfig) {
+        init(filterConfig);
+    }
+
+    /**
+     * Return filter config
+     * Required by Weblogic 6.1
+     */
+    public FilterConfig getFilterConfig() {
+        return config;
+    }
+
+}</pre> <p> </p> <p>CompressionServletResponseWrapper.java</p> <pre>package name.iaceob.util;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.util.Locale;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.ServletResponse;
+import javax.servlet.ServletResponseWrapper;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
+
+/**
+ * Implementation of &lt;b&gt;HttpServletResponseWrapper&lt;/b&gt; that works with
+ * the CompressionServletResponseStream implementation..
+ *
+ * @author Amy Roh
+ * @author Dmitri Valdin
+ * @version $Revision: 267129 $, $Date: 2004-03-18 10:40:35 -0600 (Thu, 18 Mar 2004) $
+ */
+
+public class CompressionServletResponseWrapper extends HttpServletResponseWrapper {
+
+    // ----------------------------------------------------- Constructor
+
+    /**
+     * Calls the parent constructor which creates a ServletResponse adaptor
+     * wrapping the given response object.
+     */
+
+    public CompressionServletResponseWrapper(HttpServletResponse response) {
+        super(response);
+        origResponse = response;
+        if (debug &gt; 1) {
+            System.out.println("CompressionServletResponseWrapper constructor gets called");
+        }
+    }
+
+    // ----------------------------------------------------- Instance Variables
+
+    /**
+     * Original response
+     */
+
+    protected HttpServletResponse origResponse = null;
+
+    /**
+     * Descriptive information about this Response implementation.
+     */
+
+    protected static final String info = "CompressionServletResponseWrapper";
+
+    /**
+     * The ServletOutputStream that has been returned by
+     * &lt;code&gt;getOutputStream()&lt;/code&gt;, if any.
+     */
+
+    protected ServletOutputStream stream = null;
+
+    /**
+     * The PrintWriter that has been returned by
+     * &lt;code&gt;getWriter()&lt;/code&gt;, if any.
+     */
+
+    protected PrintWriter writer = null;
+
+    /**
+     * The threshold number to compress
+     */
+    protected int threshold = 0;
+
+    /**
+     * Debug level
+     */
+    private int debug = 0;
+
+    /**
+     * Content type
+     */
+    protected String contentType = null;
+
+    // --------------------------------------------------------- Public Methods
+
+    /**
+     * Set content type
+     */
+    public void setContentType(String contentType) {
+        if (debug &gt; 1) {
+            System.out.println("setContentType to "+contentType);
+        }
+        this.contentType = contentType;
+        origResponse.setContentType(contentType);
+    }
+
+    /**
+     * Set threshold number
+     */
+    public void setCompressionThreshold(int threshold) {
+        if (debug &gt; 1) {
+            System.out.println("setCompressionThreshold to " + threshold);
+        }
+        this.threshold = threshold;
+    }
+
+    /**
+     * Set debug level
+     */
+    public void setDebugLevel(int debug) {
+        this.debug = debug;
+    }
+
+    /**
+     * Create and return a ServletOutputStream to write the content
+     * associated with this Response.
+     *
+     * @exception IOException if an input/output error occurs
+     */
+    public ServletOutputStream createOutputStream() throws IOException {
+        if (debug &gt; 1) {
+            System.out.println("createOutputStream gets called");
+        }
+
+        CompressionResponseStream stream = new CompressionResponseStream(origResponse);
+        stream.setDebugLevel(debug);
+        stream.setBuffer(threshold);
+
+        return stream;
+
+    }
+
+    /**
+     * Finish a response.
+     */
+    public void finishResponse() {
+        try {
+            if (writer != null) {
+                writer.close();
+            } else {
+                if (stream != null)
+                    stream.close();
+            }
+        } catch (IOException e) {
+        }
+    }
+
+    // ------------------------------------------------ ServletResponse Methods
+
+    /**
+     * Flush the buffer and commit this response.
+     *
+     * @exception IOException if an input/output error occurs
+     */
+    public void flushBuffer() throws IOException {
+        if (debug &gt; 1) {
+            System.out.println("flush buffer @ CompressionServletResponseWrapper");
+        }
+        ((CompressionResponseStream)stream).flush();
+
+    }
+
+    /**
+     * Return the servlet output stream associated with this Response.
+     *
+     * @exception IllegalStateException if &lt;code&gt;getWriter&lt;/code&gt; has
+     *  already been called for this response
+     * @exception IOException if an input/output error occurs
+     */
+    public ServletOutputStream getOutputStream() throws IOException {
+
+        if (writer != null)
+            throw new IllegalStateException("getWriter() has already been called for this response");
+
+        if (stream == null)
+            stream = createOutputStream();
+        if (debug &gt; 1) {
+            System.out.println("stream is set to "+stream+" in getOutputStream");
+        }
+
+        return (stream);
+
+    }
+
+    /**
+     * Return the writer associated with this Response.
+     *
+     * @exception IllegalStateException if &lt;code&gt;getOutputStream&lt;/code&gt; has
+     *  already been called for this response
+     * @exception IOException if an input/output error occurs
+     */
+    public PrintWriter getWriter() throws IOException {
+
+        if (writer != null)
+            return (writer);
+
+        if (stream != null)
+            throw new IllegalStateException("getOutputStream() has already been called for this response");
+
+        stream = createOutputStream();
+        if (debug &gt; 1) {
+            System.out.println("stream is set to "+stream+" in getWriter");
+        }
+        //String charset = getCharsetFromContentType(contentType);
+        String charEnc = origResponse.getCharacterEncoding();
+        if (debug &gt; 1) {
+            System.out.println("character encoding is " + charEnc);
+        }
+        // HttpServletResponse.getCharacterEncoding() shouldn't return null
+        // according the spec, so feel free to remove that "if"
+        if (charEnc != null) {
+            writer = new PrintWriter(new OutputStreamWriter(stream, charEnc));
+        } else {
+            writer = new PrintWriter(stream);
+        }
+
+        return (writer);
+
+    }
+
+    public void setContentLength(int length) {
+    }
+
+    /**
+     * Returns character from content type. This method was taken from tomcat.
+     * @author rajo
+     */
+    private static String getCharsetFromContentType(String type) {
+
+        if (type == null) {
+            return null;
+        }
+        int semi = type.indexOf(";");
+        if (semi == -1) {
+            return null;
+        }
+        String afterSemi = type.substring(semi + 1);
+        int charsetLocation = afterSemi.indexOf("charset=");
+        if(charsetLocation == -1) {
+            return null;
+        } else {
+            String afterCharset = afterSemi.substring(charsetLocation + 8);
+            String encoding = afterCharset.trim();
+            return encoding;
+        }
+    }
+
+}</pre> <p>CompressionResponseStream.java</p> <pre>package name.iaceob.util; 
+
+import java.io.IOException; 
+import java.io.OutputStream; 
+import java.util.zip.GZIPOutputStream; 
+import javax.servlet.ServletOutputStream; 
+import javax.servlet.http.HttpServletResponse; 
+
+/** 
+ * Implementation of &lt;b&gt;ServletOutputStream&lt;/b&gt; that works with 
+ * the CompressionServletResponseWrapper implementation. 
+ * 
+ * @author Amy Roh 
+ * @author Dmitri Valdin 
+ * @version $Revision: 267129 $, $Date: 2004-03-18 10:40:35 -0600 (Thu, 18 Mar 2004) $ 
+ */ 
+
+public class CompressionResponseStream 
+    extends ServletOutputStream { 
+
+    // ----------------------------------------------------------- Constructors 
+
+    /** 
+     * Construct a servlet output stream associated with the specified Response. 
+     * 
+     * @param response The associated response 
+     */ 
+    public CompressionResponseStream(HttpServletResponse response) throws IOException{ 
+
+        super(); 
+        closed = false; 
+        this.response = response; 
+        this.output = response.getOutputStream(); 
+
+    } 
+
+    // ----------------------------------------------------- Instance Variables 
+
+    /** 
+     * The threshold number which decides to compress or not. 
+     * Users can configure in web.xml to set it to fit their needs. 
+     */ 
+    protected int compressionThreshold = 0; 
+
+    /** 
+     * Debug level 
+     */ 
+    private int debug = 0; 
+
+    /** 
+     * The buffer through which all of our output bytes are passed. 
+     */ 
+    protected byte[] buffer = null; 
+
+    /** 
+     * The number of data bytes currently in the buffer. 
+     */ 
+    protected int bufferCount = 0; 
+
+    /** 
+     * The underlying gzip output stream to which we should write data. 
+     */ 
+    protected GZIPOutputStream gzipstream = null; 
+
+    /** 
+     * Has this stream been closed? 
+     */ 
+    protected boolean closed = false; 
+
+    /** 
+     * The content length past which we will not write, or -1 if there is 
+     * no defined content length. 
+     */ 
+    protected int length = -1; 
+
+    /** 
+     * The response with which this servlet output stream is associated. 
+     */ 
+    protected HttpServletResponse response = null; 
+
+    /** 
+     * The underlying servket output stream to which we should write data. 
+     */ 
+    protected ServletOutputStream output = null; 
+
+    // --------------------------------------------------------- Public Methods 
+
+    /** 
+     * Set debug level 
+     */ 
+    public void setDebugLevel(int debug) { 
+        this.debug = debug; 
+    } 
+
+    /** 
+     * Set the compressionThreshold number and create buffer for this size 
+     */ 
+    protected void setBuffer(int threshold) { 
+        compressionThreshold = threshold; 
+        buffer = new byte[compressionThreshold]; 
+        if (debug &gt; 1) { 
+            System.out.println("buffer is set to "+compressionThreshold); 
+        } 
+    } 
+
+    /** 
+     * Close this output stream, causing any buffered data to be flushed and 
+     * any further output data to throw an IOException. 
+     */ 
+    public void close() throws IOException { 
+
+        if (debug &gt; 1) { 
+            System.out.println("close() @ CompressionResponseStream"); 
+        } 
+        if (closed) 
+            throw new IOException("This output stream has already been closed"); 
+
+        if (gzipstream != null) { 
+            flushToGZip(); 
+            gzipstream.close(); 
+            gzipstream = null; 
+        } else { 
+            if (bufferCount &gt; 0) { 
+                if (debug &gt; 2) { 
+                    System.out.print("output.write("); 
+                    System.out.write(buffer, 0, bufferCount); 
+                    System.out.println(")"); 
+                } 
+                output.write(buffer, 0, bufferCount); 
+                bufferCount = 0; 
+            } 
+        } 
+
+        output.close(); 
+        closed = true; 
+
+    } 
+
+    /** 
+     * Flush any buffered data for this output stream, which also causes the 
+     * response to be committed. 
+     */ 
+    public void flush() throws IOException { 
+
+        if (debug &gt; 1) { 
+            System.out.println("flush() @ CompressionResponseStream"); 
+        } 
+        if (closed) { 
+            throw new IOException("Cannot flush a closed output stream"); 
+        } 
+
+        if (gzipstream != null) { 
+            gzipstream.flush(); 
+        } 
+
+    } 
+
+    public void flushToGZip() throws IOException { 
+
+        if (debug &gt; 1) { 
+            System.out.println("flushToGZip() @ CompressionResponseStream"); 
+        } 
+        if (bufferCount &gt; 0) { 
+            if (debug &gt; 1) { 
+                System.out.println("flushing out to GZipStream, bufferCount = " + bufferCount); 
+            } 
+            writeToGZip(buffer, 0, bufferCount); 
+            bufferCount = 0; 
+        } 
+
+    } 
+
+    /** 
+     * Write the specified byte to our output stream. 
+     * 
+     * @param b The byte to be written 
+     * 
+     * @exception IOException if an input/output error occurs 
+     */ 
+    public void write(int b) throws IOException { 
+
+        if (debug &gt; 1) { 
+            System.out.println("write "+b+" in CompressionResponseStream "); 
+        } 
+        if (closed) 
+            throw new IOException("Cannot write to a closed output stream"); 
+
+        if (bufferCount &gt;= buffer.length) { 
+            flushToGZip(); 
+        } 
+
+        buffer[bufferCount++] = (byte) b; 
+
+    } 
+
+    /** 
+     * Write &lt;code&gt;b.length&lt;/code&gt; bytes from the specified byte array 
+     * to our output stream. 
+     * 
+     * @param b The byte array to be written 
+     * 
+     * @exception IOException if an input/output error occurs 
+     */ 
+    public void write(byte b[]) throws IOException { 
+
+        write(b, 0, b.length); 
+
+    } 
+
+    /** 
+     * Write &lt;code&gt;len&lt;/code&gt; bytes from the specified byte array, starting 
+     * at the specified offset, to our output stream. 
+     * 
+     * @param b The byte array containing the bytes to be written 
+     * @param off Zero-relative starting offset of the bytes to be written 
+     * @param len The number of bytes to be written 
+     * 
+     * @exception IOException if an input/output error occurs 
+     */ 
+    public void write(byte b[], int off, int len) throws IOException { 
+
+        if (debug &gt; 1) { 
+            System.out.println("write, bufferCount = " + bufferCount + " len = " + len + " off = " + off); 
+        } 
+        if (debug &gt; 2) { 
+            System.out.print("write("); 
+            System.out.write(b, off, len); 
+            System.out.println(")"); 
+        } 
+
+        if (closed) 
+            throw new IOException("Cannot write to a closed output stream"); 
+
+        if (len == 0) 
+            return; 
+
+        // Can we write into buffer ? 
+        if (len &lt;= (buffer.length - bufferCount)) { 
+            System.arraycopy(b, off, buffer, bufferCount, len); 
+            bufferCount += len; 
+            return; 
+        } 
+
+        // There is not enough space in buffer. Flush it ... 
+        flushToGZip(); 
+
+        // ... and try again. Note, that bufferCount = 0 here ! 
+        if (len &lt;= (buffer.length - bufferCount)) { 
+            System.arraycopy(b, off, buffer, bufferCount, len); 
+            bufferCount += len; 
+            return; 
+        } 
+
+        // write direct to gzip 
+        writeToGZip(b, off, len); 
+    } 
+
+    public void writeToGZip(byte b[], int off, int len) throws IOException { 
+
+        if (debug &gt; 1) { 
+            System.out.println("writeToGZip, len = " + len); 
+        } 
+        if (debug &gt; 2) { 
+            System.out.print("writeToGZip("); 
+            System.out.write(b, off, len); 
+            System.out.println(")"); 
+        } 
+        if (gzipstream == null) { 
+            if (debug &gt; 1) { 
+                System.out.println("new GZIPOutputStream"); 
+            } 
+            response.addHeader("Content-Encoding", "gzip"); 
+            gzipstream = new GZIPOutputStream(output); 
+        } 
+        gzipstream.write(b, off, len); 
+
+    } 
+
+    // -------------------------------------------------------- Package Methods 
+
+    /** 
+     * Has this response stream been closed? 
+     */ 
+    public boolean closed() { 
+
+        return (this.closed); 
+
+    } 
+
+}</pre> <p> </p> <p>web.xml</p> <pre>     &lt;!-- Gzip 页面压缩  Bug--&gt;
+     &lt;filter&gt;
+         &lt;filter-name&gt;gzipCompression&lt;/filter-name&gt;
+         &lt;filter-class&gt;name.iaceob.filter.CompressionFilter&lt;/filter-class&gt;
+        &lt;init-param&gt;
+          &lt;param-name&gt;compressionThreshold&lt;/param-name&gt;
+          &lt;param-value&gt;512&lt;/param-value&gt;
+        &lt;/init-param&gt;
+        &lt;init-param&gt;
+          &lt;param-name&gt;debug&lt;/param-name&gt;
+          &lt;param-value&gt;0&lt;/param-value&gt;
+        &lt;/init-param&gt;
+     &lt;/filter&gt;
+     &lt;filter-mapping&gt;
+         &lt;filter-name&gt;gzipCompression&lt;/filter-name&gt;
+         &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+     &lt;/filter-mapping&gt;</pre> <p> </p> <p> </p> <p> </p> <p>-----</p> <p>结束 。。。。。</p> <p>最明显的显示 就是 在火狐浏览器 中 右键查看网页信息</p> <p>让之前 20 多k的一个页面 压缩成了 2-3k左右 效果很惊人！！！</p> <p>改天在找找这些资料 这里的代码应该是可以跑起来的</p> <p>错误也是配置的位置问题 要放在一些过滤器 或者其他框架的前面 否则 项目启动可能就会报错。。</p> <p> </p> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/compressor">compressor</a></li> <li><a href="/tag/filter">filter</a></li> <li><a href="/tag/gzip">gzip</a></li> <li><a href="/tag/j2ee">j2ee</a></li> <li><a href="/tag/java">java</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-10-30T02:28:55.000Z">October 30, 2013</time> <h1><a href="/post/j2ee-html-compressor-filter/">j2ee html 压缩过滤器</a></h1> </header> <section class="post-main"><p>说起html压缩相信也很多人都知道</p> <p>html压缩后能更快的被浏览器解释 等等一些好处</p> <p>之前写那个整合框架的时候就想要把html压缩这功能加上去 传到前台浏览器解析的html全部都是一行</p> <p>找了很久都没有任何进展 也大概能想到是怎么实现 可惜。。。慢慢学吧！</p> <p>不负有心人 最近让我给找到了</p> <p>是在下面这篇博文中看到的实现方式</p> <p>http://www.fanyanan.com/note/item/97-jsp-filter-compress-html</p> <p>(表示大神给跪)</p> <p>总体的按照该篇文章实现了html的压缩功能</p> <p>不过也是有问题的 下面说说遇到的问题 (关于怎么实现压缩代码势力那篇文章中也都写过了 这里只把代码贴出来 解释就算了 到那篇文章去看吧)</p> <p>先贴代码</p> <p>HtmlCompressorFilter.java</p> <pre>/*****************
+*
+* 执行压缩html
+*/
+public void doFilter(ServletRequest filterRequest, ServletResponse filterResponse, FilterChain filterChain) throws IOException, ServletException {
+// TODO Auto-generated method stub
+
+HttpServletRequest request = (HttpServletRequest)filterRequest;
+HttpServletResponse response = (HttpServletResponse)filterResponse;
+ServletContext servletContext = null ;
+
+CharResponseWrapper charResponseWrapper = new CharResponseWrapper(response);
+filterChain.doFilter(filterRequest, charResponseWrapper);
+String html = charResponseWrapper.toString();
+
+HtmlCompressor compressor = new HtmlCompressor();
+//        compressor.setEnabled(true); // 如果为false，所有的压缩关闭(默认值是true)
+//        compressor.setRemoveComments(true); // 如果为false保持HTML注释(默认值是true)
+//        compressor.setRemoveMultiSpaces(true);  // 如果为false保持多个空白字符(默认值是true)
+//        compressor.setRemoveIntertagSpaces(true); // 删除迭代标签空白字符
+//        compressor.setRemoveQuotes(true);  // 删除不必要的标签属性报价
+//        compressor.setCompressCss(true); // css 压缩
+//        compressor.setCompressJavaScript(true); //  js压缩
+
+try {
+html=compressor.compress(html);
+} catch (Exception e) {
+e.printStackTrace();
+}
+
+response.getWriter().write(html);
+
+}</pre> <p>HtmlCompressor.java</p> <p>这个类没有使用那篇文章中提到的jar包而是提取出来的java文件，下面给出链接</p> <p>web.xml</p> <pre>    &lt;!-- 统一样式    sitemesh  --&gt;
+    &lt;filter&gt;
+        &lt;filter-name&gt;sitemesh&lt;/filter-name&gt;
+        &lt;filter-class&gt;com.opensymphony.module.sitemesh.filter.PageFilter&lt;/filter-class&gt;
+        &lt;!--&lt;filter-class&gt;org.sitemesh.config.ConfigurableSiteMeshFilter&lt;/filter-class&gt;--&gt;
+    &lt;/filter&gt;
+    &lt;filter-mapping&gt;
+        &lt;filter-name&gt;sitemesh&lt;/filter-name&gt;
+        &lt;url-pattern&gt;*.htm&lt;/url-pattern&gt;
+        &lt;url-pattern&gt;*.html&lt;/url-pattern&gt;
+        &lt;url-pattern&gt;*.do&lt;/url-pattern&gt;
+        &lt;url-pattern&gt;*.action&lt;/url-pattern&gt;
+        &lt;url-pattern&gt;*.jsp&lt;/url-pattern&gt;
+    &lt;/filter-mapping&gt;
+
+..........
+
+     &lt;!-- html 压缩过滤器 --&gt;
+     &lt;filter&gt;
+         &lt;filter-name&gt;htmlCompressorFilter&lt;/filter-name&gt;
+         &lt;filter-class&gt;name.iaceob.filter.HtmlCompressorFilter&lt;/filter-class&gt;
+     &lt;/filter&gt;
+     &lt;filter-mapping&gt;
+         &lt;filter-name&gt;htmlCompressorFilter&lt;/filter-name&gt;
+          &lt;url-pattern&gt;/*&lt;/url-pattern&gt; 
+        &lt;!-- &lt;url-pattern&gt;*.css&lt;/url-pattern&gt;
+         &lt;url-pattern&gt;*.htm&lt;/url-pattern&gt;
+          &lt;url-pattern&gt;*.html&lt;/url-pattern&gt;
+          &lt;url-pattern&gt;*.jsp&lt;/url-pattern&gt;
+         &lt;url-pattern&gt;*.do&lt;/url-pattern&gt;
+         &lt;url-pattern&gt;*.action&lt;/url-pattern&gt; --&gt;
+     &lt;/filter-mapping&gt;</pre> <p>这里只单独列出了 sitemesh 的配置和 html 压缩的配置 因为就是 sitemesh 除了问题 那篇文章中也说到了</p> <p>----------</p> <p>跑起来</p> <p>html 是被压缩了但是压缩的只是部分 也就是 &lt;decorator:body/&gt; 被sitemesh引入的部分 而且url还必须是jsp或者html才能被压缩 struts 或者其他被过滤的链接 都不会被压缩。</p> <p>试了很多方法都不行 仍然是这样 包括 升级了sitemesh 后来想想也就作罢 又时间在看看</p> <p>今天 恰好又有了兴趣 来看看</p> <p>忽然间发现一个问题这个html压缩的过滤器是找到这个页面的uri然后对其进行压缩 在写出 因为sitemesh在前面操作过这个页面 那么到后面的这个html压缩的过滤器 这个时候 uri 不是这个页面的真正uri了 而是被sitemesh过滤后的uri(那篇文章中也有提到)，这么一想 如果让html压缩的过滤器先跑 在去跑sitemesh的过滤器，然后就试了以下，然后果然可以了！！！！！！！</p> <p>----</p> <p>解决方法就是 把html压缩过滤器放到sitemesh的前面就行了</p> <p>原流程 jsp-&gt;sitemesh-&gt;htmlcompressor</p> <p>现流程 jsp-&gt;htmlcompressor-&gt;sitemesh</p> <p>有俩个jsp文件 a.jsp b.jsp</p> <p>a.jsp 是 sitemesh 的模板文件 b.jsp 值 sitemesh 的body文件</p> <p>a.jsp</p> <pre>&lt;html&gt;
+     &lt;head&gt;
+        &lt;title&gt;&lt;decorator:title default="test"/&gt; - sitemesh&lt;/title&gt;
+     &lt;/head&gt;
+     &lt;body&gt;
+       &lt;decorator:body/&gt;
+     &lt;/body&gt;
+&lt;/html&gt;</pre> <p>b.html</p> <pre>&lt;html&gt;
+
+    &lt;head&gt;
+        &lt;title&gt;html compressor&lt;/title&gt;
+    &lt;/head&gt;
+
+     &lt;body&gt;
+           &lt;h1&gt;Hello World !&lt;/h1&gt;
+           &lt;h2&gt;Welcome !&lt;/h2&gt; 
+     &lt;/body&gt;
+&lt;/html&gt;</pre> <p>之前流程</p> <p>sitemesh 先合并 页面</p> <pre>&lt;html&gt;
+     &lt;head&gt;
+        &lt;title&gt;test - sitemesh&lt;/title&gt;
+     &lt;/head&gt;
+     &lt;body&gt;
+        &lt;h1&gt;Hello World !&lt;/h1&gt;
+        &lt;h2&gt;Welcome !&lt;h2&gt;
+     &lt;/body&gt;
+&lt;/html&gt;</pre> <p>html 压缩过滤器 在进行压缩</p> <pre>&lt;html&gt;
+     &lt;head&gt;
+        &lt;title&gt;test - sitemesh&lt;/title&gt;
+     &lt;/head&gt;
+     &lt;body&gt;
+        &lt;h1&gt;Hello World !&lt;/h1&gt;&lt;h2&gt;Welcome !&lt;h2&gt;
+     &lt;/body&gt;
+&lt;/html&gt;</pre> <p> </p> <p>只能压缩 b.jsp 中的内容 而且页面还必须是要访问 b.jsp 才可以</p> <p>第二种</p> <p>html 压缩过滤器 先压缩html</p> <p>a.jsp</p> <pre>&lt;html&gt;&lt;head&gt;&lt;title&gt;&lt;decorator:title default="test"/&gt; - sitemesh&lt;/title&gt;&lt;/head&gt;&lt;body&gt;&lt;decorator:body/&gt;&lt;/body&gt;&lt;/html&gt;</pre> <p>d.jsp</p> <pre>&lt;html&gt;&lt;head&gt;&lt;title&gt;html compressor&lt;/title&gt;&lt;/head&gt;&lt;body&gt;&lt;h1&gt;Hello World !&lt;/h1&gt;&lt;h2&gt;Welcome !&lt;/h2&gt;&lt;/body&gt;&lt;/html&gt;</pre> <p>之后 sitemesh 在合并</p> <pre>&lt;html&gt;&lt;head&gt;&lt;title&gt;html compressor - sitemesh&lt;/title&gt;&lt;/head&gt;&lt;body&gt;&lt;h1&gt;Hello World !&lt;/h1&gt;&lt;h2&gt;Welcome !&lt;/h2&gt;&lt;/body&gt;&lt;/html&gt;</pre> <p>这样 最终 所有的html代码都会被压缩</p> <p> </p> <p>-----</p> <p>修改后的web.xml 如下</p> <pre>     &lt;!-- html 压缩过滤器 --&gt;
+     &lt;filter&gt;
+         &lt;filter-name&gt;htmlCompressorFilter&lt;/filter-name&gt;
+         &lt;filter-class&gt;com.kunda.filter.HtmlCompressorFilter&lt;/filter-class&gt;
+     &lt;/filter&gt;
+     &lt;filter-mapping&gt;
+         &lt;filter-name&gt;htmlCompressorFilter&lt;/filter-name&gt;
+         &lt;url-pattern&gt;/*&lt;/url-pattern&gt; 
+     &lt;!--    &lt;url-pattern&gt;*.css&lt;/url-pattern&gt;
+         &lt;url-pattern&gt;*.htm&lt;/url-pattern&gt;
+          &lt;url-pattern&gt;*.html&lt;/url-pattern&gt;
+          &lt;url-pattern&gt;*.jsp&lt;/url-pattern&gt;
+         &lt;url-pattern&gt;*.do&lt;/url-pattern&gt;
+         &lt;url-pattern&gt;*.action&lt;/url-pattern&gt; --&gt;
+     &lt;/filter-mapping&gt;
+
+......
+
+    &lt;!-- 统一样式    sitemesh  --&gt;
+    &lt;filter&gt;
+        &lt;filter-name&gt;sitemesh&lt;/filter-name&gt;
+        &lt;filter-class&gt;com.opensymphony.module.sitemesh.filter.PageFilter&lt;/filter-class&gt;
+        &lt;!--&lt;filter-class&gt;org.sitemesh.config.ConfigurableSiteMeshFilter&lt;/filter-class&gt;--&gt;
+    &lt;/filter&gt;
+    &lt;filter-mapping&gt;
+        &lt;filter-name&gt;sitemesh&lt;/filter-name&gt;
+        &lt;url-pattern&gt;*.htm&lt;/url-pattern&gt;
+        &lt;url-pattern&gt;*.html&lt;/url-pattern&gt;
+        &lt;url-pattern&gt;*.do&lt;/url-pattern&gt;
+        &lt;url-pattern&gt;*.action&lt;/url-pattern&gt;
+        &lt;url-pattern&gt;*.jsp&lt;/url-pattern&gt;
+    &lt;/filter-mapping&gt;</pre> <p>这样 所有的页面都会被压缩</p> <p> </p> <p>不过又产生了一个问题 。。。。。</p> <p>因为项目中使用了 dwr 这个过滤器也顺便把dwr生成的js给压缩了 。。。</p> <p>导致 dwr 不能使用</p> <p>俩个解决办法</p> <p>一个是把dwr的配置拿到html压缩的配置上面</p> <p>一个是在 html压缩过滤其中 的url-pattern 设置压缩的后缀名 不要写js就不会被压缩</p> <pre>     &lt;!-- html 压缩过滤器 --&gt;
+     &lt;filter&gt;
+         &lt;filter-name&gt;htmlCompressorFilter&lt;/filter-name&gt;
+         &lt;filter-class&gt;com.kunda.filter.HtmlCompressorFilter&lt;/filter-class&gt;
+     &lt;/filter&gt;
+     &lt;filter-mapping&gt;
+         &lt;filter-name&gt;htmlCompressorFilter&lt;/filter-name&gt;
+&lt;!--          &lt;url-pattern&gt;/*&lt;/url-pattern&gt; --&gt;
+         &lt;url-pattern&gt;*.css&lt;/url-pattern&gt;
+         &lt;url-pattern&gt;*.htm&lt;/url-pattern&gt;
+          &lt;url-pattern&gt;*.html&lt;/url-pattern&gt;
+          &lt;url-pattern&gt;*.jsp&lt;/url-pattern&gt;
+         &lt;url-pattern&gt;*.do&lt;/url-pattern&gt;
+         &lt;url-pattern&gt;*.action&lt;/url-pattern&gt;
+     &lt;/filter-mapping&gt;</pre> <p>当然 我没看到自己写的js或者css被压缩 。。。。。。</p> <p> </p> <p>好了 html 压缩的配置就到这了 这样 也就会压缩html了 到前台的html代码就会被压缩成一行</p> <p>html被压缩的站点 最常见的是 google 了 google 的几乎所有页面都是被压缩过的</p> <p> </p> <p>这样 提高了效率 也减慢了效率</p> <p>提高的是浏览器解析的效率 减慢的是服务器的效率</p> <p>就像那篇文章中说的</p> <blockquote> <p> 和起初预想的一样，这个Filter出现了性能问题，使用大量的正则与替换文本影响到了性能。12kb的网页用了40ms才过滤完。</p> </blockquote> <p> </p> <p>服务器的压力会增大 有所的就有所失 。。。。。。</p> <p>只能想想 用其他的办法来优化这个问题了。</p> <p>试个人而选吧。</p> <p> </p> <p><a title="HtmlCompressor" href="http://pan.baidu.com/s/103jL6" target="_blank">HtmlCompressor.zip</a></p> <p>(这个也是在网上找到的 在哪忘了 目测 直接搜 htmlcompressor 就会搜到， 也是一片博文)</p> <p> </p> <p> </p> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/compressor">compressor</a></li> <li><a href="/tag/filter">filter</a></li> <li><a href="/tag/html">html</a></li> <li><a href="/tag/j2ee">j2ee</a></li> <li><a href="/tag/java">java</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-10-10T13:43:54.000Z">October 10, 2013</time> <h1><a href="/post/java-web-session-set-time/">java web session 过期时间设置</a></h1> </header> <section class="post-main"><p>设置session时间有如下三种方式：</p> <p><strong>以tomcat为例，修改service.xml设置session过期时间</strong></p> <p>在 tomcat/conf/service.xml 文件中定义如下：</p> <pre>&lt;Context path="/test" docBase="/test"     
+　　defaultSessionTimeOut="3600" isWARExpanded="true"     
+　　isWARValidated="false" isInvokerEnabled="true"     
+　　isWorkDirPersistent="false"/&gt;</pre> <p>defaultSessionTimeOut="3600″ -这个是失效时间</p> <p> </p> <p><strong>在项目的web.xml中设置</strong></p> <p>在项目的web.xml中添加如下：(单位为分钟)</p> <pre>&lt;session-config&gt;     
+     &lt;session-timeout&gt;20&lt;/session-timeout&gt;     
+&lt;/session-config&gt;</pre> <p> </p> <p><strong>在程序中定义</strong></p> <p>在使用session的地方设置session的存活时间</p> <pre>session.setMaxInactiveInterval(30*60);</pre> <p> </p> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/j2ee">j2ee</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/session">session</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-08-09T20:04:43.000Z">August 9, 2013</time> <h1><a href="/post/paging-custom-tag/">分页自定义标签</a></h1> </header> <section class="post-main"><p> 嗯，很久都没有写文章了，貌似快一个月了。。。。 </p> <p> 这整个7月 很。。。。 </p> <p> 什么世道。。。。。 </p> <p> 好吧，不抱怨了，抱怨也没什么用啊。。 </p> <p> 发一个这几天才写的公共部分代码，分页。 </p> <p> 几乎每一个网站都会有分页的，那么前台显示中是要显示页码的，这样每次遇到页码都要重新写一次很麻烦，后来想到了包含一个公共的页面这样就将公共代码集中到一个页面中，可是虽然这样比每次都写方便，但是这样写的话那个页码的页面会非常的繁琐，假如使用了 struts2 的标签，和el表达式，做这些页码判断的话，会有很长很长的篇幅去搞，而且还不一定通用，万一哪系统没用struts2或者el表达式，那又得麻烦；这里写的这种方式是使用那个自定义标签来实现公共分页页码的功能，关于自定义标签，这个功能还是很强大的，如果不明白的话，可以到网路上搜一搜。 </p> <p> </p> <p> 分页自定义标签开始： </p> <p> 建立java文件 PagingTag.java 在目录 name.iaceob.taglib </p> <pre>
+package name.iaceob.taglib;
+
+import java.io.IOException;
+
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.TagSupport;
+
+
+/**
+ * 
+ * 分页自定义标签，显示分页页码
+ * @version 1.2
+ * @author 生物烯丙菊
+ *
+ */
+public class PagingTag extends TagSupport  {
+
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4378177896058045032L;
+	
+	private String currentPage = "1"; // 当前页 传递值 默认为1
+	private String totalPage; // 总页数 传递值
+	private String pageSize; //每页记录数
+	private String allRow; // 总记录数
+	private String showsNumber = "10"; // 显示页码数量
+	private String isOpenForm = "false"; // 是否开始跳转页面 form 表单
+	private String parameter = ""; // 额外的get参数
+	
+	// 
+	private String customInfo = "first#&amp;amp;lt;##previous#&amp;amp;lt;&amp;amp;lt;##next#&amp;amp;gt;&amp;amp;gt;##last#&amp;amp;gt;##submit#u8df3u8f6c##pagingInfo#u9875u6570uff1a##pageSize#u6570u636eu91cfuff1a"; // 自定义显示信息
+	private String customHtml = ""; // 自定义分页html(下版本)
+	
+	
+	
+		
+	
+	/**
+	 * 
+	 * 实现分页页码
+	 * @author 生物烯丙菊
+	 */
+	@SuppressWarnings("static-access")
+	public int doStartTag() throws JspException {
+		// TODO Auto-generated method stub
+		
+		int currentPage = Integer.parseInt(this.currentPage); // 当前页
+		int totalPage = Integer.parseInt(this.totalPage); //总页数
+		int showsNumber = Integer.parseInt(this.showsNumber); // 显示页码的数量
+		
+		boolean isOpenForm = Boolean.valueOf(this.isOpenForm); // 强制转换为boolean类型
+		
+		// 如果 parameter 为空 也就是没有额外的get参数，那么就让 parameter为空
+		String parameter;
+		if (this.parameter.equals("")) {
+			parameter = "";
+		}  else {
+			parameter = this.parameter;
+			// System.out.println("额外参数：" + parameter);
+		}
+		
+		/*
+		 * 判断当前页是否大于最大页数和小于最小页数 如果是 则让当前页等于最大或者最小页数
+		 */
+		if (currentPage &amp;lt; 1) {
+			currentPage = 1;
+		} else if (currentPage &amp;gt; totalPage) {
+			currentPage = totalPage;
+		}
+		
+		
+		/*
+		 * 打印页码到页面
+		 */
+		try {
+			this.pageContext.getOut().print("&amp;lt;ul id="pager"&amp;gt;");
+			
+			this.pageContext.getOut().print(this.getPagingLeft(currentPage, parameter, this.customInfo)); // 打印左侧上一页以及第一页
+			this.pageContext.getOut().print(this.getPagingCenter(showsNumber, currentPage, totalPage, parameter)); //打印中间页码内容
+			this.pageContext.getOut().print(this.getPagingRight(currentPage, totalPage, parameter, this.customInfo)); // 打印右侧下一页以及最后一页
+			this.pageContext.getOut().print(this.getOpenForm(isOpenForm, currentPage, parameter, this.customInfo));
+			this.pageContext.getOut().print(this.getPageNumberInfo(currentPage, totalPage, this.customInfo)); // 打印页码信息
+			this.pageContext.getOut().print(this.getPageSize(this.pageSize, this.allRow, this.customInfo)); // 打印每页信息量
+			
+			this.pageContext.getOut().print("&amp;lt;/ul&amp;gt;");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} // 打印到页面中
+		
+		return EVAL_PAGE;
+	}
+
+
+	public static String getPagingLeft(int currentPage, string parameter, String customInfo) {
+           .....
+        }
+  
+      ......
+	
+}</pre> <p> </p> <p> 嗯，因为篇幅问题，代码较多具体的实现代码这里没有贴，下面会给个链接供下载。 </p> <p> 这个java文件首先继承了TagSupport，这是写自定义标签必须继承的类。 </p> <p> 之后重写(是重写吧。。。)doStartTag方法实现标签功能 </p> <p> this.pageContext.getOut().print( .... ); 打印内容到页面中。 </p> <p> 具体的实现方法在下面写的方法中 getPagingLeft getPagingCenter 等等。 </p> <p> 功能实现了便在配置前台的标签的信息了 </p> <p> 在WEB-INF下新建一个cabbage.tld 内容如下 </p> <pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;taglib xmlns="http://java.sun.com/xml/ns/j2ee" 
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee web-jsptaglibrary_2_0.xsd" 
+        version="2.0"&gt;  
+	
+	&lt;tlib-version&gt;1.0&lt;/tlib-version&gt;
+	&lt;short-name&gt;cabbage&lt;/short-name&gt;
+	&lt;uri&gt;http://blog.iaceob.name&lt;/uri&gt;
+
+
+
+	&lt;!-- =====================分页页码========================== --&gt;
+	&lt;tag&gt;
+		&lt;name&gt;paging&lt;/name&gt;
+		&lt;tag-class&gt;name.iaceob.taglib.PagingTag&lt;/tag-class&gt;
+		&lt;!-- ========传递当前页============= --&gt;
+		&lt;attribute&gt;
+			&lt;name&gt;currentPage&lt;/name&gt;
+	        &lt;required&gt;true&lt;/required&gt;
+	        &lt;rtexprvalue&gt;true&lt;/rtexprvalue&gt;
+		&lt;/attribute&gt;
+		&lt;!-- ========传递总页数============= --&gt;
+		&lt;attribute&gt;
+			&lt;name&gt;totalPage&lt;/name&gt;
+	        &lt;required&gt;true&lt;/required&gt;
+	        &lt;rtexprvalue&gt;true&lt;/rtexprvalue&gt;
+		&lt;/attribute&gt;
+		&lt;!-- =========每页记录数============ --&gt;
+		&lt;attribute&gt;
+			&lt;name&gt;pageSize&lt;/name&gt;
+			&lt;required&gt;false&lt;/required&gt;
+			&lt;rtexprvalue&gt;true&lt;/rtexprvalue&gt;	
+		&lt;/attribute&gt;
+		&lt;!-- =========总记录数============== --&gt;
+		&lt;attribute&gt;
+			&lt;name&gt;allRow&lt;/name&gt;
+			&lt;required&gt;false&lt;/required&gt;
+			&lt;rtexprvalue&gt;true&lt;/rtexprvalue&gt;	
+		&lt;/attribute&gt;
+		&lt;!-- ==========显示数量============ --&gt;
+		&lt;attribute&gt;
+			&lt;name&gt;showsNumber&lt;/name&gt;
+			&lt;required&gt;false&lt;/required&gt;
+			&lt;rtexprvalue&gt;true&lt;/rtexprvalue&gt;
+		&lt;/attribute&gt;
+		&lt;!-- ==========是否开启快捷跳转页面 form表单========== --&gt;
+		&lt;attribute&gt;
+			&lt;name&gt;isOpenForm&lt;/name&gt;
+			&lt;required&gt;false&lt;/required&gt;
+			&lt;rtexprvalue&gt;true&lt;/rtexprvalue&gt;
+		&lt;/attribute&gt;
+		&lt;!-- ===========额外get参数========== --&gt;
+		&lt;attribute&gt;
+			&lt;name&gt;parameter&lt;/name&gt;
+			&lt;required&gt;false&lt;/required&gt;
+			&lt;rtexprvalue&gt;true&lt;/rtexprvalue&gt;
+		&lt;/attribute&gt;
+		&lt;!-- ==============自定义信息============= --&gt;
+		&lt;attribute&gt;
+			&lt;name&gt;customInfo&lt;/name&gt;
+			&lt;required&gt;false&lt;/required&gt;
+			&lt;rtexprvalue&gt;true&lt;/rtexprvalue&gt;
+		&lt;/attribute&gt;
+		
+	&lt;/tag&gt;
+
+&lt;/taglib&gt;
+</pre> <p> </p> <p> </p> <p> 具体哪个属性是什么意思上面也描述了 </p> <p> 这个tld文件配置的便是供前台使用标签信息 </p> <p> 首先tag标签下面的name标签中的内容便是自定义标签中的名字 </p> <p> attribute 则是这个表中的各个属性 name 是属性名称 required 是否必须 rtexprvalue 是否可以通过传值的方式拿到值 </p> <p> 这其中 分页的页码计算 必须用到当前页和总页数，所以说只有这俩个属性才是必须的，其他的都可以不用。 </p> <p> 当这个配置好了之后在web.xml中加载这个标签(在有些地方看好像都不用这么做，直接找到这个标签的位置，而在web.xml中配置的话就能拿到一个相对的链接) </p> <pre>
+	 
+	 &lt;!-- ============自定义标签定义===============  --&gt;
+	 &lt;jsp-config&gt;
+	 	&lt;!-- 格式化时间戳标签 --&gt;
+	 	&lt;taglib&gt;
+	 		&lt;taglib-uri&gt;/cabbage&lt;/taglib-uri&gt;
+	 		&lt;taglib-location&gt;/WEB-INF/cabbage.tld&lt;/taglib-location&gt;
+	 	&lt;/taglib&gt;
+	 &lt;/jsp-config&gt;
+
+	 &lt;!-- ============自定义标签定义===============  --&gt;</pre> <p> </p> <p> 这些都配置完毕了，那么就可以在前台使用啦 </p> <p> 在页面顶部导入这个标签 </p> <pre>
+
+&lt;%@ taglib prefix="cabbage" uri="/cabbage" %&gt; </pre> <p> </p> <p> 下面就可以在需要的地方使用了 使用方法如下 </p> <p> 嗯 数据都是测试用的 所以就直接制定了 </p> <pre>
+
+
+
+	&lt;%
+		String customInfo = "first#&lt;i&gt;&lt;/i&gt;##previous#&lt;i&gt;&lt;/i&gt;##next#&lt;i&gt;&lt;/i&gt;##last#&lt;i&gt;&lt;/i&gt;##submit#提交##pagingInfo#页数##pageSize#数据量";
+		String totalPage = "10000";
+		String pageSize = "20";
+		String allRow = "200000";
+		String showsNumber = "6";
+	 %&gt;
+
+
+
+
+	&lt;cabbage:paging 
+		currentPage="${param.page != null ? param.page : 1 }"
+		totalPage="&lt;%=totalPage %&gt;" 
+		pageSize="&lt;%=pageSize %&gt;" 
+		allRow="&lt;%=allRow %&gt;"
+		showsNumber="&lt;%=showsNumber %&gt;"
+		isOpenForm="true"
+		parameter="welcome=${param.welcome }&amp;type=${param.type }&amp;server=${param.server }&amp;browers=${param.browers }&amp;language=${param.language }"
+		customInfo="&lt;%=customInfo %&gt;"
+		
+	/&gt; </pre> <p> </p> <p> 这样就能看到分页了。效果如下图： </p> <p> 。。。。 坑爹 不能上传了 刚好现在域名也还没搞好，以后再传吧 </p> <p> </p> <p> </p> <p> 这个分页标签是之前写的java的快速开发框架中的一部分，这次又对框架进行了一次优化和整理，下次一起挂上来。 </p> <p> 下面是这个分页标签的源码包，嗯，要注意，下载的这个肯定是跑不起来的，因为只是简单的将需要的文件打包的，不过想测试跑起来也很容易，自己建个工程吧文件拷进去测试下就行了。详细的话可以在后面发布的框架中看到。 </p> <p> 而且这里描述的也不清楚，具体的详细描述，代码中有注释还挺多的，在那展示页面中也有详细的描述，相信很容易看懂。 </p> <p> </p> <p> </p> <p> <a href="http://pan.baidu.com/share/link?shareid=2809058181&amp;uk=1409985539" target="_blank">http://pan.baidu.com/share/link?shareid=2809058181&amp;uk=1409985539</a> </p> <p> </p> <p> </p> <p> 2013-08-09 </p> <p> 生物烯丙菊</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/custom">custom</a></li> <li><a href="/tag/j2ee">j2ee</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/page">page</a></li> <li><a href="/tag/paging">paging</a></li> <li><a href="/tag/tag">tag</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-06-13T23:37:17.000Z">June 13, 2013</time> <h1><a href="/post/dwr-use-mode-2/">dwr 使用方法-返回javabean数据</a></h1> </header> <section class="post-main"><p>dwr 入门篇 <a href="/post/dwr-use-mode-1/">dwr 使用方法-初步</a>这段时间在使用的时候遇到了些问题，不过最后也解决了，详细说说dwr使用的步骤和方法。dwr.xml的配置</p> <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE dwr PUBLIC 
+    "-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN" 
+    "http://www.getahead.ltd.uk/dwr/dwr20.dtd"&gt;    
+	&lt;dwr&gt;			
+		&lt;allow&gt;
+			&lt;!-- creator为spring表示根据spring创建一个方法，JavaScript属性表示页面引用时的脚本对象名 --&gt;
+			&lt;create creator="spring" javascript="About"&gt;
+				&lt;!--这里的value值与spring中id="userBIZ"是同一个值 --&gt;
+				&lt;param name="beanName" value="aboutAction" /&gt;
+			&lt;/create&gt;
+			&lt;!--方法具有实体类返回值，那么就要为其创建一个bean，这个类就要根据match所指向的实体类进行创建 --&gt;
+			&lt;convert match="com.iaceob.entity.About" converter="bean"&gt;&lt;/convert&gt;
+		&lt;/allow&gt;	
+	&lt;/dwr&gt;</pre> <p> </p> <p>这里和之前写的不同的地方就是这里将事物交给spring管理了，就不必在写具体的类的地址了，写相应的类交给spring的id，这里就能或者类的地址找到相应的方法。</p> <p>这里dwr所找的是aboutAction也就对应着我项目中的com.iceob.action.AboutAction 所以到里面看看相应的方法，这里也可以不是action，直接指向dao就能直接操作数据库了，这里使用的是action，根据情况而定</p> <pre>	/**
+	 * 用于dwr访问数据action
+	 * @return About
+	 * @throws Exception
+	 * @author 生物烯丙菊
+	 */
+	public About getAboutData() throws Exception {
+		this.about = this.aboutService.getAboutData(1);
+		return this.about;
+	}</pre> <p> </p> <p>这里只使用了getAboutData方法，写这个方法要注意的是这个方法返回的是about这个实体类(之前有实例化)，因为这里查询的数据是是放到这个实体类，然后让前台去调用的，dwr也可以直接调用action的方法，不过通常action返回的是一个字符串然后交给struts2的配置文件去选择显示什么页面，也就不能让dwr显示数据。</p> <p>这个时候如果dwr的调试模式开启的话，就可以到调试页面去查看了，如下图</p> <p><img src="/img/dwr-use-mode-2/1.png"></p> <p> </p> <p>可以看到有 getAbout() Us() getAboutData() 这三个方法，</p> <p>getAbout() 实例化的about实体类的get方法</p> <p>us() 前台页面action方法</p> <p>getAboutData() 新建的dwr查找数据的方法</p> <p>这个时候如果点击getAbout() 后面的按钮的话返回的肯定是null</p> <p><img src="/img/dwr-use-mode-2/2.png"></p> <p>是因为这里about实体类还没有赋值，查询出来的当然是空<br/> 现在点击us方法</p> <p><img src="/img/dwr-use-mode-2/3.png"></p> <p>返回的是success，因为这里是前台使用的action方法，返回的string类型的字符串。</p> <p>这个时候在来点击getAbout() 后面的按钮</p> <p><img src="/img/dwr-use-mode-2/4.png"></p> <p>可以看到这个时候点击就有值了，是因为之前点击了us方法，us方法中将值赋给了about实体类，但是因为us是返回的string类型，就没有弹出窗口显示值了，现在在点击getabout的时候就有值了，同样点击getaboutdata方法之后getaboutdata也会有值，但是因为getaboutdata方法返回的就是about实体类，所以会直接弹出窗口显示值。</p> <p><img src="/img/dwr-use-mode-2/5.png"></p> <p> <br/> 上面说的可能有点饶了，要根据自己的代码环境去理解吧，不同环境不同对待。</p> <p>测试通过了接下来解释在网页显示的问题了</p> <p>页面中手先需要导入js js的地址在测试页面中都有给出， 分别是 util.js engine.js xxx.js // 最后一个js是名称是根据你在dwr.xml中的配置而得来的。</p> <p>导入js文件之后</p> <p>html中写代码如下</p> <pre>                            &lt;script type="text/javascript"&gt;
+                       	     &lt;!--
+                            	$(function(){
+                            		  About.getAboutData(callBackMenthod);    
+                            	});	                           	
+                            	
+                            	function callBackMenthod(data) {                            	                            	
+					document.getElementById("HomeAbout").innerHTML=data.content;									 
+                            	}                            	
+                            //--&gt;
+                            &lt;/script&gt;
+                            &lt;div id="HomeAbout"&gt;&lt;/div&gt;</pre> <p> </p> <p>上面的js流程就是</p> <p>$(function(){ }); // 让页面加载的时候自动运行使用了jquery</p> <p>About.getAboutData(callBackMenthod); // About便是那个自动生成的js的文件名 .getAboutData 是需要使用的方法callBackMenthod 是回调函数 这样就执行了dwr去调用java的方法去查询数据库，然后将至回调给指定的函数，让该函数去完成相应的事物</p> <p>function callBVackMenthod(data){ } // 回调函数，dwr 执行后会将值交给这个函数，执行相关操作<br/> document.getElementById("HomeAbout").innerHTML=data.content; // 将data中的content的内容写入到id为HomeAbout的标签中去<br/> </p> <p>这里说一下data</p> <p>data 就是dwr查询后的值，这里alert(data); 会发现弹出的窗口是一个object，因为返回的是json类型的数据</p> <p>{aboid:1,content:"u8FD9u91CCu662Fu5185u5BB9″,createtime:1371057600}</p> <p>需要使用返回值的时候</p> <pre>//其中data接收方法的返回值
+
+//对于JavaBean返回值，有两种方式处理
+
+//不知道属性名称时，使用如下方法
+
+for(var property in data){
+       alert("property:"+property);
+       alert(property+":"+data[property]);
+}
+
+//知道属性名称时，使用如下方法
+
+alert(data.username);
+alert(data.password);</pre> <p> </p> <p> </p> <p>返回javabean的方式使用方法就如上所述，具体使用的使用要具体对待，代码这东西不是一成不变的，dwr还有一种是返回list形式的，后面也会用到，等用到的时候在来写吧。</p> <p> </p> <p>dwr 的百科目录上介绍的就很好，建议去看看http://baike.baidu.com/view/73492.htm</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/ajax">ajax</a></li> <li><a href="/tag/dwr">dwr</a></li> <li><a href="/tag/j2ee">j2ee</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/jquery">jquery</a></li> <li><a href="/tag/js">js</a></li> <li><a href="/tag/spring">spring</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-06-13T23:33:54.000Z">June 13, 2013</time> <h1><a href="/post/dwr-use-mode-1/">dwr 使用方法-初步</a></h1> </header> <section class="post-main"><p>-------文章是从之前的博客中拷贝过来的，这次又使用dwr，也没用之前的博客了，那边的文章也没打算都搞过来，只感觉学习是循序渐进的如果一看dwr就从一些复杂的地方开始肯定不能很好的使用</p> <p><a href="http://hi.baidu.com/iaceob/item/5e5fbdfdca420400c7dc456e" target="_blank">http://hi.baidu.com/iaceob/item/5e5fbdfdca420400c7dc456e</a></p> <p> </p> <p>dwr 在java web开发中使用到主要是用于改善web页面与Java类交互的远程服务器端Ajax开源框架。</p> <p>这里是让dwr实现简单的hello world实例。</p> <p>首先导入dwr的jar包</p> <p>然后创建java类</p> <p>Hello.java</p> <pre>package name.iaceob.ajax.dwr;
+public class Hello {
+    public String sayHello(String name) {
+        return name + "", hello world!;
+    }
+}</pre> <p> </p> <p>web.xml</p> <pre>&lt;!-- Ajax Dwr 框架 --&gt;
+&lt;servlet&gt;
+    &lt;servlet-name&gt;dwr-invoker&lt;/servlet-name&gt;
+    &lt;servlet-class&gt;org.directwebremoting.servlet.DwrServlet&lt;/servlet-class&gt;
+    &lt;!-- 是否允许调试，如果要在浏览器中调试必须设置为 true 项目应用时应设为 false --&gt;
+    &lt;init-param&gt;
+        &lt;param-name&gt;debug&lt;/param-name&gt;
+        &lt;param-value&gt;true&lt;/param-value&gt;
+    &lt;/init-param&gt;
+    &lt;!-- 是否进行日志管理，如果是要设置此参数，通常可以省略 --&gt;
+    &lt;init-param&gt;
+        &lt;param-name&gt;logLevel&lt;/param-name&gt;
+        &lt;param-value&gt;WARN&lt;/param-value&gt;
+    &lt;/init-param&gt;
+    &lt;!-- 如果允许跨域请求，则必须将此值设置为false，默认为true --&gt;
+    &lt;init-param&gt;
+        &lt;param-name&gt;crossDomainSessionSecurity&lt;/param-name&gt;
+        &lt;param-value&gt;false&lt;/param-value&gt;
+    &lt;/init-param&gt;
+    &lt;!-- //这个是DWR2.0必须的,不然会报java.lang.IllegalArgumentException --&gt;
+    &lt;init-param&gt; 
+       &lt;param-name&gt; classes &lt;/param-name&gt;
+       &lt;param-value&gt; java.lang.Object &lt;/param-value&gt;
+    &lt;/init-param&gt;
+&lt;/servlet&gt;    
+&lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;dwr-invoker&lt;/servlet-name&gt;
+    &lt;url-pattern&gt;/dwr/*&lt;/url-pattern&gt;
+&lt;/servlet-mapping&gt;</pre> <p>在web.xml的同等级目录下创建dwr.xml文件</p> <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE dwr PUBLIC 
+    "-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN" 
+    "http://www.getahead.ltd.uk/dwr/dwr20.dtd"&gt;
+        
+&lt;dwr&gt;
+    &lt;allow&gt;
+        &lt;create creator="new" javaascript="hello"&gt;
+            &lt;param name="class" value="name.iaceob.ajax.dwr.Hello"&gt;&lt;/param&gt;
+            &lt;include method="sayHello" /&gt;
+        &lt;/create&gt;
+    &lt;/allow&gt;
+&lt;/dwr&gt;</pre> <p>这样配置就完成了，部署的tomcat的环境中，接下来在浏览器地址栏输入</p> <p>http://localhost:8080/dwrtest/dwr</p> <p>便能看到 dwr 测试连接<br/> 框架的最终目的，是为了实现需要的功能，接下来就是在页面上利用dwr框架实现ajax了。dwrsayhello.html</p> <pre>&lt;!DOCTYPE HTML&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;dwrsayhello.html&lt;/title&gt;
+          
+    &lt;meta http-equiv="keywords" content="keyword1,keyword2,keyword3"&gt;
+    &lt;meta http-equiv="description" content="this is my page"&gt;
+    &lt;meta http-equiv="content-type" content="text/html; charset=UTF-8"&gt;
+          
+    &lt;script type="text/javascript" src="/dwrtest/dwr/interface/Hello.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" src="/dwrtest/dwr/engine.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" src="/dwrtest/dwr/util.js"&gt;&lt;/script&gt;
+      
+    &lt;script type="text/javascript"&gt;
+      function getMessage(txt) {
+          var name=document.getElementById(txt).value;
+          Hello.sayHello(name,callBack);
+      }
+      function callBack(data) {
+          alert(data);
+          var Div = document.getElementById('message');
+          Div.innerText = data;
+          Div.style.display = "block";
+      }
+    &lt;/script&gt;
+          
+  &lt;/head&gt;
+        
+  &lt;body&gt;
+        &lt;center&gt;
+            &lt;input type="text" id="name" name="name"&gt;
+            &lt;input type="button" value="从服务器端取值" onclick="getMessage('name')"&gt;
+        &lt;/center&gt;
+        &lt;dir id="message"&gt;&lt;/dir&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</pre> <p>效果如下</p> <p> </p> <p><img src="/img/dwr-use-mode-1/1.png"><br/> 这样就能在页面实现ajax了。<br/> 这是我在学习时的编码包，包内有些文件和这里描述的不相同，但是同一个意思，也有较多的测试页面等等。最终实现了。<br/> 如果用我的包的话在浏览器输入 http://localhost:8080/experiment/dwrsayhello.html 便可测试。<br/> <a title="http://pan.baidu.com/share/link?shareid=249564&amp;uk=1409985539" href="http://pan.baidu.com/share/link?shareid=249564&amp;uk=1409985539" target="_blank">http://pan.baidu.com/share/link?shareid=249564&amp;uk=1409985539</a><br/> dwr功能很强大，这只是一个很简单的案例，为了学会使用这个框架，能更好的应用这个框架。学无止境！</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/ajax">ajax</a></li> <li><a href="/tag/dwr">dwr</a></li> <li><a href="/tag/j2ee">j2ee</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/jquery">jquery</a></li> <li><a href="/tag/ssh">ssh</a></li> </ul> </footer> </article> <menu class="page"> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

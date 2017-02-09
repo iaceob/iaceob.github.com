@@ -1,0 +1,367 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>生物烯丙菊 - 达文西手电筒 - 第 3 頁</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2015-03-29T14:43:59.000Z">March 29, 2015</time> <h1><a href="/post/reduction/">減量</a></h1> </header> <section class="post-main"><p>等价交换.</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/undefined">undefined</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2015-03-24T17:58:49.000Z">March 24, 2015</time> <h1><a href="/post/turntable/">轉盤.</a></h1> </header> <section class="post-main"><p>從前幾天開始, 就一直發警告郵件給我說服務器的 CPU 到 108% (不知道是如何計算出來的這個值..), 並不知道是何原因(很惱怒).</p> <p>然後倆天前登陸到服務器後, 重啓了下, 之後發生了各種不愉快的事情.</p> <p>丟了好多東西, 找不回來了(不知道怎麼找...).</p> <p>那麼具體情況這麼個樣子, 服務器裝有 Mysql 和 Postgresql 倆個數據庫(貌似有建議說不要在一臺機器上裝多個數據庫的來着).</p> <p>重启了之后俩个数据库都无法启动, 各种报错, 良久也未发现是什么问题, 没辙重装了就, 然后各种备份.</p> <p>重装后添加组以及账户</p> <pre>// 添加组
+# groupadd master
+// 添加账户 并指定到 master 组和 sudo 组 拥有 sudo 权限
+# useradd username -g master -G sudo -m</pre> <p>也可以在添加账户后在追加用户的组</p> <pre>usermod username -G sudo</pre> <p>服务器的时区并非为东八区, 这样在以后程序在获取时间的时候就和当地时间时错误的.</p> <pre>dpkg-reconfigure tzdata</pre> <p>选择亚洲 东八区 的时区就行了.</p> <p>其实这次重装最大的成就是保住了 wordpress 的数据, 对.</p> <p>Mysql 在无法启动的状况下如何进行备份把.</p> <p>找到 Mysql 的数据存储目录把目录下的所有文件都备份出来, 然后在重装后把之前备份的目录还原回去, 不必全部还原, 只要将 以库名命名的文件夹(存储表结构) 和 ibdata1 文件备份即可, ibdata1 文件即数据存储的文件.</p> <p>Mysql 数据目录在 /var/lib/mysql</p> <p>覆盖还原文件后需要降覆盖的文件 属主 和 属组 都改为 mysql , 否则 mysql 能看到这个还原的库, 但是却不能访问, 无权限进行访问.</p> <pre># chown -R mysql.mysql /var/lib/mysql/ibdata1</pre> <p>..</p> <p>也许 Postgresql 也能够用同样的方式进行复原. 不过没测试成功. 只能重来.</p> <p>还有些数据把丢失的在添加进去就成了~</p> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/back">back</a></li> <li><a href="/tag/mysql">mysql</a></li> <li><a href="/tag/turntable">turntable</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2015-03-14T21:53:19.000Z">March 14, 2015</time> <h1><a href="/post/this-year-you-read-a-few-books/">今年你讀了幾本書？</a></h1> </header> <section class="post-main"><p>無可厚非，這己經是個網絡信息的時代，獲取知識信息的途徑也並不僅僅限於書籍，有更多的選擇更廣的空間。<br/> 在這網絡發達的今天你真的能靜下心來完整的讀完這本書嗎？<br/> 記得在上學那會兒聽我的老師說過，在日本等公交的時候都會拿出隨身所帶的書閱讀，雖然並不知道是不是如此，或許那只是為了勉勵我們學習而說的話而已，想想的話能做到這樣的又能有多少了。<br/> 網絡太快了，走馬觀花似的閱讀，很容易就被其他的信息所吸引，事與願違。<br/> 拾起被拋棄的書本吧，靜下心認真的看本書吧，網絡會讓人變得浮躁，相信拿到書本和屏幕是有區別的，多讀本書充實自己，不浮躁。<br/> 那麼今年你要讀幾本書？</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/book">book</a></li> <li><a href="/tag/read">read</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2015-02-02T10:49:57.000Z">February 2, 2015</time> <h1><a href="/post/vbox-nat-connection/">Vbox NAT 網絡通信</a></h1> </header> <section class="post-main"><p>Vbox 虛擬機中網絡使用 NAT 方式, 與本機不可直接通信, 只可虛擬機訪問本機, 但是本機無法訪問虛擬機, 需要進行一次端口映射.</p> <pre>VBoxManage setextradata 'ubuntu1404' 'VBoxInternal/Devices/pcnet/0/LUN#0/Config/uung/Protocol' TCP
+VBoxManage setextradata 'ubuntu1404' 'VBoxInternal/Devices/pcnet/0/LUN#0/Config/uung/GuestPort' 80
+VBoxManage setextradata 'ubuntu1404' 'VBoxInternal/Devices/pcnet/0/LUN#0/Config/uung/HostPort' 8900</pre> <p>使用 VboxManage 命令, ubuntu1404 是虛擬機名, uung 是一個自定義名稱, 可以隨意設置, 在終端中執行這三條命令就能夠降 ubuntu1404 這個虛擬機中的 80 端口映射至本機的 8900 端口, 假設虛擬機中安裝了 nginx 或者 apache 之類的 web 服務器, 並且使用着 80 端口, 那麼這個時候在本機訪問 8900 端口即訪問虛擬機中的 web 服務器.</p> <p>使轉發設置成功, 在重啓虛擬機後即可.</p> <p> </p> <p> </p> <p>====== 2015-04-03 更</p> <p>又其实了, 除了这种方法的话. Vbox 可以在界面设置端口转发的. 当然啦也是不久才发现的, 网络-&gt;网络地址转换(NAT)-&gt;高级-&gt;端口转发.</p> <p>工欲善其事, 必先利其器.</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/linux">linux</a></li> <li><a href="/tag/nat">nat</a></li> <li><a href="/tag/vbox">vbox</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2015-01-29T17:15:37.000Z">January 29, 2015</time> <h1><a href="/post/postgresql-get/">PostgreSQL 新技能</a></h1> </header> <section class="post-main"><p>通常数据库的模糊查询语句如下</p> <pre>select * from t_exp where column like '%xxx%' -- '%s' 's%'</pre> <p>PostgreSQL 有个进阶方案可以使用 ~ 代替</p> <pre>select * from t_exp where column ~ 'x';</pre> <p>这就相当于 <code>like '%x%'</code></p> <p>同时 经测试发现 <code>~''</code> 查出的是所有的数据, 当查询值存在的时候 比如 <code>~'x'</code> 相当于 <code>like '%x%'</code></p> <p>新技能. 简单的模糊查询会方便很多</p> <p> </p> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/database">database</a></li> <li><a href="/tag/get">get</a></li> <li><a href="/tag/key">key</a></li> <li><a href="/tag/postgresql">postgresql</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2015-01-19T20:34:40.000Z">January 19, 2015</time> <h1><a href="/post/merge-all/">該整合起來了</a></h1> </header> <section class="post-main"><p>分別做了些站點. 最擾人的就是賬戶的部分了, 基本上都有, 但又每次都要做, 這些應該都統一起來做統一的管理, 以及評論等內容.</p> <p>先整理下都有哪些, 以及具體的做法吧.</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/account">account</a></li> <li><a href="/tag/auth">auth</a></li> <li><a href="/tag/undefined">undefined</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2015-01-16T23:41:25.000Z">January 16, 2015</time> <h1><a href="/post/record-repair-ssh/">記修復 ssh</a></h1> </header> <section class="post-main"><p>服務器很長時間沒重啓了, 然後剛剛重啓了下.</p> <p>重啓後 ssh 不能連接, 一直報</p> <pre>ssh: connect to host localhost port 22: Connection refused</pre> <p>查閱各種資料都說是 ssh 服務未啓動, 解決方案大都是說重新安裝下 ssh-server , 然後重裝數次, 重啓數次任然無法解決.</p> <p>但是在查看進程的時候都又 ssh 服務的啓動, 查看網絡的時候發現 tcp 22 端口並未被 ssh 啓動, 服務啓動了, 但是端口沒監聽.</p> <p>後未直接通過 service 命令啓動 ssh 服務, 而是直接啓動運行 /usr/sbin/sshd 這次啓動報錯了, 說在 /etc/ssh/sshd_config 中又錯誤的配置, 恩 錯誤的信息忘了記錄了.</p> <p>錯誤的是這兩行</p> <pre>AllowUsers:atk ibd
+AllowGroups:atk ibd ssh admin</pre> <p>atk ibd 是系統的賬戶</p> <p>不知道 ssh 默認的配置文件是否有這個配置, 看這名字意思大概就是 允許的賬戶和允許的用戶組了, 後註釋了這兩行重新啓動 ssh 服務, 就可以正常連接了.</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/linux">linux</a></li> <li><a href="/tag/ssh">ssh</a></li> <li><a href="/tag/sshd">sshd</a></li> <li><a href="/tag/ubuntu">ubuntu</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2015-01-03T19:00:51.000Z">January 3, 2015</time> <h1><a href="/post/javascript-parse-page/">javascript 解析分页</a></h1> </header> <section class="post-main"><p>怀旧, 看到了这篇古老的<a title="分页自定义标签" href="/post/paging-custom-tag/">文章</a>, 一个 java servlet 的自定义分页标签, 毕竟每个人的观念以及认识都在改变, 看到了这就想到了现在在用的了, 感觉现在和以前差别还是挺大的, 那就来说说吧.</p> <p>先来说说之前的那篇文章吧.</p> <p>首先那是一个标准的 jsp 自定义标签的方式, 在 web.xml 中注册标签名, 标签会调用后台的java类, 传递 行数 页数 等参数, 这个类就去分析这些数字来生成 html, 后输出, 另外还有增加了很多自定义的功能.</p> <p>相对来说, 还是比较完善的.</p> <p>不过现在来看话, 只感觉到繁杂, 标签使用麻烦, 整个配置麻烦, 而且 还给服务器增加了负担.</p> <p>其实那东西我自己都没用过= =</p> <p>好吧. 前面的先这样, 那么 说说现在的吧.</p> <p>现在的处理方案是全部使用js来做分页, 既然是分页查询, 都肯定会有 总行数 总页数 页码 每页数据量</p> <p>有了这些, 就可以对其进行分析了</p> <pre>/**
+ * 解析分页页码
+ */
+function parsePage(totalRow, totalPage, pageNumber, pageSize, url, pageParam) {
+    totalRow = totalRow||0;
+    totalPage = totalPage||0;
+    pageNumber = pageNumber||0;
+    pageSize = pageSize||0;
+    url = url||window.location.href;
+    pageParam = pageParam||'page';
+    var phtml = '&lt;div&gt;';
+    phtml += '&lt;span&gt;共&lt;strong&gt;' + totalRow + '&lt;/strong&gt;条&lt;/span&gt;&lt;span&gt;每页&lt;strong&gt;' + pageSize + '&lt;/strong&gt;条&lt;/span&gt;';
+    if (pageNumber &gt; 1) {
+        phtml += '&lt;a href="' + joinPageUrl(1, url, pageParam) + '" data-page="1"&gt;首页&lt;/a&gt;';
+        phtml += '&lt;a href="' + joinPageUrl((pageNumber - 1), url, pageParam) + '" data-page="' + (pageNumber - 1) + '"&gt;上一页&lt;/a&gt;';
+    } else {
+        phtml += '&lt;span&gt;首页&lt;/span&gt;';
+        phtml += '&lt;span&gt;上一页&lt;/span&gt;';
+    }
+    var prevp = pageNumber - 4;
+    for (var i = 0; i &lt; 4; i++) {
+        var prevpj = prevp++;
+        if (prevpj &gt; 0) {
+            phtml += '&lt;a href="' + joinPageUrl(prevpj, url, pageParam) + '" data-page="' + prevpj + '"&gt;' + prevpj + '&lt;/a&gt;';
+        }
+    };
+    phtml += '&lt;span&gt;&lt;strong&gt;' + pageNumber + '&lt;/strong&gt;&lt;/span&gt;';
+    var nexp = pageNumber;
+    for (var i = 0; i &lt; 5; i++) {
+        var nexpj = ++nexp;
+        if (nexpj &lt; pageNumber + 5 &amp;&amp; nexpj &lt;= totalPage) {
+            phtml += '&lt;a href="' + joinPageUrl(nexpj, url, pageParam) + '" data-page="' + nexpj + '"&gt;' + nexpj + '&lt;/a&gt;';
+        }
+    };
+    if (pageNumber &lt; totalPage) {
+        phtml += '&lt;a href="' + joinPageUrl((pageNumber + 1), url, pageParam) + '" data-page="' + (pageNumber + 1) + '"&gt;下一页&lt;/a&gt;';
+        phtml += '&lt;a href="' + joinPageUrl(totalPage, url, pageParam) + '" data-page="' + totalPage + '"&gt;尾页&lt;/a&gt;';
+    } else {
+        phtml += '&lt;span&gt;下一页&lt;/span&gt;';
+        phtml += '&lt;span&gt;尾页&lt;/span&gt;';
+    };
+    phtml += '&lt;span&gt;' + pageNumber + '/' + totalPage + '&lt;/span&gt;';
+    phtml += '&lt;/div&gt;';
+    return phtml;
+};
+
+/**
+ * 拼接分页链接
+ * 分页链接简单处理
+ * */
+function joinPageUrl(pageNumber, url, pageParam) {
+    pageParam = pageParam||kit.config.site.pageParam;
+    url = url.split('?');
+    var upr='';
+    if (url.length&lt;=1) {
+        upr += url[0] + '?' + pageParam + '=' + pageNumber;
+        return upr;
+    }
+    var up = url[1].split('&amp;');
+    var urlParam = [];
+    for(var i=up.length; (i--)&gt;0;) {
+      urlParam = up[i].split('=');
+      if (urlParam[0]!=pageParam) upr += up[i]+'&amp;';
+    }
+    upr += pageParam + '=' + pageNumber;
+    url = url[0] + '?' + upr;
+    return url;
+};</pre> <p>分析的流程都是大同小异的之前怎么做这里就怎么做</p> <p>这里唯一只是多了一个 joinPageUrl 这个函数的处理, 就是分页链接的自定义, 例如 ajax 加载某个内容, url 并不是当前页面的 url , 那就可以直接传递分页的 url , 另外这里也添加了多参数的功能, 依稀记得 以前 thinkphp 内置的分页标签以前就存在这个问题, 例如原分页链接如下</p> <p>//host.com/a.php?type=0</p> <p>这是第一页 , 然后 tp 的分页标签在生成页码的时候 把 type=0 给抛弃了, 也就是 第二页像这样</p> <p>//host.com/a.php?page=2</p> <p>正确的应该是</p> <p>//host.com/a.php?type=0&amp;page=2</p> <p>当然, 现在tp已经没有这问题了, 已经被修复了.</p> <p>这里的 joinPageUrl 里 首先会去获取 url 如果有参数, 会分析所有参数, 并加上分页的参数.</p> <p>====</p> <p>逻辑还是那个逻辑, 只是形式变了而已, 分页从后台跑到前台来做了, 这样也减轻了后台的负担, 同样这样也更灵活, 任何地方想要分页, 只要传递参数过来,这里就能进行分析.</p> <p>但这绝对不是最好的方案, 这样做非常不利于seo, 所以酌情使用咯.</p> <p>应该算是最简单的一种方案, 使用很方便.</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/page">page</a></li> <li><a href="/tag/parse">parse</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2015-01-01T00:59:16.000Z">January 1, 2015</time> <h1><a href="/post/js-parse-lyric/">js 解析歌词</a></h1> </header> <section class="post-main"><p>这里解析歌词是根据这篇文章的基础进行修改的,完善了下代码.</p> <p>http://www.feelcss.com/html5-music-player-synchronous-display-lyrics.html</p> <p>建议先看看这篇文章, 在继续阅读下述内容.</p> <p>简单的说那篇文章中所述的方式确实可以解析歌曲, 但是稍有些不足的, 解析必须是标准的歌词文件以及歌词文件中时间是不可重复的, 如果歌词中有俩个时间在同一行就不能够正确解析了. 总之那只是一个思路, 然后这里就给具体完善下.</p> <p>解析流程大致如下</p> <pre>歌词
+      ----- 异常格式 -&gt; 按行切割 -&gt; 依次拼接html并返回
+      ----- 正常格式 -&gt; 按行切割 -&gt; 解析每一行歌词
+                                                              |
+                                                -------------------------------
+                                        歌曲信息                        歌词
+                                            |                    -------------------------
+                                            |                 一个时间           多个时间
+                                            |                      |                           |
+                                            |                      |                         拆开
+                                            |                      |                           |
+                                        -------------------------------------------------
+                                                 放入到一个统一的对象中
+                                                                   |
+                                      歌曲信息和歌词分开并且歌词排序返回
+                                                                   | 
+                                                  根据返回拼接成html并返回</pre> <p>那么就是代码实现了</p> <p>先把用到的正则解释下(正则也许是最反人类的代码了....测试了好久)</p> <pre>// 歌词中时间格式匹配
+lrctimeformat: /\[(\d*):(\d*)([\.|\:]\d*|)\]/
+// 获取一行歌词中 所有正确的时间格式
+lrclinetime: /\[\d*:\d*.\d*\]/g, 
+// 获取一行歌词中 歌词内容 例如 &lt;[01:02.01][02:10.03]aaa&gt; 匹配 aaa
+lrclinearticle: /\](?!\[\d*).*?(.*)/, 
+// 在一行歌词中匹配出来的时间的左右括号 获取时间值
+lrclinermformat1: /\[|\]/g, 
+// 和上方相同 只是多匹配了 时间值中的符号  删除这些符号后用于排序
+lrclinermformat2: /\[|\]|\:|\./g, 
+// 匹配歌词信息
+lrcinfo: /\[([a-zA-Z]*):(.*?)\]/</pre> <p>判断是否为标准的歌词文件可以使用 lrctimeformat</p> <pre>   // lrc 是歌词内容 如果匹配到了例如 [01:24]或者[01:24.21]这样格式的字符 就会返回匹配回来的数组, 如果没有就返回null
+    var n = lrc.match(conf.regex.lrctimeformat);
+   // 这里做俩个判断 一是 如果没检索到就表示 不是标准的歌词, 另外一个是 如果返回的数组是空的也不是标准的歌词, 这种语法见<a title="javascript 一些比较奇葩的语法" href="/post/javascript-some-of-the-more-bizarre-syntax/">这里</a>
+    if (!n||!n.length) {
+     // 不标准的歌词处理
+    } else {
+     // 标准歌词处理
+    }</pre> <p>不标准的歌词文件处理相对就简单了, 直接按行切割拼接html就成了</p> <p>在说标准歌词解析之前了 先说说整个歌词的处理相关</p> <p>歌词通常格式像这样</p> <pre>[ti:I Wish You Knew]
+[ar:Mariah Carey]
+[al:The Emancipation Of Mimi]
+[00:00.55]Mariah Carey 
+[00:01.47]
+[00:02.27]I Wish You Knew
+[00:09.92]
+[00:13.92]I've got to see you
+[00:17.14]Wherever you are
+[00:20.40]And I've got to be there
+...</pre> <p>上方为歌曲的相关信息然后以[00:00.00]这样开头的是歌词</p> <p>但是有时候为了,恩从代码的角度来说,叫歌词的复用, 一首歌重复的一句话会出现很多次的, 这时候, 歌词有可能会这样</p> <pre>[00:17.14][01:02.22]Wherever you are
+[00:20.40][01:05.35][02:04.30]And I've got to be there</pre> <p>这时候就需要将这些拆开成这样</p> <pre>[00:17.14]Wherever you are
+[01:02.22]Wherever you are
+[00:20.40]And I've got to be there
+[01:05.35]And I've got to be there
+[02:04.30]And I've got to be there</pre> <p>拆成这样后了 因为是在一个 for 中执行的, 这里的操作是加入到一个数组中, 然后 整体就像这样</p> <pre>[00:17.14]Wherever you are
+[01:02.22]Wherever you are
+[01:02.25]xxxx
+....
+[00:20.40]And I've got to be there
+[00:20.41]xxx
+....
+[01:05.35]And I've got to be there
+[01:05.40]xxx
+...
+[02:04.25]
+[02:04.30]And I've got to be there</pre> <p>这样歌词就乱了, 所以就需要对歌词进行排序, 排序的规则了就按照歌词播放的时间来排序了, 可是你说 [00:00.00] 这样怎么排序, 其实很简单, 把所有这些字符都剔除掉, 剩下的就是时间的字符串了, 然后对其进行转换 <code>Number.parseInt()</code></p> <pre>001714    1714
+010222    10222
+010225    10225
+....
+002040    2040
+002041    2041
+....
+010535    10535
+010540    10540
+....
+020425    20425
+020430    20430</pre> <p>这样就可以进行排序了, 然后了又需要歌词和歌曲播放同步, 歌曲的播放了是可以获取到播放到哪一秒了, 那歌词也需要这些信息, 这里了处理方法和前面这基本相同, 就是 剔除 [ ] 符号 然后剩下来的就像这样 00:17.14 01:02.22 然后剔除后面的毫秒数 00:17 01:02 在按照 : 切割 左边的就是 分 右边的就是秒 分*60+秒 就是当前这一行在歌曲播放的哪一秒的歌词</p> <p>这些都有了之后了 就定义一个统一的对象, 比如这样</p> <pre>{index: 1714, time: '00:17.14', lyric: 'xxxxxx'}</pre> <p>歌曲信息了就像这样</p> <pre>{key: 'ar', val: 'xxxx'}</pre> <p>好 前提工作都做好了, 现在开始解析, 直接用代码来解释吧</p> <pre>// 这个 lrcArr 就是 按行分割出来的数组 .split('\n')
+function parseLine(lrcArr){
+    var line, lt, la, lla=[];
+    for(var i=0; i&lt;lrcArr.length; i++) {
+        line = lrcArr[i]; 
+        // 判断是否为 歌曲信息 是的话 放入到 lla 中
+        if (isLrcInfo(line)) {
+            // toLoObject 就是前文中提到的 返回统一歌曲信息对象
+            lla.push(toLoObject(line));
+            continue;
+        }
+        // 获取一行中所有匹配上的时间格式
+        lt = line.match(lrclinetime);
+        // 获取一行中 歌词内容
+        la = line.match(lrclinearticle);
+        // 如果匹配出来的是null或者长度小于等于1 表示这一行没有或者 就一个时间 直接将这行加入到新的数组中
+        if (!lt||lt.length&lt;=1) {
+            /// tiLrcObject 就是统一个歌词统一对象
+            lla.push(toLrcObject(line));
+            continue;
+        }
+        /*
+        一行多个时间, 那这些时间的歌词都是一样的,
+        拼接后 转成 统一格式的数组放入到 lla 这个数组中
+         */
+        for(var j=0; j&lt;lt.length; j++)
+            lla.push(toLrcObject(lt[j] + la[1]));
+    }
+    /// 到这里了 lla 就是 被完全解析后的 歌词信息了 重复的也拆分了
+   /// 那么这时候要做的就是 将 lla 中的 歌曲信息和歌词去分开
+   /// 和 对歌词的排序了
+    return sortLrc(lla);
+};
+
+// 判断是否是歌曲信息
+function isLrcInfo(line){
+    // 这里就比较艺术了...
+    // lrcinfo 就是前面提到的 正则, 匹配是不是 歌曲信息的格式
+   // 首先 如果匹配上了 那返回的就是数组 否则就是null
+   // 那么 !null 表示不是歌曲信息 
+    // ![] 表示 是歌曲信息 
+    // 艺术的是什么了, 还是 <a title="javascript 一些比较奇葩的语法" href="/post/javascript-some-of-the-more-bizarre-syntax/">这个</a> 
+    // !null true
+    // ![]  false
+    // 所以在取反一次 那么 true 表示是歌曲信息 否则 就不是
+    return !!line.match(lrcinfo);
+};
+
+function sortLrc(lrcArr){
+        var line, li=[], la=[], tmp;
+        // 先将歌曲信息和歌词内容分开
+        // 如果存在 key 就放入 li 否则就是歌词信息
+        // 这个时候就不需要使用 isLrcInfo 来判断了, 毕竟正则效率不高, 而且前面也已经返回了统一的对象了 循环的时候判断lrcArr 有没有 key 这个属性就行了
+        //  分别 将歌曲信息和歌词放入到不同的变量去 li  la
+       // 例如la是歌词, 然后对la进行排序
+      return {info: li, lrcs: la};
+};
+</pre> <p>之后, 就剩下一件事了, 把 sortLrc 返回的这个对象 在解析成html就行了, 解析的时候 给 html 加个属性值就是 前面提到的 把时间转化成秒, 以同步歌曲播放显示的歌词</p> <pre>function parseTime(time){
+    var t = time.split('.')[0].split(':');
+    var min = Number.parseInt(t[0]),
+        sec = Number.parseInt(t[1]),
+        realMin = min*60+sec;
+    return realMin;
+};
+
+function joinLrc(arr){
+    var lah = '';
+    for(var i=0; i&lt;arr.length; i++) {
+        if (arr[i].index&lt;0) continue;
+        lah += '&lt;li data-time="'+parseTime(arr[i].time)+'"&gt;' + arr[i].lyric;
+    }
+    return lah;
+};</pre> <p>基本上事情就做完了, 后面就是和歌曲和歌词的同步了.</p> <p>好 就这样, 有点乱, 全部代码在 <a title="JavaScript 歌詞解析" href="//code.iaceob.name/code/347857775260471296.html" target="_blank">JavaScript 歌詞解析</a> , 这里就不放全部了= = 不占字数.</p> <p>还有. 谢谢开头提到的那博主了.</p> <p>======</p> <p>然后问题来了. 歌词滚动还没做好啊..</p> <p>该撤了. 一篇文章写了俩年......</p> <p>2015年了都= =</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/lrc">lrc</a></li> <li><a href="/tag/lyric">lyric</a></li> <li><a href="/tag/parse">parse</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-12-27T20:45:28.000Z">December 27, 2014</time> <h1><a href="/post/audio-js-toss/">audio.js 折腾</a></h1> </header> <section class="post-main"><p>恩 要做一个不得了的东西, 有音频要播放, 为了更加快速了(其实不会)就找了一个音频播放的工具.也就是 audo.js 了</p> <p>主页: http://kolber.github.com/audiojs/</p> <p>这东西叻在遇到支持 html5 的浏览器就使用 html5 的方式播放, 不支持的就使用 flash 播放, 所有浏览器的界面都是统一的.</p> <p>上述的几个优点了看着很好, 其实都是问题....</p> <p>比如不想用那原始的界面, 没错, audiojs 的样式是可以自己定义的, 只要添加样式把原始的样式覆盖掉就成了, 但是! 事实是你所想要的html的结构并不是 audiojs 所给出的那样, 这样只会让你写起来更复杂, 为了 audiojs 所给出的标签结构来美化, 而并不是自己所想要的结构.</p> <p>上述说的遇到支持 html5 的浏览器了也并不全面, 事实情况是, 如果浏览器支持 html5 的 audio 标签但是不支持 mp3 格式的音频都会以 flash 方式播放.</p> <p>那么 进入正文吧</p> <p>首先初始化页面中的所有 audio , 音频了就使用 audio 标签加载就行了. 然后执行 audiojs 的初始化, 播放器了就自己用 html 拼一个出来就是. 主要说说 audiojs 所提供的参数以及函数吧.</p> <pre>    var asall = audiojs.createAll();
+    var as = asall[0];</pre> <p>然后打开浏览器控制台查看 as 变量有如下的参数</p> <pre>duration                      284.029387755102
+loadStartedCalled      false
+loadedPercent           1
+mp3                            "/well/music/a.mp3?v=2"
+playing                       false
+settings                      Object { autoplay=true, loop=false, preload=true, more...}
+source                       audio
+swfReady                   true
+wrapper                     div#audiojs_wrapper0.audiojs
+element                     embed
+init                             function()
+load                           function(c)
+loadError                  function()
+loadProgress           function(percent, duration)
+loadStarted              function()
+pause                       function()
+play                          function()
+playPause                 function()
+setVolume               function(c)
+skipTo                     function(c)
+trackEnded             function()
+updatePlayhead     function(percent)</pre> <p>几个用到的描述下</p> <p>duration 是文件的长度 恩差不多</p> <p>playing 是否正在播放</p> <p>settings audiojs 相关设置</p> <p>element 播放音频的对象</p> <p>loadError 载入音频失败回调</p> <p>loadProgress 载入音频的过程回调</p> <p>play 播放音频</p> <p>pause 暂停播放</p> <p>swfReady swf 加载完毕</p> <p>setVolume 设置音量</p> <p>skipTo 音频跳转到指定位置</p> <p>trackEnded 音乐播放结束后回调</p> <p>updatePlayhead 音乐正在播放中的回调</p> <p>然后就开始自定义吧</p> <p>====</p> <pre>function isFlash(as){
+     /*
+      判断audiojs是否通过flash加载的,
+      settings 中提供了 hasFlash 但是我测试后发现不管是 flash 还是 audio 都是 true 可能另有作用 详细的没看, swfReady 发现 在flash 播放的时候 为true 而 audio 播放的时候是没有这个参数的
+     */
+     return as.swfReady;
+};
+    /*
+     获取播放的时间值  
+     直接 copy audiojs 代码的
+      这里有个区别就是  如果是获取总时间 percent 是不需要的
+      percent 只有在 获取当前进度的时候才需要
+   */
+    function parseTime(duration, percent){
+        var p = 0;
+        if (percent) p = duration * percent; else p = duration;
+        var m = Math.floor(p / 60),
+            s = Math.floor(p % 60);
+        return ((m&lt;10?'0':'')+m+':'+(s&lt;10?'0':'')+s);
+    };
+
+   /*
+    没发现或者说没理解是什么作用
+   不过 看到 audiojs 的进度以及音量调节中是有获取这个值的
+   */
+    function leftPos(elem) {
+        var curleft = 0;
+        if (elem.offsetParent)
+            do { curleft += elem.offsetLeft; } while (elem = elem.offsetParent);
+        return curleft;
+    };
+
+
+// 播放结束回调
+as.trackEnded = function(){
+    nextMusic(); // 预先定义切换下一首函数
+};
+
+// 音频缓冲中的处理
+// 这一步 主要是获取 audiojs 正在缓冲音乐的时候相关参数来做些效果处理
+// 比如 缓冲的时候 的一个滚动条
+as.loadProgress = function(percent, duration){
+      var self = this;
+      // 这里要分俩中状态处理, 就是 flash 和 audio 分别对待
+      // 只有在 flash 方式的时候回调函数提供了 percent 和 duration 这俩个参数, audio 方式 回调是没有返回参数的, 需要自己获取
+      if (isFlash(as)) {
+        // ==== 这些一定要带上, 这些参数会传递到供后面的函数使用,如果不带后面的函数将获取不到这些数据, 具体去看 audiojs 的源码
+        as.loadedPercent = percent;
+        as.duration = duration;
+        as.settings.loadStarted.apply(as);
+        as.settings.loadProgress.apply(as, [percent]);
+       // ==========================================
+       //  后面就可以加入自己的代码了 控制自己定义的样式
+        $('.progress-load').style.width = (percent*100)+'%';
+        $('#time-tol').innerHTML = parseTime(duration);
+          return;
+       }
+      // audio 方式处理
+      // 这里也是直接把 audiojs 中的代码拿出来的. 这些都是必须得加上的, 否则会导致后面的函数无法获取到值
+        if (self.element.buffered != null &amp;&amp; self.element.buffered.length) {
+            if (!self.loadStartedCalled) {
+                self.loadStartedCalled = self.loadStarted();
+            }
+            var durationLoaded = self.element.buffered.end(self.element.buffered.length - 1);
+            self.loadedPercent = durationLoaded / self.duration;
+
+            self.settings.loadProgress.apply(self, [self.loadedPercent]);
+             
+            // 下方就可以加入自己的控制代码
+            $('.progress-load').style.width = (self.loadedPercent*100)+'%';
+            $('#time-tol').innerHTML = parseTime(audio.duration);
+        }
+};
+
+       /// 正在播放音乐的处理
+       /// 获取正在播放中的相关参数 进行自己的效果处理
+       // 只有flash方式才会有 percent 参数
+      as.updatePlayhead = function(percent){
+            // 同样区分 flash 和 audio 俩中方式
+            var self = this;
+            if (isFlash(as)) {
+                  $('.progress-cur').style.width = (percent*100)+'%';
+                  $('#time-cur').innerHTML = parseTime(self.duration, percent);
+                return;
+            }
+            // == 这里是 audiojs 源码中拿出来的因为 audio 方式回调是没有当前播放进度的, 所以得自己获取
+            var percent = self.element.currentTime / self.duration;
+            self.settings.updatePlayhead.apply(self, [percent]);
+            // ===========
+            // 获取了之后加入自己的一些处理
+            $('.progress-cur').style.width = (percent*100)+'%';
+            $('#time-cur').innerHTML = parseTime(self.duration, percent);
+            return;
+        };
+
+
+   /*
+     主要的就是重写上方的俩个函数, 那控制 诸如 播放进度 当前播放的时间这些信息, 然后其他的 比如 暂停 下一首 这些 可以直接对自己的按钮绑定事件即可
+   */
+    $('#btn_switch').bind('click', function(){
+         // 点击 btn_switch 如果音频真正播放 就暂停  否则就开始播放
+         !as.playing ? as.play() : as.pause();
+    });
+ /// 其他的绑定也是如此</pre> <p>基本上了处理代码就如上方这样.</p> <p>后面绑定的事件中有俩个需要注意的是 点击调整音量和点击进度条跳转音频播放的时间</p> <pre>/*
+音频播放进去点击事件, 这里的事件触发都是从audiojs里拿出来的,
+只是将这个绑定放到自己定义的进度条上进行触发
+*/
+$('.guess-progress').bind('click', function(event){
+    var self = this;
+    if (!as.playing) as.play();
+    var i = (event.clientX-leftPos(self))/self.offsetWidth;
+    // 同样的 也需要判断 flash 和 audio 二者的处理方式是不同的
+    if (isFlash(as)) {
+        audio.updatePlayhead.call(as, [i]);
+        audio.element.skipTo(i);
+        return;
+    }
+    as.skipTo(i);
+    return;
+});
+
+/*
+绑定音量点击事件
+*/
+$('.ctrl-volume').bind('click', function(e){
+       var i = (e.clientX-leftPos(this))/this.offsetWidth;
+       $('.volume-cur').style.width = (i*100)+'%';
+       as.setVolume(i);
+});</pre> <p>特别需要注意 setVolume 这个函数, 或者说需要注意的并不是这个函数, 怎么说了, 就是 audiojs 在使用 flash 方式进行播放的时候了, setVolume 这个函数是无效的, 亦或者说, 是 audiojs 所提供的 swf 文件是不提供这个 setVolume 函数的, 所以 会看到控制台有提示说 setVolumen is not function, 详细见 audio issue</p> <p><a title=" IE8 stops on a.element.setVolume(c)}; #51 " href="https://github.com/kolber/audiojs/issues/51" target="_blank">IE8 stops on a.element.setVolume(c)}; #51</a></p> <p>解决方式叻.这个 issue 中</p> <p>https://github.com/kolber/audiojs/issues/51#issuecomment-9720606</p> <p>有个演示页</p> <p>http://demo.svnlabs.com/html5player/volume-control/</p> <p>这个页面的测试 音量是可以调节的, 起初一直以为是 js 或者什么配置有问题, 原来是 swf 有问题= =.</p> <p>把那个演示页的 swf 下载了, 覆盖掉自己的就行了.</p> <p>另外, 自动播放, 按照 audiojs 网页中所说的给 audio 标签加个 autoplay 属性, 是可以自动播放, 测试中发现 使用 audiojs 中默认的是可以, 但是经我这么一修改 发现有问题,</p> <p>linux firefox devliper edition 可以正常使用</p> <p>window firefox DE || chrome 可以自动播放, 但是貌似被播放了俩遍</p> <p>不知道是我哪里写错了.</p> <p>然后有测试过 在 create 之后执行 as.play() 在flash 方式中会报错 说 pplay not function</p> <p>= =</p> <p>所以.. 最后又被我发现 settings 中有 autoplay 这个配置,</p> <p>对 create 之后</p> <pre>as.settings.autoplay = true;</pre> <p>我就是这么解决的.</p> <p>======</p> <p>好吧 修修补补 也算是完成了, 恩, 基本上就这样.</p> <p>图叻就先不放了, 不就这个就能发布了, 域名的话 就先 guess.iaceob.name 好了</p> <p>对, 没错 是个电台!</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/audiojs">audiojs</a></li> <li><a href="/tag/fm">fm</a></li> <li><a href="/tag/js">js</a></li> <li><a href="/tag/toss">toss</a></li> </ul> </footer> </article> <menu class="page"> <li class="page-prev"> <a href="/page/2" title="Previous">Prev</a> </li> <li class="page-next"> <a href="/page/4" title="Next">Next</a> </li> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

@@ -1,0 +1,400 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>生物烯丙菊 - 达文西手电筒 - 第 4 頁</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2014-12-09T22:23:37.000Z">December 9, 2014</time> <h1><a href="/post/iframe-auto-height/">iframe 自适应高度</a></h1> </header> <section class="post-main"><p>很久以前就在网络的某处找到过一个iframe自适应高度的文章, 并且测试过还非常好用, 可惜当时这个方案被取消了, 而是使用了frameset代替了iframe来实现页面搭建了, 当时就直接修改了, 也没有在意. 直到今天突然有人在问iframe怎么自适应高度... 原文件已经找不到了, 又是一番查找, 果然找到的都不是想要的, 然后就自己重写了个. 虽然还有瑕疵.</p> <p>初级方案:</p> <p>使用onload在iframe加载完毕后触发一个函数获取iframe页面的高度, 然后修改父页面iframe标签的height值, 达到高度自适应的目的.</p> <p>在被iframe的页面中添加如下代码</p> <pre>&lt;script&gt;
+function resetSize(){
+    var height = document.body.scrollHeight;
+    parent.document.getElementById('frameid').style.height = height+'px';
+};
+window.onload=resetSize;
+&lt;/script&gt;</pre> <p>这样iframe在加载完毕后就会同步父页面的高度与iframe页面的高度一样, 虽然实现起来很简单, 但是有些不足, onload 在加载后就会在工作了, iframe的页面如果有其他操作父页面的高度是不会更改的onload只会在页面加载完毕后执行.</p> <p> </p> <p>终极方案:</p> <p>利用 DOMNodeInserted 和 DOMNodeRemoved 事件来监听节点的改变, 调用重置函数来同步高度.</p> <p>给被iframe的页面body添加 DOMNodeInserted DOMNodeRemoved 这俩个事件来监听页面内容的增加或删除, 同步父页面iframe标签的高度.</p> <p>在被iframe的页面中添加如下代码</p> <pre>&lt;script&gt;
+function resetSize(){
+    var height = document.body.scrollHeight;
+    parent.document.getElementById('frameid').style.height = height+'px';
+};
+window.onload=resetSize;
+document.body.addEventListener('DOMNodeInserted', resetSize, false);
+document.body.addEventListener('DOMNodeRemoved', resetSize, false);
+&lt;/script&gt;</pre> <p>这样就能够实现实时内容同步了, 不过至少我没测试过兼容性= =, firefox dev 是可以正常运行的.</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/auto">auto</a></li> <li><a href="/tag/height">height</a></li> <li><a href="/tag/html">html</a></li> <li><a href="/tag/iframe">iframe</a></li> <li><a href="/tag/javascript">javascript</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-11-22T21:44:08.000Z">November 22, 2014</time> <h1><a href="/post/wordpress-disabled-google-fonts/">wordpress 禁用 google 字体</a></h1> </header> <section class="post-main"><p>我大天朝把 google 给封了, 然后打开各种慢= =.</p> <p>基本上都打不开, 还是把 google 字体给封了吧... 万恶的 GFW .</p> <p>各种折腾, 还把 twentyfourteen 给玩坏了 = =</p> <p>封印方式:</p> <p>在模板函数文件中追加如下内容</p> <pre>add_filter('gettext_with_context', 'disable_open_sans', 888, 4 );
+function disable_open_sans( $translations, $text, $context, $domain ) {
+    if ( 'Open Sans font: on or off' == $context &amp;&amp; 'on' == $text ) $translations = 'off';
+    return $translations;
+}</pre> <p>去除后可以在模板的样式文件中修改字体.</p> <p>要不改天还是把之前那模板给写起来吧.</p> <p>另外 google 的统计代码也是如此</p> <p>不可以将统计代码放在 head 中, 一被墙 整站都打不开了.</p> <p>虽然放在底部也并不能完全解决问题, 但总比放头部阻止页面渲染的要好.</p> <p>祝病魔早日战胜方校长!!!</p> <p>- 2014-12-17</p> <p>更新补, 在functions.php中添加如下函数禁止 Twenty Fourteen 模板google字体</p> <pre>// Remove Lato Font
+function qot_dequeue_fonts() {
+wp_dequeue_style( 'twentyfourteen-lato' );
+}
+add_action( 'wp_enqueue_scripts', 'qot_dequeue_fonts', 11 );</pre> <p>多提交几次</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/fonts">fonts</a></li> <li><a href="/tag/google">google</a></li> <li><a href="/tag/twentyfourteen">TwentyFourteen</a></li> <li><a href="/tag/wordpress">wordpress</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-11-12T00:35:32.000Z">November 12, 2014</time> <h1><a href="/post/nginx-php-php-fpm-configure/">Nginx php php-fpm 配置</a></h1> </header> <section class="post-main"><p> </p> <p>Debian/Ubuntu 中安装 nginx php 并进行配置</p> <p>安装很简单。 使用 apt-get 进行安装即可</p> <pre>~$ sudo apt-get install nginx
+# 根据需要选择 php 插件
+~$ sudo apt-get install php5 php5-cli php5-cgi php5-dev php5-mysql php5-gd php5-mcrypt php5-curl</pre> <p>这样 nginx 和 php 就装好了。<br/> 接着安装 fastcgi 管理模块。<br/> nginx采用fastcgi的模式运行php，一般有两种搭配<br/> ngix + php+ spawn-fcgi<br/> ngix + php + PHP-FPM(主流)<br/> 如果选择spawn-fcgi来管理fastcgi</p> <pre>~$ sudo apt-get install spawn-fcgi</pre> <p>如果选择php-fpm来管理fastcgi</p> <pre>~$ sudo apt-get install php5-fpm</pre> <p>当这些都安装完毕后就对其进行配置<br/> 相关配置文件路径(默认情况下):<br/> nginx:<br/> /etc/nginx/nginx.conf<br/> /etc/nginx/sites-enabled/*<br/> # 之前有说过看 nginx.conf 文件就能看到还有那些地方可以配置</p> <p>php:<br/> /etc/php5/cgi/php.ini<br/> /usr/bin/php5-cgi</p> <p>php-fpm:<br/> /etc/php5/fpm/pool.d/www.conf</p> <p>配置 nginx 支持 php</p> <p>直接修改配置文件中的 default 配置<br/> /etc/nginx/sites-enabled/default</p> <p>修改根路径</p> <pre>root /home/xxx/wwwroot;</pre> <p>在 server { } 中添加</p> <pre>location ~ \.php$ {
+        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }</pre> <p>这样就配置完成了。<br/> 重启 nginx 即可。</p> <p>=====<br/> 如果出现访问 php 报 http 502 Bad Gateway<br/> 首先检测 php5-fpm 是否正在运行</p> <pre>ps aux | grep php</pre> <p>如果没有则卸载重装<br/> 之后修改 php5-fpm 配置</p> <pre>sudo nano /etc/php5/fpm/pool.d/www.conf</pre> <p>找到</p> <pre>listen = /var/run/php5-fpm.sock</pre> <p>修改为</p> <pre>listen = 127.0.0.1:9000</pre> <p>重启 php5-fpm</p> <pre>sudo service php5-fpm restart</pre> <p>或者不修改 php5-fpm 的配置， 在 nginx 配置 php 的时候 fastcgi_pass 的值是 /var/run/php5-fpm.sock 即可， 只要保证俩边的配置一样。</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/nginx">nginx</a></li> <li><a href="/tag/php">php</a></li> <li><a href="/tag/php5-fpm">php5-fpm</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-11-08T00:26:37.000Z">November 8, 2014</time> <h1><a href="/post/sql-full-join-and-union/">sql 中 full join 于 union</a></h1> </header> <section class="post-main"><p>在 sql 的众多的 join 中存在一个 full join</p> <p>full join 的作用是全关联, 也就是不管俩边的表数据书否被关联上, 都会被一起输出, 未被关联上的那行就是 null<br/> union 的作用是连接俩个/多个查询的结果<br/> 现有表如下</p> <pre>torder
+id  product   price_o    price_c  num   stat
+1   p1            3               3           5         1
+1   p2            41             43         3         1
+1   p3            23             26         1         2
+1   p4            10             15         12       2
+2   p5            20             16         1         2
+2   p6            43             45         4         3
+2   p7            60             65         1         2
+3   p2            55             54         3         2</pre> <p>现要查寻出所有订单的总金额, 当 stat 为 1 的时候取 price_o 的值, 其他状态都取 price_c 的值.</p> <p>总价的计算方式是数量*价格, 但是这里的条件中要求不同的状态取不同的价格,就无法直接计算, 需要先计算出不同状态下不同的总金额, 在相加得出总金额</p> <p>使用 full join 方式</p> <pre>select * from (
+    select  id, product, price_o, num from torder where stat=1
+) as j1 full join (
+    select id, product, price_c, num from torder where stat in (2,3)
+) as j2 on j1.product=j2.product
+</pre> <p>这样查询出来后的结果</p> <table border="1"> <tbody> <tr bgcolor="#CCCCFF"> <th>id</th> <th>product</th> <th>price_o</th> <th>num</th> <th>id</th> <th>product</th> <th>price_c</th> <th>num</th> </tr> <tr> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>1</td> <td>p3</td> <td>26</td> <td>1</td> </tr> <tr> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>1</td> <td>p4</td> <td>15</td> <td>12</td> </tr> <tr> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>2</td> <td>p5</td> <td>16</td> <td>1</td> </tr> <tr> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>2</td> <td>p6</td> <td>45</td> <td>4</td> </tr> <tr> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>2</td> <td>p7</td> <td>65</td> <td>1</td> </tr> <tr> <td>1</td> <td>p2</td> <td>41</td> <td>3</td> <td>3</td> <td>p2</td> <td>54</td> <td>3</td> </tr> <tr> <td>1</td> <td>p1</td> <td>3</td> <td>5</td> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> <td>&lt;null&gt;</td> </tr> </tbody> </table> <p>订单1和3中有相同的p2商品, 被关联到了一起, 而其他没有被关联上的都填null了, 到这一步就可以进行计算了</p> <pre>select
+isnull(j1.product, j2.product) as product,
+isnull(j1.price_o, 0)*isnull(j1.num, 0) +isnull(j2.price_c, 0)*isnull(j2.num, 0) as money
+from (
+    select  id, product, price_o, num from torder where stat=1
+) as j1 full join (
+    select id, product, price_c, num from torder where stat in (2,3)
+) as j2 on j1.product=j2.product
+order by isnull(j1.product, j2.product)</pre> <table border="1"> <tbody> <tr bgcolor="#CCCCFF"> <th>product</th> <th>money</th> </tr> <tr> <td>p1</td> <td>15</td> </tr> <tr> <td>p2</td> <td>285</td> </tr> <tr> <td>p3</td> <td>26</td> </tr> <tr> <td>p4</td> <td>180</td> </tr> <tr> <td>p5</td> <td>16</td> </tr> <tr> <td>p6</td> <td>180</td> </tr> <tr> <td>p7</td> <td>65</td> </tr> </tbody> </table> <p>这一步首先判断是否为空, 左右表中价格和数量是null的全部填0, 然后计算数量*价格就是该商品的金额, 然后加俩个金额相加就是总金额了, 之后在进行一次sum就是所有订单的金额.</p> <p> </p> <p>使用 union 方式</p> <p>相对来说 union 方式会简单很多, 并没有 full join 这么复杂</p> <pre>select product, sum(money) as money from (
+    select product, num*price_o as money from torder where stat=1
+    union
+    select product, num*price_c as money from torder where stat in (2,3)
+) as j
+group by j.product
+order by j.product</pre> <table border="1"> <tbody> <tr bgcolor="#CCCCFF"> <th>product</th> <th>money</th> </tr> <tr> <td>p1</td> <td>15</td> </tr> <tr> <td>p2</td> <td>285</td> </tr> <tr> <td>p3</td> <td>26</td> </tr> <tr> <td>p4</td> <td>180</td> </tr> <tr> <td>p5</td> <td>16</td> </tr> <tr> <td>p6</td> <td>180</td> </tr> <tr> <td>p7</td> <td>65</td> </tr> </tbody> </table> <p>这样就能够实现不同状态取不同的值合并起来了.<br/> 去除 product 字段 sum(money) 就是所有订单总金额.</p> <p> </p> <p>--</p> <p>相对来说 union 写起来较 full join 要方便, 从直觉上判断 union 的效率也比 full join 要高. full join 会产生很多的冗余数据, 需要进行判断, 而 union 则不会.</p> <p>俩着也都有着不友好的地方,</p> <p>full join 相对书写叫麻烦, 另外 full join 在连续使用多次的时候会导致数据错误</p> <pre>select * fom a
+full join b on a.id=b.id
+full join c on a.id=c.id</pre> <p>这个时候 如果 a 的 id 在 b 中被关联到了 在 c 中没有被关联到(具体情况已忘), 最后可能会产生重复数据, 同理用 b 去关联 c 也是如此, 多个 full join 应该利用子查询来进行</p> <pre>select * from (
+select isnull(a.xx,b.xx).... from a
+full join b on a.id=b.id
+) as abj 
+full join c on abj.id=c.id</pre> <p>这样才可以避免俩边数据不对等所造成的重复, 数据不统一的问题</p> <p>而 union 在连接的时候很方便, 但是要对后续的处理很麻烦, 必须要在外部嵌套一个 select 把 union 当作子查询, 外部的 select 来操作这个查询后的表.</p> <p> </p> <p>解决问题的方式并不止一种, 试情况而待.</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/full-join">full join</a></li> <li><a href="/tag/join">join</a></li> <li><a href="/tag/mssql">mssql</a></li> <li><a href="/tag/sql">sql</a></li> <li><a href="/tag/union">union</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-10-25T17:24:49.000Z">October 25, 2014</time> <h1><a href="/post/nginx-proxy/">Nginx 反向代理</a></h1> </header> <section class="post-main"><p>nginx 的配置文件 nginx 有这写配置</p> <pre>include /etc/nginx/conf.d/*.conf;
+include /etc/nginx/sites-enabled/*;
+</pre> <p>就是会自动导入 /etc/nginx/conf.d 目录下 conf 后缀的文件和 /etc/nginx/sites-enabled 目录下的所有文件.</p> <p>除了默认导入的 default 配置 这些配置也将加载.</p> <p>看过好多配置反向代理的方式, 配置类似与这样</p> <pre>server {
+	listen 80;
+	server_name host.com;
+	location / {
+		proxy_pass         http://100.111.122.133;
+		#proxy_redirect     off;
+		proxy_set_header   Host $host;
+		proxy_set_header   X-Real-IP  $remote_addr;
+		proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header   Referer http://$host;    
+	}
+}</pre> <p>可是正在这样配置的时候, 重启 nginx 会无法启动, 说错误是 listen 80 这里, 因为 default 配置文件中已经监听了端口, 这里再加就冲突了.</p> <p>不知是就我这有问题.</p> <p>其实让其工作, 配置还是很简单的.</p> <p>一个简单的配置方式</p> <pre>server {
+    server_name host.name;
+
+    location / {
+        proxy_pass http://localhost:8080;
+    }
+}
+</pre> <p>这样就能够实现 host.name 反向代理到本机的 8080 端口</p> <p>--</p> <p>但是 nginx 反向代理, 如果是代理到一个二级目录上, 比如 还有一个 tomcat 的服务, 有个 test 项目, 那么访问链接应该为 localhost:8080/test 这个时候到 nginx 配置代理的时候</p> <pre>server {
+    server_name host.com;
+    
+    location / {
+        proxy_pass http://localhost:8080/test/;
+    }
+}
+</pre> <p>这样配置, 重启, 访问 host.com 已经实现了访问了, 但是也是有个问题的.</p> <p>例如 java 在代码中, 使用 request 获取域名 路径的时候, 就很"智能"的检测到, 这是使用二级目录进行访问的, 通常情况下网页中如果是使用的绝对路径, 带上了更目录</p> <p>url 是 host.com</p> <p>而获取的其他文件路径 会加上 /test/xxxx</p> <p>这样文件路径就错误了</p> <p>发现也有人问这问题</p> <p>http://www.oschina.net/question/208700_35450</p> <p>http://www.oschina.net/question/256934_45085</p> <p>不过也没看到有什么解决方案.</p> <p> </p> <p>其实遇到这问题就灵光一闪想了个解决方法, 不过感觉不是很正规的方式, 奈何也没找到更好的方法.</p> <p>实现这个二级目录的代理, 获取路径错误的问题, 通过 hosts 的方式解决</p> <p>在 hosts 文件中新加一个规则, 去欺骗tomcat, 配置到这个二级目录直接访问. 做俩次解析</p> <pre>127.0.0.1 local.host.com</pre> <p>这样 local.host.com 在服务器中指向的就是本机, 当然这个域名是可以随便写的.</p> <p>然后在 tomcat 中绑定 local.host.com 直接到 test 二级目录</p> <pre>&lt;Host name="local.host.com" appBase="webapps"
+          unpackWARs="true" autoDeploy="true"
+          xmlValidation="false" xmlNamespaceAware="false"&gt;
+       &lt;Context path="" docBase="/tomcat/webapps/text" debug="0"
+                 reloadable="true" crossContext="true"/&gt;
+&lt;/Host&gt;</pre> <p>然后在 nginx 中配置反向代理到 这个域名</p> <pre>server {
+    server_name host.com;
+    
+    location / {
+        proxy_pass http://local.host.com;
+    }
+}</pre> <p>这时候在去 访问 host.com 加载的文件路径就是正确的了.</p> <p>request 获取的域名就是 local.host.com 并且不是二级目录, 那么 nginx 转发出去就不会存在路径问题.</p> <p>虽然是可以用了, 不过感觉这种实现方式...</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/nginx">nginx</a></li> <li><a href="/tag/proxy">proxy</a></li> <li><a href="/tag/tomcat">tomcat</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-10-16T13:29:34.000Z">October 16, 2014</time> <h1><a href="/post/sql-like-multi-criteria-query/">SQL LIKE 多条件查询</a></h1> </header> <section class="post-main"><p>sql 语句中使用 like 关键字实现模糊查询, 但是 like 条件只能有一个, 需要实现一个字段多个条件查询就需要用 or 拼多个条件. or 的速度比较慢, 另外拼多个 or 的写法也很操蛋. like 也不能和 in 一样实现多条件查询.</p> <pre>select * from test where col1 like '%x%'; // 默认使用方法
+select * from test where col1 like '%x%' or col1 like '%y%' or ...; // 多条件</pre> <p>like 的多条件查询,可以通过替代方案来解决</p> <pre>-- 通过 union 合并多个查询条件
+-- 然后拿查询的表中的字段 like 这里合并的多个条件
+-- inner join 查询出被关联出来的数据
+select * from test as t
+inner join (
+select '%x%' as le union select '%y%' as le union select '%z' as le
+) as lej on t.col1 like lej.le</pre> <p>或者通过字符串切割,之后在合并的方式</p> <pre>-- regexp_split_to_table 是 PostgreSQL 内置的字符串切割的函数
+-- like 条件写在一个字符串中, 按逗号分隔
+-- 切割字符串, 拿查询的表 inner join 切割后的表
+-- 然后 on 条件在拼接成 like 的语法即可
+-- PostgreSQL
+select * from test as t 
+inner join regexp_split_to_table('x,y,z', ',') as le on t.col1 like '%' || le || '%'</pre> <p>按这种方式即可实现多条件 like 查询.第二种方式想要 like 条件更灵活, 将 % 写在字符串中, 之后的 on 条件后面的 like 就不需要拼接 like 的格式了</p> <pre>select * from test as t 
+inner join regexp_split_to_table('%x%,%y,z%', ',') as le on t.col1 like le</pre> <p>各个数据库的字符串的切割,拼接方式可能有所不同.</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/like">like</a></li> <li><a href="/tag/postgresql">postgresql</a></li> <li><a href="/tag/sql">sql</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-10-15T09:17:52.000Z">October 15, 2014</time> <h1><a href="/post/javascript-some-of-the-more-bizarre-syntax/">javascript 一些比较奇葩的语法</a></h1> </header> <section class="post-main"><p>js 因为历史原因,以至于有不少的比较奇耙的现象.<br/> 比如下面这些.</p> <p>[] 数组<br/> console.log(!"); // false<br/> console.log(0); // false<br/> console.log(!0); // true<br/> // 问题来了..<br/> console.log([]); // []<br/> console.log(![]); // false<br/> console.log([]==false); // true<br/> console.log(Boolean([])) // true<br/> console.log(![].join(")); // true<br/> console.log(![].join(‘,’)); // true<br/> console.log(![].toString()); // true<br/> console.log([] ? 1 : 0); // 1<br/> console.log(![] ? 1 : 0); // 0<br/> console.log([]==![]); // true ...<br/> console.log([]===![]); // false<br/> [] 就是一个空数组<br/> console.log([]==false); 这输出 true 就是直接表示 [] 就是 false, 但是将 [] 转成 Boolean 类型的时候 表示又为 true 那 true==false 应该为false才对.<br/> 也就是说 [].join(") [].join(‘,’) [].toString() 的返回值都是 "", 那么取反的话也就是 !"" 当然为 true<br/> 虽然不能直接证明 [] 是 true 还是 false 不过从转换后的字符串来看 [] 应该为 false 才对.<br/> 接下来 console.log([] ? 1 : 0; ); 输出的是 1 也就是说 [] 是 true, ![] 输出 0 也同样<br/> 在下面这个 console.log([]==![]) .... 输出的是 true ...<br/> 好吧.<br/> 那 [] 在判断的时候 到底是 true 还是 false .<br/> ---<br/> 事实上在不同情况就是得不同对待的..<br/> 当 [] 在做 if 条件判断的时候 也就是 if([]) 或者 [] ? y : z; 这个时候 [] 是对象, 那么判断的时候就会当作 true 来看待<br/> 在 js 中任何值与 boolean 值做判断的时候都会转化为 Number 在进行判断<br/> 也就相当与 console.log(Number([])==false) , 这样就能理解了<br/> Number([]) 输出的是0<br/> Number(false) 删除的也是0<br/> 0==0 []==false 是等效的<br/> 这个时候在来解释 []==![]<br/> Number([]) // 0<br/> Number(![]) == Number(false) // 0<br/> 那么 []==![] 就成立了<br/> 最后一个 []===![] 这个为 false 就很好理解了 俩边的数据类型不匹配, 直接返回了false, 看下 == 和 === 的区别就知道了.<br/> --<br/> 说了这么多. 那为毛 ![] 是 false ......<br/> 总结来说<br/> [] 在 if 条件中 因为是对象 那么就是 true<br/> [] 在于 boolean 做判断的时候 会进行 Number 强转也就是 0<br/> 因此需要判断一个数组是否为空的时候, 尽量使用 === 或者 [].length [].join(") 进行判断, 避免这种也许会出现无法预料的结果..</p> <p>Date 函数<br/> (new Date()).getTime();<br/> (new Date()).valueOf();<br/> +new Date();<br/> +new Date;<br/> 这三种方法返回的都是时间的毫秒数<br/> + 这种方法比较奇耙.....</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/array">array</a></li> <li><a href="/tag/bizarre">bizarre</a></li> <li><a href="/tag/date">date</a></li> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/syntax">syntax</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-10-12T11:19:55.000Z">October 12, 2014</time> <h1><a href="/post/hello-world/">Hello world!</a></h1> </header> <section class="post-main"><p>Welcome to WordPress. This is your first post. Edit or delete it, then start blogging!</p></section> <footer class="post-foot"> <ul class="post-tags"> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-09-09T22:27:41.000Z">September 9, 2014</time> <h1><a href="/post/js-css-asynchronous-loading-part-2/">js&&css 异步加载-2</a></h1> </header> <section class="post-main"><p>前面也说了.</p> <p>所有的代码都有个通病,功能越来越强悍但体积越来越庞大....</p> <p>好...也来强悍和庞大这个异步加载.....</p> <p>万恶.</p> <p>js的加载时不时还会有这样的需求.</p> <p>第二个js文件是第一个js文件的补充, 那么第二个js文件就需要依赖第一个js的某个功能,来最终实现某个目的.</p> <p>如果就只是使用前一篇文章的方法, 给一起加载了. 第二个js文件在解析的时候就会报错, 因为第一个js还没有完全解析完, 第二个文件就找不到依赖. 然后就报错了.</p> <p>说白了就是 并行加载 和 串行加载.</p> <p>并行加载就是所有文件一起加载</p> <p>串行加载就是一个一个加载.</p> <p>其实实现还是通过那个加载的状态判断</p> <p>并行加载在所有文件加载并且执行完毕后 执行回调.</p> <p>串行加载 一个文件加载并执行完毕后 在继续第二个文件,直到所有文件都完毕后在执行回调.</p> <p>那么就可以通过一个递归来实现这功能, 修改后的代码如下</p> <pre>!(function(window, undefined){
+    'use strict';
+    var scriptName = 'jcsl';
+    var version = 1;
+    var document = window.document;
+
+    function $() {};
+
+    /**
+     * 引入js或者css文件
+     * @param file 文件名
+     * @param callback 回调
+     **/
+    function loadFile(file, callback, category) { // mark
+        category = category||1;
+        switch(category) {
+        case 1:
+            loadFileParallel(file, callback);
+            break;
+        case 2:
+            loadFileSerial(file, callback);
+            break;
+        }
+    };
+
+    function loadFileSerial(files, callback) {
+        if (!files) throw 'load script fail: file&amp;&amp;mark is not null';
+        if (typeof(files)=='string') {
+            this.loadParallel(files, callback);
+            return;
+        }
+        var scripts = [];
+        try {
+            for(var i=0; i&lt;files.length; i++) {
+                switch(getFileSuffix(files[i])) {
+                case 'CSS':
+                    // css 
+                    excuteImportFile(files[i], 'CSS');
+                    break;
+                case 'JS':
+                    scripts.push(files[i]);
+                    break;
+                }
+            }
+            serialImport(scripts, 0, callback);
+        } catch(e) {
+            throw 'load script fail: load error; description:' + e;
+        }
+    };
+
+    function loadFileParallel(file, callback) {
+        if (!file) throw 'load script fail: file&amp;&amp;mark is not null';
+        var scripts = [];
+        try {
+            // 单文件或多文件加载
+            switch(typeof(file)) {
+            case 'object':
+                for(var i=file.length; (i--)&gt;0;) {
+                    scripts.push(excuteImportFile(file[i], getFileSuffix(file[i])));
+                }
+                break;
+            case 'string':
+                scripts.push(excuteImportFile(file, getFileSuffix(file)));
+                break;
+            default:
+                break;
+            }
+        } catch(e){
+            throw 'load script fail: load error; description:' + e;
+        }
+        // 文件引入后记录标识
+        // run.push(mark);
+        var scriptNum=0, loadNum=0;
+        // 获取引入的js文件数量
+        for(var i=scripts.length; (i--)&gt;0;) {
+            if (scripts[i].verify) scriptNum+=1;
+        };
+        // 依次判断引入的js是否引入完毕
+        for(var i=scripts.length; (i--)&gt;0;) {
+            if (!scripts[i].verify) continue;
+            // 加载完毕回调
+            scripts[i].fileref.onload = scripts[i].onreadystatechange = function(){
+                if (!0||this.readyState==='loaded'||this.readyState==='complete') {
+                    loadNum+=1; // 加载完毕数量
+                    // 加载完毕数量和加载的文件数量相同执行函数回调
+                    if (loadNum===scriptNum) {
+                        !callback||callback();
+                    };
+                };
+            };
+        };
+    };
+
+    /**
+     * 执行引入文件
+     * @param file 文件路径
+     * @param tyoe 文件类型
+     * */
+    function excuteImportFile(file, type){
+        // v js文件标识
+        var v=0, fileref;
+        switch(type.toUpperCase()) {
+        case 'JS':
+            fileref = document.createElement('script');
+            fileref.setAttribute('type','text/javascript');
+            fileref.setAttribute('src',file);
+            v=1;
+            break;
+        case 'CSS':
+            fileref = document.createElement('link');
+            fileref.setAttribute('rel','stylesheet');
+            fileref.setAttribute('type','text/css');
+            fileref.setAttribute('href',file);
+            break;
+        default:
+            break;
+        }
+        !fileref||document.getElementsByTagName('head')[0].appendChild(fileref);
+        return {verify: v, fileref: fileref};
+    };
+    
+    // 获取文件后缀名
+    function getFileSuffix(filename) {
+        filename = filename.split('?')[0];
+        return filename.substr(filename.lastIndexOf('.')+1, filename.length).toUpperCase();
+    };
+
+    function serialImport(files, index, callback) {
+        if (index&gt;=files.length){
+            !callback||callback();
+            return;
+        };
+        var eif = excuteImportFile(files[index], 'JS');
+        eif.fileref.onload = eif.fileref.onreadystatechange = function(){
+            if (!0||this.readyState==='loaded'||this.readyState==='complete') {
+                serialImport(files, index+1, callback);
+            };
+        };
+    };
+
+    $.prototype = {
+        version: version,
+        load: loadFile,
+        loadSerial: loadFileSerial,
+        loadParallel: loadFileParallel
+    };
+
+    window[scriptName] = new $();
+
+})(window);</pre> <p>也就是 这里新增的 loadFileSerial 函数</p> <p>loadFileSerial 函数中 判断是多文件还是一个文件 typeof(files), 单文件就直接通过并行加载即可, 多文件 根据后缀名判断是 css 或者 js , 如果是 css 就执行加载, js 就存入到一个临时的数组, 然后就走到那个递归的函数中.</p> <p>serialImport 进行文件的引入 , 然后根据引入返回添加的 script 标签的信息, 判断执行的状态, 执行完毕后加载下一个文件 index+1 , 直到 index 大于等于 files 这个数组的长度, 那么所有文件都执行完毕了, 执行回调.</p> <p> </p> <p>使用方法改动不大,之前的调用方式还是可用, 不传方式的话 默认是并行加载的</p> <pre>jcsl.load(['a.js', 'b.css', 'c.js'], function(){ //..; }, [1|2]); // 并行可以不用第三个参数  串行 第三个参数填2</pre> <p>当然也可以使用 原型中添加的 loadSerial 和 loadParallel 分别实现串行和并行加载, 传递的参数是一样的.</p> <p>没有ie...不知道ie能不能用.</p> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/async">async</a></li> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/jcsl">jcsl</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-09-04T23:57:45.000Z">September 4, 2014</time> <h1><a href="/post/js-css-asynchronous-loading-part-2-2/">js&&css 异步加载-1</a></h1> </header> <section class="post-main"><p>浏览器在执行js的时候会停止对页面的渲染,如果有一个js文件比较大,加载比较耗时,这个时候浏览器在下载这个js的时候,网页就会一片空白直到js下载并执行完成后才开始后面的操作, css相对来说各浏览器稍微好点.</p> <p>这时候可以通过异步加载来完成这个耗时较长的文件,页面渲染完毕后在进行js的下载执行.</p> <p>这样的插件也有很多. require.js head.js ...</p> <p>所有的代码都有个通病,功能越来越强悍但体积越来越庞大....</p> <p>也许这并不是最好的选择.</p> <p>异步加载的逻辑说白了就是在页面加载完成后,通过js下载另外的脚本文件,然后在执行后续的操作.</p> <p>代码如下</p> <pre>!(function(window, undefined){
+    'use strict';
+    var scriptName = 'jcsl';
+    var version = 1;
+    var document = window.document;
+
+    function $() {
+        /*
+        this.config = {
+            load: {
+                mark: {},
+                run: []
+            }
+        };
+        */
+    };
+
+    /**
+     * 引入js或者css文件
+     * @param file 文件名
+     * @param callback 回调
+     **/
+    function loadFile(file, callback) { // mark
+        // !mark
+        if (!file) throw 'load script fail: file&amp;&amp;mark is not null';
+        // var run = this.config.load.run;
+        // if (inArray(run, mark)) throw 'load script fail: mark is not found';
+        /*
+        for(var i=run.length; (i--)&gt;0;) {
+            // 检测文件是否已经被引入
+            if (run[i]==mark) {
+                console.info('load success: file already import');
+                return;
+            };
+        }
+        */
+        var scripts = [];
+        try {
+            // 单文件或多文件加载
+            switch(typeof(file)) {
+            case 'object':
+                for(var i=file.length; (i--)&gt;0;) {
+                    scripts.push(excuteImportFile(file[i], getFileSuffix(file[i])));
+                }
+                break;
+            case 'string':
+                scripts.push(excuteImportFile(file, getFileSuffix(file)));
+                break;
+            default:
+                break;
+            }
+        } catch(e){
+            throw 'load script fail: load error; description:' + e;
+        }
+        // 文件引入后记录标识
+        // run.push(mark);
+        var scriptNum=0, loadNum=0;
+        // 获取引入的js文件数量
+        for(var i=scripts.length; (i--)&gt;0;) {
+            if (scripts[i].verify) scriptNum+=1;
+        };
+        // 依次判断引入的js是否引入完毕
+        for(var i=scripts.length; (i--)&gt;0;) {
+            if (!scripts[i].verify) continue;
+            // 加载完毕回调
+            scripts[i].fileref.onload = scripts[i].fileref.onreadystatechange = function(){
+                if (!0||this.readyState==='loaded'||this.readyState==='complete') {
+                    loadNum+=1; // 加载完毕数量
+                    // 加载完毕数量和加载的文件数量相同执行函数回调
+                    if (loadNum===scriptNum) {
+                        !callback||callback();
+                    };
+                };
+            };
+        };
+    };
+
+
+    /**
+     * 执行引入文件
+     * @param file 文件路径
+     * @param tyoe 文件类型
+     * */
+    function excuteImportFile(file, type){
+        // v js文件标识
+        var v=0, fileref;
+        switch(type.toUpperCase()) {
+        case 'JS':
+            fileref = document.createElement('script');
+            fileref.setAttribute('type','text/javascript');
+            fileref.setAttribute('src',file);
+            v=1;
+            break;
+        case 'CSS':
+            fileref = document.createElement('link');
+            fileref.setAttribute('rel','stylesheet');
+            fileref.setAttribute('type','text/css');
+            fileref.setAttribute('href',file);
+            break;
+        default:
+            break;
+        }
+        !fileref||document.getElementsByTagName('head')[0].appendChild(fileref);
+        return {verify: v, fileref: fileref};
+    };
+    
+    // 获取文件后缀名
+    function getFileSuffix(filename) {
+        filename = filename.split('?')[0];
+        return filename.substr(filename.lastIndexOf('.')+1, filename.length).toUpperCase();
+    };
+
+    function inArray(arr, o) {
+      var s = String.fromCharCode(2);
+      var r = new RegExp(s+o+s);
+      return (r.test(s+arr.join(s)+s));
+    };
+
+    $.prototype = {
+        version: version,
+        load: loadFile
+    };
+
+    window[scriptName] = new $();
+
+})(window);</pre> <p>引入文件就是通过 document.createElement 创建一个 script 或者 link 标签 然后将标签嵌入到 head 标签中, 这样浏览器就会下载这个文件.</p> <p>关键在于那个回调何时执行的问题</p> <p>直接在引入js后就执行回调的话, 被引入的js里的内容是不能够立马执行的, 浏览器下载需要时间, 初始化也需要时间, 在这期间就直接使用了引入的那些函数,也许还并没有执行.</p> <p>要做的就是等待这些引入的脚本都执行完毕了,在来执行回调函数, 也就是判断引入的脚本的加载状态</p> <p>通过 createElement 创建的标签</p> <p>ie 浏览器 可以通过 onreadystatechange 函数 通过 readyState 判断加载的状态</p> <p>firefox/chrome 可以通过 onload 函数 无需在进行判断</p> <p>当执行加载完毕的脚本数量和js文件的数量相同在初始化完毕,执行回调继续后续的操作</p> <p>使用方式 在页面中加入这个脚本</p> <p>调用方式</p> <pre>jcsl.load('//test.com/res/test.js', function(){
+    // ...
+});
+// 或者 多文件
+jcsl.load([
+    '//test.com/res/test1.js',
+    '//test.com/res/test2.js',
+    '//test.com/res/style.css'
+], function(){
+    // ....
+});</pre> <p>类似于 head.js 的调用方式</p> <p>当然还可以继续优化这东西的.</p> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/async">async</a></li> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/jcsl">jcsl</a></li> </ul> </footer> </article> <menu class="page"> <li class="page-prev"> <a href="/page/3" title="Previous">Prev</a> </li> <li class="page-next"> <a href="/page/5" title="Next">Next</a> </li> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

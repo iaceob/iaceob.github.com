@@ -1,0 +1,737 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>javascript - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2015-07-01T01:08:17.000Z">July 1, 2015</time> <h1><a href="/post/re-coding-jquery-jskit/">重造轮(和谐)子之 jQuery [base]</a></h1> </header> <section class="post-main"><p>因为最近在做一些重造轮子的事情, 所以了, 索性把 jQuery 重新造一遍, 当然, 不可能全部都重造出来...</p> <p>重造 jQuery 主要是因为想要一个 js 的工具包, 然而了 jQuery 实在太大了, 而那些现成的做好的精简包, 比如 <a title="Zepto.js: the aerogel-weight jQuery-compatible JavaScript library" href="http://zeptojs.com/" target="_blank">zepto</a> , 又有些东西是不需要的, 所以就重造一个.</p> <p>好吧, 这里主要说说实现的方法.</p> <p>首先定义一个类, 也就是闭包的函数, 作为主方法, 并提供 prototype 供外部扩展函数, 并且主方法作为入口, 做出类似于 jQuery 的选择器入口.</p> <p>所以有如下代码</p> <pre>!(function(window, undefined){
+    'use strict';
+    function kit(select){
+        try {
+            return self.selector(select);
+        } catch (e) {
+            return null;
+        }
+    };
+    var self = kit.fn = kit.prototype = Object.create(Array.prototype);
+    window.jsKit = kit;
+})(window);
+</pre> <p>那么来分析下这段主方法的代码.</p> <p>首先是建一个闭包, 这里面有个 kit 的函数, 为入口函数, 并且将 kit 赋于 window 的 jsKit 变量上.</p> <p>先来看原型赋值这</p> <pre>    var self = kit.fn = kit.prototype = Object.create(Array.prototype);</pre> <p>这段的意思了, 就是将 kit 的原型设置为 类数组对象 然后将 kit 的原型赋予 kit.fn 接着继续赋给 self;</p> <p>关于类数组对象, 这个是 让 kit 的 prototype 带有数组的特性, 也就是 js 中的 Array like Object, 详细的这个分析这里就不描述了, 看以后在能不能写点这, 详细来分析.</p> <p>这个原型分配好了之后了, 其中 self 只是在当前闭包中使用 kit.fn 是外部使用的.</p> <p>再来看 kit 函数, 这里面只做了一件事</p> <pre> return self.selector(select);</pre> <p>self.selector 也就是选择器了.</p> <p>所以就在新建一个类(闭包)专门做选择器的实现, 然后作为扩展添加到这个主方法中.</p> <p>selector 实现就如下</p> <pre>!(function(window, kit, undefined){
+    'use strict';
+    var document = window.document;
+    var self = kit.fn;
+    function selector(select){
+        self.splice(0, self.length);
+        var allDom = document.querySelectorAll(select);
+        for(var i=allDom.length; i--&gt;0;)
+            self.push(allDom[i]);
+        return self;
+    };
+    self.selector = selector;
+})(window, jsKit);</pre> <p>一个非常简单的实现方式, 首先引入 jsKit , 使用 jsKit.fn 注册一个 selector 的函数, 函数的实现就是当前这个闭包中的 selector 函数.</p> <p>当然这个选择器偷懒直接使用了 document.querySelectorAll 方法了, 不够这个方法也基本上能满足大多数的需求了.</p> <p>query 出来的结果是一个 NodeList 的数据类型, 是不能够直接操作的, 因此就需要将这个 NodeList 数据转化为这里的 jsKit 类, 前面也说了 jsKit 的原型被设置未 类数组的对象, 所以能够使用数组的相关特性,因此这里直接对 NodeList 遍历, 并且 push 到 jsKit 中. 然后 return self; 也就是返回 jsKit 类, 这样做的目的就是为了实现原型链, 能够进行链式调用.</p> <p>需要注意的是 这里加了一行</p> <pre>self.splice(0, self.length);</pre> <p>这个的作用是清空数组, 这里也就是清空 jsKit, 因为 jsKit 在 push 后不释放的话, 在执行一次, 第二次会累加, 这也是 Array 的特性.</p> <p>所以一个简单的类似于 jQuery 的选择器就实现了.</p> <p>接下来可以进行 jQuery 和 jsKit 的简单测试了.</p> <p>比如</p> <pre>jQuery('li'); // Object[li, li, li]
+jsKit('li'); // Object[li, li, li]</pre> <p>返回的结果都是一样的.</p> <p>所以前提条件都有了, 接下来只要对 jsKit.fn 进行扩充就行了.</p> <p>像是 addClass</p> <pre>jsKit.fn.addClass = function(){
+  this.forEach(function(target){
+    console.log(target);
+  });
+};</pre> <p>调用的使用通过和 jQuery 一样的原型链方式</p> <pre>jsKit('li').addClass('test');</pre> <p> </p> <p>话就到这</p> <p>当然这只是一个非常简单的模拟啦, jQuery 很强大了, 代码写的很高深, 只是阅读就很复杂了, 比如这里的选择器实现只是简单的 querySelectAll , 而 jQuery 则提供了更多实用的功能, 而且 jQuery() 还支持对象等作为选择器, 因此这个还是需要完善的.</p> <p>jQuery 是很好使, 但是就是臃肿了点, 现在很多用 jQuery 的地方其实根本可以不需要, 只是用了 jQuery 的很少几个功能.</p> <p> </p> <p>所以 jsKit 继续优化吧.</p> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/harmony">harmony</a></li> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/jquery">jquery</a></li> <li><a href="/tag/js">js</a></li> <li><a href="/tag/recoding">recoding</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2015-04-15T15:25:41.000Z">April 15, 2015</time> <h1><a href="/post/javascript-call-apply/">javascript call apply</a></h1> </header> <section class="post-main"><p>javascript 中 call 于 apply 都作用都是去调用某个函数, 区别在于 call 在调用的时候参数是需要一一带入, 而 apply 只需要传递一个参数数组即可, 同时 apply 也可以将 arguments 作为参数传递给将调用的方法</p> <pre>fun1.call(fun2, 'a', 'b', 'c')
+fun1.apply(func2, ['a', 'b', 'c'])</pre> <p>例如如下用法</p> <pre>(function(){
+
+  function test(){};
+  
+  function a(){
+    // 当执行 a 的时候, 调用 a2 函数并将当前函数的 arguments 传递于 a2 
+    a2.apply(this, arguments);
+  };
+  
+  function a2(){
+    console.log(arguments);
+  };
+
+  kit.prototype = {
+    a: a,
+    a2: a2
+  }
+  window.k = new test();
+})();
+
+k.a(1111, 3,22)</pre> <p>如果是使用 call 调用</p> <pre>a2.call(this, arguments[0], arguments[1], ..);</pre> <p>apply 可以以数组的方式传参, 因此也可以继续对 arguments 进行封装, 供 a2 使用.</p> <pre>function a(){
+ var para = [];
+ for(var i=0; i&lt;arguments.length; i++) para.push(arguments[i]);
+ para.push(1);
+ para.push(true);
+ //...
+ a2.apply(this, para);
+};</pre> <p>a2 就可以根据这些不同的参数进行不同的逻辑处理.</p> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/apply">apply</a></li> <li><a href="/tag/arguments">arguments</a></li> <li><a href="/tag/call">call</a></li> <li><a href="/tag/javascript">javascript</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2015-01-03T19:00:51.000Z">January 3, 2015</time> <h1><a href="/post/javascript-parse-page/">javascript 解析分页</a></h1> </header> <section class="post-main"><p>怀旧, 看到了这篇古老的<a title="分页自定义标签" href="/post/paging-custom-tag/">文章</a>, 一个 java servlet 的自定义分页标签, 毕竟每个人的观念以及认识都在改变, 看到了这就想到了现在在用的了, 感觉现在和以前差别还是挺大的, 那就来说说吧.</p> <p>先来说说之前的那篇文章吧.</p> <p>首先那是一个标准的 jsp 自定义标签的方式, 在 web.xml 中注册标签名, 标签会调用后台的java类, 传递 行数 页数 等参数, 这个类就去分析这些数字来生成 html, 后输出, 另外还有增加了很多自定义的功能.</p> <p>相对来说, 还是比较完善的.</p> <p>不过现在来看话, 只感觉到繁杂, 标签使用麻烦, 整个配置麻烦, 而且 还给服务器增加了负担.</p> <p>其实那东西我自己都没用过= =</p> <p>好吧. 前面的先这样, 那么 说说现在的吧.</p> <p>现在的处理方案是全部使用js来做分页, 既然是分页查询, 都肯定会有 总行数 总页数 页码 每页数据量</p> <p>有了这些, 就可以对其进行分析了</p> <pre>/**
+ * 解析分页页码
+ */
+function parsePage(totalRow, totalPage, pageNumber, pageSize, url, pageParam) {
+    totalRow = totalRow||0;
+    totalPage = totalPage||0;
+    pageNumber = pageNumber||0;
+    pageSize = pageSize||0;
+    url = url||window.location.href;
+    pageParam = pageParam||'page';
+    var phtml = '&lt;div&gt;';
+    phtml += '&lt;span&gt;共&lt;strong&gt;' + totalRow + '&lt;/strong&gt;条&lt;/span&gt;&lt;span&gt;每页&lt;strong&gt;' + pageSize + '&lt;/strong&gt;条&lt;/span&gt;';
+    if (pageNumber &gt; 1) {
+        phtml += '&lt;a href="' + joinPageUrl(1, url, pageParam) + '" data-page="1"&gt;首页&lt;/a&gt;';
+        phtml += '&lt;a href="' + joinPageUrl((pageNumber - 1), url, pageParam) + '" data-page="' + (pageNumber - 1) + '"&gt;上一页&lt;/a&gt;';
+    } else {
+        phtml += '&lt;span&gt;首页&lt;/span&gt;';
+        phtml += '&lt;span&gt;上一页&lt;/span&gt;';
+    }
+    var prevp = pageNumber - 4;
+    for (var i = 0; i &lt; 4; i++) {
+        var prevpj = prevp++;
+        if (prevpj &gt; 0) {
+            phtml += '&lt;a href="' + joinPageUrl(prevpj, url, pageParam) + '" data-page="' + prevpj + '"&gt;' + prevpj + '&lt;/a&gt;';
+        }
+    };
+    phtml += '&lt;span&gt;&lt;strong&gt;' + pageNumber + '&lt;/strong&gt;&lt;/span&gt;';
+    var nexp = pageNumber;
+    for (var i = 0; i &lt; 5; i++) {
+        var nexpj = ++nexp;
+        if (nexpj &lt; pageNumber + 5 &amp;&amp; nexpj &lt;= totalPage) {
+            phtml += '&lt;a href="' + joinPageUrl(nexpj, url, pageParam) + '" data-page="' + nexpj + '"&gt;' + nexpj + '&lt;/a&gt;';
+        }
+    };
+    if (pageNumber &lt; totalPage) {
+        phtml += '&lt;a href="' + joinPageUrl((pageNumber + 1), url, pageParam) + '" data-page="' + (pageNumber + 1) + '"&gt;下一页&lt;/a&gt;';
+        phtml += '&lt;a href="' + joinPageUrl(totalPage, url, pageParam) + '" data-page="' + totalPage + '"&gt;尾页&lt;/a&gt;';
+    } else {
+        phtml += '&lt;span&gt;下一页&lt;/span&gt;';
+        phtml += '&lt;span&gt;尾页&lt;/span&gt;';
+    };
+    phtml += '&lt;span&gt;' + pageNumber + '/' + totalPage + '&lt;/span&gt;';
+    phtml += '&lt;/div&gt;';
+    return phtml;
+};
+
+/**
+ * 拼接分页链接
+ * 分页链接简单处理
+ * */
+function joinPageUrl(pageNumber, url, pageParam) {
+    pageParam = pageParam||kit.config.site.pageParam;
+    url = url.split('?');
+    var upr='';
+    if (url.length&lt;=1) {
+        upr += url[0] + '?' + pageParam + '=' + pageNumber;
+        return upr;
+    }
+    var up = url[1].split('&amp;');
+    var urlParam = [];
+    for(var i=up.length; (i--)&gt;0;) {
+      urlParam = up[i].split('=');
+      if (urlParam[0]!=pageParam) upr += up[i]+'&amp;';
+    }
+    upr += pageParam + '=' + pageNumber;
+    url = url[0] + '?' + upr;
+    return url;
+};</pre> <p>分析的流程都是大同小异的之前怎么做这里就怎么做</p> <p>这里唯一只是多了一个 joinPageUrl 这个函数的处理, 就是分页链接的自定义, 例如 ajax 加载某个内容, url 并不是当前页面的 url , 那就可以直接传递分页的 url , 另外这里也添加了多参数的功能, 依稀记得 以前 thinkphp 内置的分页标签以前就存在这个问题, 例如原分页链接如下</p> <p>//host.com/a.php?type=0</p> <p>这是第一页 , 然后 tp 的分页标签在生成页码的时候 把 type=0 给抛弃了, 也就是 第二页像这样</p> <p>//host.com/a.php?page=2</p> <p>正确的应该是</p> <p>//host.com/a.php?type=0&amp;page=2</p> <p>当然, 现在tp已经没有这问题了, 已经被修复了.</p> <p>这里的 joinPageUrl 里 首先会去获取 url 如果有参数, 会分析所有参数, 并加上分页的参数.</p> <p>====</p> <p>逻辑还是那个逻辑, 只是形式变了而已, 分页从后台跑到前台来做了, 这样也减轻了后台的负担, 同样这样也更灵活, 任何地方想要分页, 只要传递参数过来,这里就能进行分析.</p> <p>但这绝对不是最好的方案, 这样做非常不利于seo, 所以酌情使用咯.</p> <p>应该算是最简单的一种方案, 使用很方便.</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/page">page</a></li> <li><a href="/tag/parse">parse</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2015-01-01T00:59:16.000Z">January 1, 2015</time> <h1><a href="/post/js-parse-lyric/">js 解析歌词</a></h1> </header> <section class="post-main"><p>这里解析歌词是根据这篇文章的基础进行修改的,完善了下代码.</p> <p>http://www.feelcss.com/html5-music-player-synchronous-display-lyrics.html</p> <p>建议先看看这篇文章, 在继续阅读下述内容.</p> <p>简单的说那篇文章中所述的方式确实可以解析歌曲, 但是稍有些不足的, 解析必须是标准的歌词文件以及歌词文件中时间是不可重复的, 如果歌词中有俩个时间在同一行就不能够正确解析了. 总之那只是一个思路, 然后这里就给具体完善下.</p> <p>解析流程大致如下</p> <pre>歌词
+      ----- 异常格式 -&gt; 按行切割 -&gt; 依次拼接html并返回
+      ----- 正常格式 -&gt; 按行切割 -&gt; 解析每一行歌词
+                                                              |
+                                                -------------------------------
+                                        歌曲信息                        歌词
+                                            |                    -------------------------
+                                            |                 一个时间           多个时间
+                                            |                      |                           |
+                                            |                      |                         拆开
+                                            |                      |                           |
+                                        -------------------------------------------------
+                                                 放入到一个统一的对象中
+                                                                   |
+                                      歌曲信息和歌词分开并且歌词排序返回
+                                                                   | 
+                                                  根据返回拼接成html并返回</pre> <p>那么就是代码实现了</p> <p>先把用到的正则解释下(正则也许是最反人类的代码了....测试了好久)</p> <pre>// 歌词中时间格式匹配
+lrctimeformat: /\[(\d*):(\d*)([\.|\:]\d*|)\]/
+// 获取一行歌词中 所有正确的时间格式
+lrclinetime: /\[\d*:\d*.\d*\]/g, 
+// 获取一行歌词中 歌词内容 例如 &lt;[01:02.01][02:10.03]aaa&gt; 匹配 aaa
+lrclinearticle: /\](?!\[\d*).*?(.*)/, 
+// 在一行歌词中匹配出来的时间的左右括号 获取时间值
+lrclinermformat1: /\[|\]/g, 
+// 和上方相同 只是多匹配了 时间值中的符号  删除这些符号后用于排序
+lrclinermformat2: /\[|\]|\:|\./g, 
+// 匹配歌词信息
+lrcinfo: /\[([a-zA-Z]*):(.*?)\]/</pre> <p>判断是否为标准的歌词文件可以使用 lrctimeformat</p> <pre>   // lrc 是歌词内容 如果匹配到了例如 [01:24]或者[01:24.21]这样格式的字符 就会返回匹配回来的数组, 如果没有就返回null
+    var n = lrc.match(conf.regex.lrctimeformat);
+   // 这里做俩个判断 一是 如果没检索到就表示 不是标准的歌词, 另外一个是 如果返回的数组是空的也不是标准的歌词, 这种语法见<a title="javascript 一些比较奇葩的语法" href="/post/javascript-some-of-the-more-bizarre-syntax/">这里</a>
+    if (!n||!n.length) {
+     // 不标准的歌词处理
+    } else {
+     // 标准歌词处理
+    }</pre> <p>不标准的歌词文件处理相对就简单了, 直接按行切割拼接html就成了</p> <p>在说标准歌词解析之前了 先说说整个歌词的处理相关</p> <p>歌词通常格式像这样</p> <pre>[ti:I Wish You Knew]
+[ar:Mariah Carey]
+[al:The Emancipation Of Mimi]
+[00:00.55]Mariah Carey 
+[00:01.47]
+[00:02.27]I Wish You Knew
+[00:09.92]
+[00:13.92]I've got to see you
+[00:17.14]Wherever you are
+[00:20.40]And I've got to be there
+...</pre> <p>上方为歌曲的相关信息然后以[00:00.00]这样开头的是歌词</p> <p>但是有时候为了,恩从代码的角度来说,叫歌词的复用, 一首歌重复的一句话会出现很多次的, 这时候, 歌词有可能会这样</p> <pre>[00:17.14][01:02.22]Wherever you are
+[00:20.40][01:05.35][02:04.30]And I've got to be there</pre> <p>这时候就需要将这些拆开成这样</p> <pre>[00:17.14]Wherever you are
+[01:02.22]Wherever you are
+[00:20.40]And I've got to be there
+[01:05.35]And I've got to be there
+[02:04.30]And I've got to be there</pre> <p>拆成这样后了 因为是在一个 for 中执行的, 这里的操作是加入到一个数组中, 然后 整体就像这样</p> <pre>[00:17.14]Wherever you are
+[01:02.22]Wherever you are
+[01:02.25]xxxx
+....
+[00:20.40]And I've got to be there
+[00:20.41]xxx
+....
+[01:05.35]And I've got to be there
+[01:05.40]xxx
+...
+[02:04.25]
+[02:04.30]And I've got to be there</pre> <p>这样歌词就乱了, 所以就需要对歌词进行排序, 排序的规则了就按照歌词播放的时间来排序了, 可是你说 [00:00.00] 这样怎么排序, 其实很简单, 把所有这些字符都剔除掉, 剩下的就是时间的字符串了, 然后对其进行转换 <code>Number.parseInt()</code></p> <pre>001714    1714
+010222    10222
+010225    10225
+....
+002040    2040
+002041    2041
+....
+010535    10535
+010540    10540
+....
+020425    20425
+020430    20430</pre> <p>这样就可以进行排序了, 然后了又需要歌词和歌曲播放同步, 歌曲的播放了是可以获取到播放到哪一秒了, 那歌词也需要这些信息, 这里了处理方法和前面这基本相同, 就是 剔除 [ ] 符号 然后剩下来的就像这样 00:17.14 01:02.22 然后剔除后面的毫秒数 00:17 01:02 在按照 : 切割 左边的就是 分 右边的就是秒 分*60+秒 就是当前这一行在歌曲播放的哪一秒的歌词</p> <p>这些都有了之后了 就定义一个统一的对象, 比如这样</p> <pre>{index: 1714, time: '00:17.14', lyric: 'xxxxxx'}</pre> <p>歌曲信息了就像这样</p> <pre>{key: 'ar', val: 'xxxx'}</pre> <p>好 前提工作都做好了, 现在开始解析, 直接用代码来解释吧</p> <pre>// 这个 lrcArr 就是 按行分割出来的数组 .split('\n')
+function parseLine(lrcArr){
+    var line, lt, la, lla=[];
+    for(var i=0; i&lt;lrcArr.length; i++) {
+        line = lrcArr[i]; 
+        // 判断是否为 歌曲信息 是的话 放入到 lla 中
+        if (isLrcInfo(line)) {
+            // toLoObject 就是前文中提到的 返回统一歌曲信息对象
+            lla.push(toLoObject(line));
+            continue;
+        }
+        // 获取一行中所有匹配上的时间格式
+        lt = line.match(lrclinetime);
+        // 获取一行中 歌词内容
+        la = line.match(lrclinearticle);
+        // 如果匹配出来的是null或者长度小于等于1 表示这一行没有或者 就一个时间 直接将这行加入到新的数组中
+        if (!lt||lt.length&lt;=1) {
+            /// tiLrcObject 就是统一个歌词统一对象
+            lla.push(toLrcObject(line));
+            continue;
+        }
+        /*
+        一行多个时间, 那这些时间的歌词都是一样的,
+        拼接后 转成 统一格式的数组放入到 lla 这个数组中
+         */
+        for(var j=0; j&lt;lt.length; j++)
+            lla.push(toLrcObject(lt[j] + la[1]));
+    }
+    /// 到这里了 lla 就是 被完全解析后的 歌词信息了 重复的也拆分了
+   /// 那么这时候要做的就是 将 lla 中的 歌曲信息和歌词去分开
+   /// 和 对歌词的排序了
+    return sortLrc(lla);
+};
+
+// 判断是否是歌曲信息
+function isLrcInfo(line){
+    // 这里就比较艺术了...
+    // lrcinfo 就是前面提到的 正则, 匹配是不是 歌曲信息的格式
+   // 首先 如果匹配上了 那返回的就是数组 否则就是null
+   // 那么 !null 表示不是歌曲信息 
+    // ![] 表示 是歌曲信息 
+    // 艺术的是什么了, 还是 <a title="javascript 一些比较奇葩的语法" href="/post/javascript-some-of-the-more-bizarre-syntax/">这个</a> 
+    // !null true
+    // ![]  false
+    // 所以在取反一次 那么 true 表示是歌曲信息 否则 就不是
+    return !!line.match(lrcinfo);
+};
+
+function sortLrc(lrcArr){
+        var line, li=[], la=[], tmp;
+        // 先将歌曲信息和歌词内容分开
+        // 如果存在 key 就放入 li 否则就是歌词信息
+        // 这个时候就不需要使用 isLrcInfo 来判断了, 毕竟正则效率不高, 而且前面也已经返回了统一的对象了 循环的时候判断lrcArr 有没有 key 这个属性就行了
+        //  分别 将歌曲信息和歌词放入到不同的变量去 li  la
+       // 例如la是歌词, 然后对la进行排序
+      return {info: li, lrcs: la};
+};
+</pre> <p>之后, 就剩下一件事了, 把 sortLrc 返回的这个对象 在解析成html就行了, 解析的时候 给 html 加个属性值就是 前面提到的 把时间转化成秒, 以同步歌曲播放显示的歌词</p> <pre>function parseTime(time){
+    var t = time.split('.')[0].split(':');
+    var min = Number.parseInt(t[0]),
+        sec = Number.parseInt(t[1]),
+        realMin = min*60+sec;
+    return realMin;
+};
+
+function joinLrc(arr){
+    var lah = '';
+    for(var i=0; i&lt;arr.length; i++) {
+        if (arr[i].index&lt;0) continue;
+        lah += '&lt;li data-time="'+parseTime(arr[i].time)+'"&gt;' + arr[i].lyric;
+    }
+    return lah;
+};</pre> <p>基本上事情就做完了, 后面就是和歌曲和歌词的同步了.</p> <p>好 就这样, 有点乱, 全部代码在 <a title="JavaScript 歌詞解析" href="//code.iaceob.name/code/347857775260471296.html" target="_blank">JavaScript 歌詞解析</a> , 这里就不放全部了= = 不占字数.</p> <p>还有. 谢谢开头提到的那博主了.</p> <p>======</p> <p>然后问题来了. 歌词滚动还没做好啊..</p> <p>该撤了. 一篇文章写了俩年......</p> <p>2015年了都= =</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/lrc">lrc</a></li> <li><a href="/tag/lyric">lyric</a></li> <li><a href="/tag/parse">parse</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-12-09T22:23:37.000Z">December 9, 2014</time> <h1><a href="/post/iframe-auto-height/">iframe 自适应高度</a></h1> </header> <section class="post-main"><p>很久以前就在网络的某处找到过一个iframe自适应高度的文章, 并且测试过还非常好用, 可惜当时这个方案被取消了, 而是使用了frameset代替了iframe来实现页面搭建了, 当时就直接修改了, 也没有在意. 直到今天突然有人在问iframe怎么自适应高度... 原文件已经找不到了, 又是一番查找, 果然找到的都不是想要的, 然后就自己重写了个. 虽然还有瑕疵.</p> <p>初级方案:</p> <p>使用onload在iframe加载完毕后触发一个函数获取iframe页面的高度, 然后修改父页面iframe标签的height值, 达到高度自适应的目的.</p> <p>在被iframe的页面中添加如下代码</p> <pre>&lt;script&gt;
+function resetSize(){
+    var height = document.body.scrollHeight;
+    parent.document.getElementById('frameid').style.height = height+'px';
+};
+window.onload=resetSize;
+&lt;/script&gt;</pre> <p>这样iframe在加载完毕后就会同步父页面的高度与iframe页面的高度一样, 虽然实现起来很简单, 但是有些不足, onload 在加载后就会在工作了, iframe的页面如果有其他操作父页面的高度是不会更改的onload只会在页面加载完毕后执行.</p> <p> </p> <p>终极方案:</p> <p>利用 DOMNodeInserted 和 DOMNodeRemoved 事件来监听节点的改变, 调用重置函数来同步高度.</p> <p>给被iframe的页面body添加 DOMNodeInserted DOMNodeRemoved 这俩个事件来监听页面内容的增加或删除, 同步父页面iframe标签的高度.</p> <p>在被iframe的页面中添加如下代码</p> <pre>&lt;script&gt;
+function resetSize(){
+    var height = document.body.scrollHeight;
+    parent.document.getElementById('frameid').style.height = height+'px';
+};
+window.onload=resetSize;
+document.body.addEventListener('DOMNodeInserted', resetSize, false);
+document.body.addEventListener('DOMNodeRemoved', resetSize, false);
+&lt;/script&gt;</pre> <p>这样就能够实现实时内容同步了, 不过至少我没测试过兼容性= =, firefox dev 是可以正常运行的.</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/auto">auto</a></li> <li><a href="/tag/height">height</a></li> <li><a href="/tag/html">html</a></li> <li><a href="/tag/iframe">iframe</a></li> <li><a href="/tag/javascript">javascript</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-10-15T09:17:52.000Z">October 15, 2014</time> <h1><a href="/post/javascript-some-of-the-more-bizarre-syntax/">javascript 一些比较奇葩的语法</a></h1> </header> <section class="post-main"><p>js 因为历史原因,以至于有不少的比较奇耙的现象.<br/> 比如下面这些.</p> <p>[] 数组<br/> console.log(!"); // false<br/> console.log(0); // false<br/> console.log(!0); // true<br/> // 问题来了..<br/> console.log([]); // []<br/> console.log(![]); // false<br/> console.log([]==false); // true<br/> console.log(Boolean([])) // true<br/> console.log(![].join(")); // true<br/> console.log(![].join(‘,’)); // true<br/> console.log(![].toString()); // true<br/> console.log([] ? 1 : 0); // 1<br/> console.log(![] ? 1 : 0); // 0<br/> console.log([]==![]); // true ...<br/> console.log([]===![]); // false<br/> [] 就是一个空数组<br/> console.log([]==false); 这输出 true 就是直接表示 [] 就是 false, 但是将 [] 转成 Boolean 类型的时候 表示又为 true 那 true==false 应该为false才对.<br/> 也就是说 [].join(") [].join(‘,’) [].toString() 的返回值都是 "", 那么取反的话也就是 !"" 当然为 true<br/> 虽然不能直接证明 [] 是 true 还是 false 不过从转换后的字符串来看 [] 应该为 false 才对.<br/> 接下来 console.log([] ? 1 : 0; ); 输出的是 1 也就是说 [] 是 true, ![] 输出 0 也同样<br/> 在下面这个 console.log([]==![]) .... 输出的是 true ...<br/> 好吧.<br/> 那 [] 在判断的时候 到底是 true 还是 false .<br/> ---<br/> 事实上在不同情况就是得不同对待的..<br/> 当 [] 在做 if 条件判断的时候 也就是 if([]) 或者 [] ? y : z; 这个时候 [] 是对象, 那么判断的时候就会当作 true 来看待<br/> 在 js 中任何值与 boolean 值做判断的时候都会转化为 Number 在进行判断<br/> 也就相当与 console.log(Number([])==false) , 这样就能理解了<br/> Number([]) 输出的是0<br/> Number(false) 删除的也是0<br/> 0==0 []==false 是等效的<br/> 这个时候在来解释 []==![]<br/> Number([]) // 0<br/> Number(![]) == Number(false) // 0<br/> 那么 []==![] 就成立了<br/> 最后一个 []===![] 这个为 false 就很好理解了 俩边的数据类型不匹配, 直接返回了false, 看下 == 和 === 的区别就知道了.<br/> --<br/> 说了这么多. 那为毛 ![] 是 false ......<br/> 总结来说<br/> [] 在 if 条件中 因为是对象 那么就是 true<br/> [] 在于 boolean 做判断的时候 会进行 Number 强转也就是 0<br/> 因此需要判断一个数组是否为空的时候, 尽量使用 === 或者 [].length [].join(") 进行判断, 避免这种也许会出现无法预料的结果..</p> <p>Date 函数<br/> (new Date()).getTime();<br/> (new Date()).valueOf();<br/> +new Date();<br/> +new Date;<br/> 这三种方法返回的都是时间的毫秒数<br/> + 这种方法比较奇耙.....</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/array">array</a></li> <li><a href="/tag/bizarre">bizarre</a></li> <li><a href="/tag/date">date</a></li> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/syntax">syntax</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-09-09T22:27:41.000Z">September 9, 2014</time> <h1><a href="/post/js-css-asynchronous-loading-part-2/">js&&css 异步加载-2</a></h1> </header> <section class="post-main"><p>前面也说了.</p> <p>所有的代码都有个通病,功能越来越强悍但体积越来越庞大....</p> <p>好...也来强悍和庞大这个异步加载.....</p> <p>万恶.</p> <p>js的加载时不时还会有这样的需求.</p> <p>第二个js文件是第一个js文件的补充, 那么第二个js文件就需要依赖第一个js的某个功能,来最终实现某个目的.</p> <p>如果就只是使用前一篇文章的方法, 给一起加载了. 第二个js文件在解析的时候就会报错, 因为第一个js还没有完全解析完, 第二个文件就找不到依赖. 然后就报错了.</p> <p>说白了就是 并行加载 和 串行加载.</p> <p>并行加载就是所有文件一起加载</p> <p>串行加载就是一个一个加载.</p> <p>其实实现还是通过那个加载的状态判断</p> <p>并行加载在所有文件加载并且执行完毕后 执行回调.</p> <p>串行加载 一个文件加载并执行完毕后 在继续第二个文件,直到所有文件都完毕后在执行回调.</p> <p>那么就可以通过一个递归来实现这功能, 修改后的代码如下</p> <pre>!(function(window, undefined){
+    'use strict';
+    var scriptName = 'jcsl';
+    var version = 1;
+    var document = window.document;
+
+    function $() {};
+
+    /**
+     * 引入js或者css文件
+     * @param file 文件名
+     * @param callback 回调
+     **/
+    function loadFile(file, callback, category) { // mark
+        category = category||1;
+        switch(category) {
+        case 1:
+            loadFileParallel(file, callback);
+            break;
+        case 2:
+            loadFileSerial(file, callback);
+            break;
+        }
+    };
+
+    function loadFileSerial(files, callback) {
+        if (!files) throw 'load script fail: file&amp;&amp;mark is not null';
+        if (typeof(files)=='string') {
+            this.loadParallel(files, callback);
+            return;
+        }
+        var scripts = [];
+        try {
+            for(var i=0; i&lt;files.length; i++) {
+                switch(getFileSuffix(files[i])) {
+                case 'CSS':
+                    // css 
+                    excuteImportFile(files[i], 'CSS');
+                    break;
+                case 'JS':
+                    scripts.push(files[i]);
+                    break;
+                }
+            }
+            serialImport(scripts, 0, callback);
+        } catch(e) {
+            throw 'load script fail: load error; description:' + e;
+        }
+    };
+
+    function loadFileParallel(file, callback) {
+        if (!file) throw 'load script fail: file&amp;&amp;mark is not null';
+        var scripts = [];
+        try {
+            // 单文件或多文件加载
+            switch(typeof(file)) {
+            case 'object':
+                for(var i=file.length; (i--)&gt;0;) {
+                    scripts.push(excuteImportFile(file[i], getFileSuffix(file[i])));
+                }
+                break;
+            case 'string':
+                scripts.push(excuteImportFile(file, getFileSuffix(file)));
+                break;
+            default:
+                break;
+            }
+        } catch(e){
+            throw 'load script fail: load error; description:' + e;
+        }
+        // 文件引入后记录标识
+        // run.push(mark);
+        var scriptNum=0, loadNum=0;
+        // 获取引入的js文件数量
+        for(var i=scripts.length; (i--)&gt;0;) {
+            if (scripts[i].verify) scriptNum+=1;
+        };
+        // 依次判断引入的js是否引入完毕
+        for(var i=scripts.length; (i--)&gt;0;) {
+            if (!scripts[i].verify) continue;
+            // 加载完毕回调
+            scripts[i].fileref.onload = scripts[i].onreadystatechange = function(){
+                if (!0||this.readyState==='loaded'||this.readyState==='complete') {
+                    loadNum+=1; // 加载完毕数量
+                    // 加载完毕数量和加载的文件数量相同执行函数回调
+                    if (loadNum===scriptNum) {
+                        !callback||callback();
+                    };
+                };
+            };
+        };
+    };
+
+    /**
+     * 执行引入文件
+     * @param file 文件路径
+     * @param tyoe 文件类型
+     * */
+    function excuteImportFile(file, type){
+        // v js文件标识
+        var v=0, fileref;
+        switch(type.toUpperCase()) {
+        case 'JS':
+            fileref = document.createElement('script');
+            fileref.setAttribute('type','text/javascript');
+            fileref.setAttribute('src',file);
+            v=1;
+            break;
+        case 'CSS':
+            fileref = document.createElement('link');
+            fileref.setAttribute('rel','stylesheet');
+            fileref.setAttribute('type','text/css');
+            fileref.setAttribute('href',file);
+            break;
+        default:
+            break;
+        }
+        !fileref||document.getElementsByTagName('head')[0].appendChild(fileref);
+        return {verify: v, fileref: fileref};
+    };
+    
+    // 获取文件后缀名
+    function getFileSuffix(filename) {
+        filename = filename.split('?')[0];
+        return filename.substr(filename.lastIndexOf('.')+1, filename.length).toUpperCase();
+    };
+
+    function serialImport(files, index, callback) {
+        if (index&gt;=files.length){
+            !callback||callback();
+            return;
+        };
+        var eif = excuteImportFile(files[index], 'JS');
+        eif.fileref.onload = eif.fileref.onreadystatechange = function(){
+            if (!0||this.readyState==='loaded'||this.readyState==='complete') {
+                serialImport(files, index+1, callback);
+            };
+        };
+    };
+
+    $.prototype = {
+        version: version,
+        load: loadFile,
+        loadSerial: loadFileSerial,
+        loadParallel: loadFileParallel
+    };
+
+    window[scriptName] = new $();
+
+})(window);</pre> <p>也就是 这里新增的 loadFileSerial 函数</p> <p>loadFileSerial 函数中 判断是多文件还是一个文件 typeof(files), 单文件就直接通过并行加载即可, 多文件 根据后缀名判断是 css 或者 js , 如果是 css 就执行加载, js 就存入到一个临时的数组, 然后就走到那个递归的函数中.</p> <p>serialImport 进行文件的引入 , 然后根据引入返回添加的 script 标签的信息, 判断执行的状态, 执行完毕后加载下一个文件 index+1 , 直到 index 大于等于 files 这个数组的长度, 那么所有文件都执行完毕了, 执行回调.</p> <p> </p> <p>使用方法改动不大,之前的调用方式还是可用, 不传方式的话 默认是并行加载的</p> <pre>jcsl.load(['a.js', 'b.css', 'c.js'], function(){ //..; }, [1|2]); // 并行可以不用第三个参数  串行 第三个参数填2</pre> <p>当然也可以使用 原型中添加的 loadSerial 和 loadParallel 分别实现串行和并行加载, 传递的参数是一样的.</p> <p>没有ie...不知道ie能不能用.</p> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/async">async</a></li> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/jcsl">jcsl</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-09-04T23:57:45.000Z">September 4, 2014</time> <h1><a href="/post/js-css-asynchronous-loading-part-2-2/">js&&css 异步加载-1</a></h1> </header> <section class="post-main"><p>浏览器在执行js的时候会停止对页面的渲染,如果有一个js文件比较大,加载比较耗时,这个时候浏览器在下载这个js的时候,网页就会一片空白直到js下载并执行完成后才开始后面的操作, css相对来说各浏览器稍微好点.</p> <p>这时候可以通过异步加载来完成这个耗时较长的文件,页面渲染完毕后在进行js的下载执行.</p> <p>这样的插件也有很多. require.js head.js ...</p> <p>所有的代码都有个通病,功能越来越强悍但体积越来越庞大....</p> <p>也许这并不是最好的选择.</p> <p>异步加载的逻辑说白了就是在页面加载完成后,通过js下载另外的脚本文件,然后在执行后续的操作.</p> <p>代码如下</p> <pre>!(function(window, undefined){
+    'use strict';
+    var scriptName = 'jcsl';
+    var version = 1;
+    var document = window.document;
+
+    function $() {
+        /*
+        this.config = {
+            load: {
+                mark: {},
+                run: []
+            }
+        };
+        */
+    };
+
+    /**
+     * 引入js或者css文件
+     * @param file 文件名
+     * @param callback 回调
+     **/
+    function loadFile(file, callback) { // mark
+        // !mark
+        if (!file) throw 'load script fail: file&amp;&amp;mark is not null';
+        // var run = this.config.load.run;
+        // if (inArray(run, mark)) throw 'load script fail: mark is not found';
+        /*
+        for(var i=run.length; (i--)&gt;0;) {
+            // 检测文件是否已经被引入
+            if (run[i]==mark) {
+                console.info('load success: file already import');
+                return;
+            };
+        }
+        */
+        var scripts = [];
+        try {
+            // 单文件或多文件加载
+            switch(typeof(file)) {
+            case 'object':
+                for(var i=file.length; (i--)&gt;0;) {
+                    scripts.push(excuteImportFile(file[i], getFileSuffix(file[i])));
+                }
+                break;
+            case 'string':
+                scripts.push(excuteImportFile(file, getFileSuffix(file)));
+                break;
+            default:
+                break;
+            }
+        } catch(e){
+            throw 'load script fail: load error; description:' + e;
+        }
+        // 文件引入后记录标识
+        // run.push(mark);
+        var scriptNum=0, loadNum=0;
+        // 获取引入的js文件数量
+        for(var i=scripts.length; (i--)&gt;0;) {
+            if (scripts[i].verify) scriptNum+=1;
+        };
+        // 依次判断引入的js是否引入完毕
+        for(var i=scripts.length; (i--)&gt;0;) {
+            if (!scripts[i].verify) continue;
+            // 加载完毕回调
+            scripts[i].fileref.onload = scripts[i].fileref.onreadystatechange = function(){
+                if (!0||this.readyState==='loaded'||this.readyState==='complete') {
+                    loadNum+=1; // 加载完毕数量
+                    // 加载完毕数量和加载的文件数量相同执行函数回调
+                    if (loadNum===scriptNum) {
+                        !callback||callback();
+                    };
+                };
+            };
+        };
+    };
+
+
+    /**
+     * 执行引入文件
+     * @param file 文件路径
+     * @param tyoe 文件类型
+     * */
+    function excuteImportFile(file, type){
+        // v js文件标识
+        var v=0, fileref;
+        switch(type.toUpperCase()) {
+        case 'JS':
+            fileref = document.createElement('script');
+            fileref.setAttribute('type','text/javascript');
+            fileref.setAttribute('src',file);
+            v=1;
+            break;
+        case 'CSS':
+            fileref = document.createElement('link');
+            fileref.setAttribute('rel','stylesheet');
+            fileref.setAttribute('type','text/css');
+            fileref.setAttribute('href',file);
+            break;
+        default:
+            break;
+        }
+        !fileref||document.getElementsByTagName('head')[0].appendChild(fileref);
+        return {verify: v, fileref: fileref};
+    };
+    
+    // 获取文件后缀名
+    function getFileSuffix(filename) {
+        filename = filename.split('?')[0];
+        return filename.substr(filename.lastIndexOf('.')+1, filename.length).toUpperCase();
+    };
+
+    function inArray(arr, o) {
+      var s = String.fromCharCode(2);
+      var r = new RegExp(s+o+s);
+      return (r.test(s+arr.join(s)+s));
+    };
+
+    $.prototype = {
+        version: version,
+        load: loadFile
+    };
+
+    window[scriptName] = new $();
+
+})(window);</pre> <p>引入文件就是通过 document.createElement 创建一个 script 或者 link 标签 然后将标签嵌入到 head 标签中, 这样浏览器就会下载这个文件.</p> <p>关键在于那个回调何时执行的问题</p> <p>直接在引入js后就执行回调的话, 被引入的js里的内容是不能够立马执行的, 浏览器下载需要时间, 初始化也需要时间, 在这期间就直接使用了引入的那些函数,也许还并没有执行.</p> <p>要做的就是等待这些引入的脚本都执行完毕了,在来执行回调函数, 也就是判断引入的脚本的加载状态</p> <p>通过 createElement 创建的标签</p> <p>ie 浏览器 可以通过 onreadystatechange 函数 通过 readyState 判断加载的状态</p> <p>firefox/chrome 可以通过 onload 函数 无需在进行判断</p> <p>当执行加载完毕的脚本数量和js文件的数量相同在初始化完毕,执行回调继续后续的操作</p> <p>使用方式 在页面中加入这个脚本</p> <p>调用方式</p> <pre>jcsl.load('//test.com/res/test.js', function(){
+    // ...
+});
+// 或者 多文件
+jcsl.load([
+    '//test.com/res/test1.js',
+    '//test.com/res/test2.js',
+    '//test.com/res/style.css'
+], function(){
+    // ....
+});</pre> <p>类似于 head.js 的调用方式</p> <p>当然还可以继续优化这东西的.</p> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/async">async</a></li> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/jcsl">jcsl</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-06-20T22:14:22.000Z">June 20, 2014</time> <h1><a href="/post/javascript-variable/">javascript 变量</a></h1> </header> <section class="post-main"><p>在js中变量的作用和其他语言的定义是相同的.</p> <p>只不过在使用方面是有着区别的</p> <p>js的变量定义 使用 <code>var</code> 关键字.</p> <p>并且 js 的变量是不需要指定类型的.</p> <p>虽然说不需要指定类型, 在使用的时候还是需要区分的, 字符串是需要 双引号或者单引号的, 而数字类型则不需要.</p> <pre>var x=2; 
+var y=3;
+alert(x+y); // 5</pre> <p>在js中 int 和 string 是可以相加的 意思是连接符, 首先会将数字当作字符串来看待, 然后把俩个字符串连接起来</p> <pre>var x=2;
+var y=' test'
+alert(x+y); // '2 test'</pre> <p> </p> <p> </p> <p>多个变量可以连续定义 使用 , 进行区分</p> <pre>var x=2, y=2, z=x+y;
+alert(x); // 2
+alert(y); // 2
+alert(z); // 4</pre> <p> </p> <p> </p> <p>当同一个变量被声明了俩次, 如果第二次声明没有给变量赋值的话, 该变量还会保留第一次赋的值</p> <pre>var x=2;
+var x;
+alert(x); //2
+var x=4;
+alert(x); // 4
+</pre> <p> </p> <p> </p> <p>js 对大小写是比较敏感的, 大写和小写表示不同的变量</p> <pre>var x=2, X=3;
+alert(x); // 2
+alert(X); // 3</pre> <p> </p> <p> </p> <p>js中表示 "空" 的类型</p> <p>有多种表现方式</p> <pre>'' 
+null 
+undefined</pre> <p>这个该怎么去解释了... " 和 null 在大多数语言中都是有这种表达方式的, 而 undefined则不是, undefined 这种类型的出现, 比如说 定义了 一个变量x却没有给x赋值,或者就没有定义x这个变量,使用x的时候返回的就是这个.</p> <p> </p> <p> </p> <p>在来说说变量的作用域</p> <p>简单的区分的话 也就是局部变量和全局变量的概念(当然是废话)</p> <pre>var a=2; // 全局
+function test1(){
+    var a=3; // test1 局部变量
+    function test1_1(){
+        var a=4; // test1_1 局部变量
+        return a;
+    }
+  return test1_1();
+}
+
+test1(); // 4</pre> <p>定义了全局变量a和test1函数,test1函数定义了变量a和test1_1函数并且返回test1_1函数, test1_1定义了变量a返回a<br/> 执行test1函数 最终返回的是4, 也就是说最终返回的是test1_1函数中的a变量<br/> 如果说 test1_1 函数中的 不定义a变量那么返回的就是 test1 中定义的a变量, 同样 test1中如果没有定义a变量就到外面找全局定义的a变量 如果都没有 那么就会返回变量未定义错误</p> <pre>var a=2; // 全局
+function test1(){
+    var a=3; // test1 局部变量
+    function test1_1(){
+        // var a=4; // test1_1 局部变量
+        return a;
+    }
+  return test1_1();
+}
+test1(); // 3
+
+
+function test1(){
+    // var a=3; // test1 局部变量
+    function test1_1(){
+        // var a=4; // test1_1 局部变量
+        return a;
+    }
+  return test1_1();
+}
+test1(); // a is not defined
+
+</pre> <p>js 查找变量会由内部一直到外部进行查找到最近一个变量并返回,如果没有定义那么返回的就是undefined</p> <p> </p> <p> </p> <p>js没有代码块内作用域的概念<br/> 例如</p> <pre>var a=2;
+for(var b=3; (b--)&gt;0;){
+  if(b==a) {
+    var c=3;
+    var d=c+a;
+  }
+  console.log(b); // 2 1 0 
+}
+console.log(a); // 2
+console.log(c); // 3
+console.log(d); // 5</pre> <p>也就是说在for if中定义的变量外部都是可以获取的,这一点区别于强类型的语言.</p> <p> </p> <p> </p> <p>外部定义的变量在所有的函数中都是有定义的</p> <pre>var x=1;
+function test(){
+console.log(x); // undefined 在函数外部定义了x变量, 函数中就会产生x这个隐藏的变量,这里打印出来的x是undefined也就是说函数内部未对x进行赋值
+x=2;
+console.log(x); // 2 上方对x进行了赋值
+}
+
+// ==== 或者如下
+function test(){
+    var x=1;
+    function test_1(){
+       console.log(x); // undefined
+       x = 2; 
+       console.log(x); // 2
+    }
+}
+</pre> <p>上述代码等同于</p> <pre>function test(){
+    var x;
+    console.log(x);
+    x=2;
+    console.log(x);
+}
+</pre> <p> </p> <p> </p> <p>全局变量都是属于 window 对象的.</p> <pre>var x=2;
+console.log(x);
+console.log(window.x);
+</pre> <p>不仅仅包括自己定义的变量, 所有的直接使用的变量都是属于window对象的.<br/> 比如 window.docuemnt 等.</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/var">var</a></li> <li><a href="/tag/variable">variable</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-06-19T21:50:47.000Z">June 19, 2014</time> <h1><a href="/post/js_start/">先从js开始.</a></h1> </header> <section class="post-main"><p>谈谈自己的理解.<br/> 想不好开场白...<br/> 从最基本的开始吧.</p> <p>js 是一种面向对象的语言.<br/> 首先先来说 <strong>use strict</strong> 开始说起,<br/> 我的理解就是 use strict 是 js 代码更规范话. 否则js的语法是可以非常混乱不严谨的.<br/> 例如这样</p> <pre>a = 2
+b=4
+alert(a+b)</pre> <p>这样对于js的解析引擎来说是没有问题的,可以正确的解析.<br/> 而定义了 use strict 上述代码就属于错误代码.</p> <pre>'use strict'
+a=2
+b=4
+alert(a+b)</pre> <p>这样是会解析失败的, 正确的写法</p> <pre>'use strict';
+var a=2;
+var b=4;
+alter(a+b);</pre> <p>这样的好处是当代码变得很多/复杂的时候便于方便阅读/调试等等,不会发生变量多而导致的一些不可察觉的错误出现,同时也能养成一个良好的书写代码习惯.<br/> 关于 ‘use strict’ 的位置,也并不是固定的, 放置与顶部或者某个函数的内部, 也就是相对的作用域不同, 顶部的话 表示着所有的js都使用这种方式,而函数内部的话 当前函数使用此方式解析.</p> <p>变量的作用域<br/> 同大多数语言相同, 定义于外部的变量为公共变量 函数内部的变量为局部变量 外部是不能访问 操作局部变量.</p> <p>数组和对象<br/> 先从数组开始<br/> 在js中数组的表现方式是 [] , 这就是一个空的数组, 或者实例Array函数 new Array();<br/> 获取数组中的数据也是使用遍历的方式</p> <pre>var names = ['tom', 'jan', 'jason', 'bynn'];
+for(var i=names.length; (i--)&gt;0;) {
+    console.log(names[i]);
+}
+console.log(names.length);
+// 输出结果:
+bynn
+jason
+jan
+tom
+4
+</pre> <p>在是对象<br/> 对象的表现方式是 {} 或者实例Object函数 new Object();<br/> 对象里面的数据的书写方式与json的书写方式相同 {key: value}<br/> 获取对象里的数据使用 .key 或者 [key]<br/> 俩者在不同情况中使用<br/> 如果 key 为字符串类型可以使用 . 语法获取value值 而如果 key 是 int double 等类型 使用 . 语法获取是不能获取到的, 因为从强类型的语言来说, 变量是不允许使用纯数字和首字母是不允许为数字的. 因此在对象中获取值 使用 [] 在任何情况下都是没有问题的.<br/> 此外在对象书写中 key 可以没有引号或单引号或双引号, 而value 除了在int double boolean之外则不行 value是object类型的数据.<br/> 当然 包括数组和对象在内都是可以嵌套使用的., 也就是数组中可以有对象和数组 对象中可以有对象和数组</p> <pre>// 正确情况
+var o={a:1}; // true a=1
+var o={a:'a'}; // true a='a'
+var o={a:2.0}; // true a=2.0
+var o={a:true}; // true a=true
+var o={1:1}; // true 1=1
+var o={1.0:(Object)}; // true 1.0=Object类型数据
+var o={a:{a1:'av'}}; // true a = {a1:'av'}
+var o={a:[{ar1:'ar1v'}, {ar2: 'ar2v'}]}; // true a=[{ar1:'ar1v'}, {ar2: 'ar2v'}]
+// 错误情况
+var o={a:a} // false
+</pre> <p>原型的扩充<br/> 属于叫嘛来着.<br/> 书写方式</p> <pre>class_name.prototype.method_name = function(argument) {
+    // body...
+};
+// class_name    函数名称
+// method_name    补充的方法名称
+// argument  参数
+//  body... 补充的方法体
+</pre> <p>也就是说给现有的某个函数添加新的功能<br/> 例如 String 函数没有 format 方法,那么就可以给 String 的原型添加该方法来实现某些操作</p> <pre>String.prototype.format = function() {
+alert(this);
+};
+
+这样使用
+var a = 'test';
+a.format();
+这样就会弹出a变量的内容
+方法体中的 this 表示的 当前变量的内容.
+</pre> <p>对象添加方法<br/> 给一个对象中添加方法有俩中方式<br/> 第一种:</p> <pre>var obj = {test: function(){alert('test')}};
+obj.test()  // 会弹出 test
+// obj 中没有 test2 这个方法 这个时候就可以直接使用 . 语法添加
+obj.test2 = function(){alert('test2');}
+obj.test2(); // 弹出 test2
+</pre> <p>第二种:</p> <pre>var obj = {
+test: test(),
+test2: test2()
+}
+function test(){
+alert('test');
+}
+function test2() {
+alert('test2');
+}
+</pre> <p>可以实现相同的功能.</p> <p>闭包<br/> 这是js所特有的一种特性也是实现js面向对象的直接体现.<br/> 下面是一个简单的闭包示例</p> <pre>function f1(){
+   var d = 1;
+   function f2(){
+       return d;
+  }
+ return f2();
+}
+var res = f1();
+res();
+// 执行f1函数 将返回1, f2函数最为f1的内部函数, 从外部是访问不了的,也就是说 对外开放的只有f1函数.
+// f2 函数 就是闭包的体现
+</pre> <p>在如</p> <pre>function f1(){
+    var d=1;
+    addfunc = function(){d+=1;};
+   function f2(){
+      return d;
+  }
+  return f2();
+}
+var res = f1();
+res(); // 1
+addfunc();
+res(); // 2
+// f2 这个闭包的函数是一直存在于内存中的
+// 当第一次执行f1函数的时候 f1 函数内部会调用f2函数 f2 函数返回d变量 之后f1在返回f2函数 输出的也就是 f1
+// 接着 执行 addfunc 这个匿名函数 给 d+1 
+// 第二次在访问f1这个函数因为d被+1 f2 会在内存中读取被操作后的d,被返回 再次获取到的值就是 2
+</pre> <p>========<br/> 一些基本的应用在这里, 但是这并不能很完善的讲述js.<br/> 先从这里开始.<br/> 之后在来详细叙述这些内容</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/closure">closure</a></li> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/syntax">syntax</a></li> </ul> </footer> </article> <menu class="page"> <li class="page-next"> <a href="/tag/javascript/page/2" title="Next">Next</a> </li> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

@@ -1,0 +1,66 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>mysql 用户管理 - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2013-11-19T11:14:13.000Z">November 19, 2013</time> <h1>mysql 用户管理</h1> </header> <section class="post-main"><pre>mysql&gt; mysql -uroot -p -- 登录管理员账户
+mysql&gt; use mysql -- 进入mysql表(mysql用户存入在当前表中)
+mysql&gt; select host,user,password from user -- 能查看到当前mysql中的用户
+
+mysql&gt; select host,user,password from user;
++-----------+--------+-------------------------------------------+
+| host      | user   | password                                  |
++-----------+--------+-------------------------------------------+
+| localhost | root   | *032197AE5731D4664921A6CCAC7CFCE6A0698693 |
+| %         | root   | *032197AE5731D4664921A6CCAC7CFCE6A0698693 |
++-----------+--------+-------------------------------------------+
+2 rows in set (0.00 sec)
+
+-- host 为主机 确定当前账户可以在什么主机下可以链接 % 为通配符 例如 192.168.1.* 表示ip在 192.168.1.* 所有的机器都可以链接数据库</pre> <h2>添加用户</h2> <pre>mysql&gt; insert into user(host,user,password,ssl_cipher,x509_issuer,x509_sub
+ject) values('localhost','test',password('000'),'','',''); 
+
+mysql&gt; flush privileges; 
+
+-- 添加一个用户  主机域为 localhost 用户名为 test 密码为 000 
+-- 添加用户后要刷新权限才可以使用
+-- 这样就可以使用 mysql -utest -p 进行登录新添加的用户了
+
+mysql&gt; insert into user(host,user,password,ssl_cipher,x509_issuer,x509_sub
+ject) values('%','test',password('000'),'','',''); 
+
+-- 添加一个远程用户 主机域为所有 ip 用户名为 test 密码为 000
+-- 这样这个账户就可以远程登录了
+-- 远程账户和本地账户的密码可以不同 在添加的时候设置可以自定义
+
+
+</pre> <h2>权限</h2> <pre>
+-- 登录test用户的时候 show databases 发现只有一个库 information_schema (有的是俩个还有一个 test 库) 并且默认添加的用户没有创建库表等权限
+-- 首先创建一个库
+mysql&gt; create database db_test;
+-- 授权test用户对这个库有所有权限
+mysql&gt; grant all privileges on db_test.* to test@localhost identified by '000';
+mysql&gt; flush privileges; 
+-- test@localhost 指定是哪个用户
+-- identified by '***' 这里输入的是test用户的密码
+-- 赋权后须刷新权限才有效
+-- 这样在localhost下的test用户就有对这个 db_test 表的所有权限了 增删改查 都可以
+mysql&gt; grant select,update on db_test.* to test@localhost identified by '000'; 
+mysql&gt; flush privileges; 
+-- 这里是给test用户赋权只有 select 和 update 权限 (更多的权限在下面链接中查看)
+-- 到这里当前的 test 用户就有对 db_test 的所有操作了
+-- 同理修改 root 账户也是如此
+-- 同理添加新的用户在修改权限也是如此 
+-- 需要注意的是 如果是要修改远程账户 得稍有改动
+
+<del datetime="2013-11-19T02:46:20+00:00">mysql&gt; grant all privileges on db_test.* to test@% identified by '000';</del>
+<del datetime="2013-11-19T02:46:20+00:00">mysql&gt; flush privileges; </del>
+-- 这么写是错误的 mysql 不认识是那个用户
+
+<del datetime="2013-11-19T03:16:11+00:00">mysql&gt; grant all privileges on db_test.* to 'test@%' identified by '000';</del>
+<del datetime="2013-11-19T03:16:11+00:00">mysql&gt; flush privileges; </del>
+-- 这么写也是错误的 mysql  会认识 是 test@% 这个用户，如果没有这个用户 则会自动在user表添加如下数据
+<del datetime="2013-11-19T03:16:11+00:00">+-----------+----------+-------------------------------------------+</del>
+<del datetime="2013-11-19T03:16:11+00:00">| host      | user     | password                                  |</del>
+<del datetime="2013-11-19T03:16:11+00:00">+-----------+----------+-------------------------------------------+</del>
+<del datetime="2013-11-19T03:16:11+00:00">| localhost | test@%   | *032197AE5731D4664921A6CCAC7CFCE6A0698693 |</del>
+<del datetime="2013-11-19T03:16:11+00:00">+-----------+----------+-------------------------------------------+</del>
+
+mysql&gt; grant all privileges on db_test.* to 'test'@'%' identified by '000';
+mysql&gt; flush privileges; 
+-- 需要这么写
+ </pre> <p>更详细的内容请 google 这里只是简单的操作。</p> <blockquote> <p>http://blog.chinaunix.net/uid-291705-id-2134311.html MySQL权限系统</p> </blockquote></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/mysql">mysql</a></li> <li><a href="/tag/privileges">privileges</a></li> <li><a href="/tag/user">user</a></li> </ul> </footer> </article> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

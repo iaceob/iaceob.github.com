@@ -1,0 +1,251 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>javascript - 生物烯丙菊 - 第 2 頁</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2014-02-04T09:43:53.000Z">February 4, 2014</time> <h1><a href="/post/jquery-top-msg-plugin-message-tip/">jquery top msg 消息提示插件</a></h1> </header> <section class="post-main"><p>一直为页面错误提示纠结，若是在顶部用一个固定的元素中放置错误消息，当页面一长，超出了一屏那错误消息就不能显示了，之前使用bootstrap样式的时候用过sco.js这个插件，可以在顶部弹出消息做到很好的效果，但是现在没用bootcss了这个插件直接放过来就不能用了。然后就根据 sco.message.js 另外找了些资料手写了个。</p> <p> </p> <p>使用方式：</p> <p>首先引入jquery</p> <p>引入 jquery.topmsg.js</p> <pre>&lt;script src="jquery.topmsg.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+$.top_msg( 'message content', $.top_msg.TYPE_OK, {close: 'click'} );
+&lt;/script&gt;</pre> <p>使用 $.top_msg 便可以弹出提示框</p> <p>$.top_msg 有3个参数</p> <p>arg1: 提示内容</p> <p>arg2: 消息类型提供选择的有俩中 <code>$.top_msg.TYPE_OK</code> 和 <code>$.top_msg.TYPE_ERROR</code> 分别表示正确消息和错误消息，区别在于正确消息背景为绿色错误消息背景为红色，也可以使用 boolean 值或数字代替</p> <p>$.top_msg.TYPE_OK == true == 1</p> <p>$.top_msg.TYPE_ERROR == false == 0</p> <p>arg3: 当类型不能满足提示需求的时候或者需要更多的定制性则可以使用第三个参数，对默认的配置覆盖，供修改的项目如下</p> <pre>    background: '#de4343', // 背景色
+    bordercolor: '#fff', // 边框色 // 默认大小1px根据需要修改
+    color: '#000', // 文字颜色
+    height: 70, // 提示框高度
+    fontsize: 20, // 文字大小
+    close: 3000, // 关闭时间 [ms]
+    click: false, // 是否点击关闭 默认false
+    domid: 'JQ_TOP_MSG', // 提示框id</pre> <p>实例：</p> <p>{color: ‘red’, close: 3000} // 提示文字红色 3秒钟消失</p> <p>{fontsize: 12} // 提示文字12px</p> <p>{height: 50} // 提示框高度50px</p> <p>当同时设置了 close 时间 和 click true 那么close的时间是无效的只有点击才会消失</p> <p>代码：</p> <p>https://github.com/iaceob/topmsg</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/jquery">jquery</a></li> <li><a href="/tag/message">message</a></li> <li><a href="/tag/top">top</a></li> <li><a href="/tag/top_msg">top_msg</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-12-23T07:28:35.000Z">December 23, 2013</time> <h1><a href="/post/javascript-to-unicode/">javascript to unicode</a></h1> </header> <section class="post-main"><p>to unicode</p> <pre>
+&lt;script&gt;
+     test = "撰写新文章"
+     str = ""
+     for( i=0;    i&lt;test.length; i++ ) {
+      temp = test.charCodeAt(i).toString(16);
+      str    += "u"+ new Array(5-String(temp).length).join("0") +temp;
+     }
+     document.write (str)
+&lt;/script&gt;</pre></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/unicode">unicode</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-12-20T10:59:12.000Z">December 20, 2013</time> <h1><a href="/post/easing-functions/">Easing Functions</a></h1> </header> <section class="post-main"><p> </p> <p>缓动函数指定动画效果在执行时的速度，使其看起来更加真实。</p> <p>现实物体照着一定节奏移动，并不是一开始就移动很快的。当我们打开抽屉时，首先会让它加速，然后慢下来。当某个东西往下掉时，首先是越掉越快，撞到地上后回弹，最终才又碰触地板。</p> <p>本页可以在每次你需要时，帮助你找到想要的缓动函数。</p> <p> </p> <ul> <li>http://easings.net/zh-cn</li> </ul></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/easing">easing</a></li> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/jquery">jquery</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-12-15T03:31:15.000Z">December 15, 2013</time> <h1><a href="/post/css-gaussian-blur/">css 高斯模糊</a></h1> </header> <section class="post-main"><p>css 实现高斯模糊效果</p> <style type="text/css"><!--
+.demo-blur{ text-shadow: 0px 0px 10px rgba(51, 51, 51, 0.9); color: rgba(0, 0, 0, 0); opacity: 0.5; } .demo-gaussian-blur{ -webkit-filter: blur(6px); -moz-filter: blur(6px); -o-filter: blur(6px); -ms-filter: blur(6px); filter: blur(6px); }
+.demo-blur-shadow{text-shadow: 0px 20px 2px #abc000;}
+--></style> <p> </p> <p> </p> <p>演示：</p> <p>text-shadow 文字阴影方式</p> <p><img src="/img/css-gaussian-blur/1.png"></p> <p>google</p> <p>google</p> <p>这种方式也并不能完全说是高斯模糊 只是使用了 <code>text-shadow</code> 文字阴影 等配合使用 这样文字会有效果 但是图片则不会有效果</p> <pre>.demo-blur{ 
+    text-shadow: 0px 0px 10px rgba(51, 51, 51, 0.9); 
+    color: rgba(0, 0, 0, 0); 
+    opacity: 0.5; 
+}
+
+.demo-blur-shadow {
+    text-shadow: 0px 20px 2px #333333;
+}
+</pre> <p> </p> <p>css filter 过滤方式</p> <p><img src="/img/css-gaussian-blur/1.png"></p> <p>google</p> <pre>.demo-gaussian-blur{ 
+    -webkit-filter: blur(3px); 
+    -moz-filter: blur(3px); 
+    -o-filter: blur(3px); 
+    -ms-filter: blur(3px); 
+    filter: blur(3px); 
+}</pre> <p>支持对图片等包括 video 标签的模糊。</p> <p>但是 这种方法 目前支持的浏览器不多</p> <p><img src="/img/css-gaussian-blur/2.jpg"></p> <p>上图中绿色标识的浏览器都可以使用</p> <p> </p> <p>svg 方式</p> <pre>&lt;?xml version="1.0" encoding="utf-8"?&gt; 
+&lt;!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"&gt; 
+&lt;!--Scalable Vector Graphic--&gt; 
+&lt;svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ev="http://www.w3.org/2001/xml-events" baseProfile="full"&gt; 
+    &lt;defs&gt; 
+        &lt;filter id="blur"&gt; 
+            &lt;feGaussianBlur stdDeviation="10" /&gt; 
+        &lt;/filter&gt; 
+     &lt;/defs&gt; 
+     &lt;image xlink:href="http://x.x.x/yourimg.jpg" x="0" y="0" filter="url(#blur)" /&gt; 
+&lt;/svg&gt;</pre> <pre>.blur {	
+    filter: url(blur.svg#blur); /* FireFox, Chrome, Opera */
+
+    -webkit-filter: blur(10px); /* Chrome, Opera */
+       -moz-filter: blur(10px);
+        -ms-filter: blur(10px);    
+            filter: blur(10px);
+
+    filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius=10, MakeShadow=false); /* IE6~IE9 */
+}</pre> <pre>&lt;img src="xxx.jpg" /&gt;</pre> <p> </p> <p>StackBlur.js canvas</p> <p>css</p> <pre>.blur {		
+    filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius=10, MakeShadow=false); /* IE6~IE9 */
+}
+:root .blur {
+    display: none; /* IE9+, Firefox, Chrome, Opera - hidden */
+    filter: none; /* no IE9 */
+}</pre> <p>html</p> <pre> &lt;img src="xxx.jpg" id="blur" /&gt; 
+ &lt;canvas id="canvas"&gt;&lt;/canvas&gt;</pre> <p>js</p> <pre>&lt;script src="StackBlur.js"&gt;&lt;/script&gt; 
+&lt;script&gt; stackBlurImage( "blur", "canvas", 20, false ); &lt;/script&gt;</pre> <p> </p> <p>====</p> <p>综合来看</p> <p>使用文字阴影方式虽然效果没有其他方式好 但是目前大多浏览器都能够支持</p> <p>css filter 过滤的效果很好但是目前支持的浏览器不多</p> <p>svg方式效果也很好 而且浏览器都支持svg 但是svg使用略不爽(个人感觉。。。)</p> <p>StackBlur.js+canvas 是个亮点 canvas 标签是html5的标签 目前大多现代浏览器都能够支持了， stackblur.js 的模糊效果也很好</p> <p> </p> <p>相关链接：</p> <ul> <li> <p title="CSS3 filter 模糊滤镜的应用">http://mao.li/css3-blur-filter-pratice/</p> </li> <li> <p title="小tip-使用css将图片转换成模糊毛玻璃效果">http://www.zhangxinxu.com/wordpress/?p=3804</p> </li> <li> <p title="StackBlur.js">http://www.quasimondo.com/StackBlurForCanvas/StackBlur.js</p> </li> <li> <p title="StackBlurDemo">http://www.quasimondo.com/StackBlurForCanvas/StackBlurDemo.html</p> </li> <li> <p title="Item Blur Effect with CSS3 &amp; jQuery">http://tympanus.net/Tutorials/ItemBlur/</p> </li> </ul></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/blur">blur</a></li> <li><a href="/tag/canvas">canvas</a></li> <li><a href="/tag/css">css</a></li> <li><a href="/tag/filter">filter</a></li> <li><a href="/tag/gaussian">gaussian</a></li> <li><a href="/tag/html">html</a></li> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/svg">svg</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-12-02T16:08:42.000Z">December 2, 2013</time> <h1><a href="/post/google-image-proxy/">Google 图片代理</a></h1> </header> <section class="post-main"><p>谷歌图片代理</p> <p>现在目测还用不上 先留着(目测能绕过各个网站的图片盗链!目测还能是墙外！)<br/> <img src="/img/css-gaussian-blur/1.png"></p> <p><img alt="" src="http://images2-focus-opensocial.googleusercontent.com/gadgets/proxy?url=https://lh6.googleusercontent.com/-t5G3Q-eKBT4/AAAAAAAAAAI/AAAAAAAAABI/_y1qBwmc_GA/s265-c-k-no/photo.jpg&amp;container=focus&amp;gadget=a&amp;rewriteMime=image/*&amp;refresh=31536000&amp;resize_h=150&amp;resize_w=150&amp;no_expand=1&amp;google+.gif"/><br/> 图片地址：</p> <pre>&lt;img alt="" src="http://images2-focus-opensocial.googleusercontent.com/gadgets/proxy?url=https://www.google.com/images/srpr/logo11w.png&amp;amp;container=focus&amp;amp;gadget=a&amp;amp;rewriteMime=image/*&amp;amp;refresh=31536000&amp;amp;resize_h=150&amp;amp;resize_w=150&amp;amp;no_expand=1&amp;amp;google.gif" /&gt;</pre> <pre>&lt;img alt="" src="http://images2-focus-opensocial.googleusercontent.com/gadgets/proxy?url=https://lh6.googleusercontent.com/-t5G3Q-eKBT4/AAAAAAAAAAI/AAAAAAAAABI/_y1qBwmc_GA/s265-c-k-no/photo.jpg&amp;amp;container=focus&amp;amp;gadget=a&amp;amp;rewriteMime=image/*&amp;amp;refresh=31536000&amp;amp;resize_h=150&amp;amp;resize_w=150&amp;amp;no_expand=1&amp;amp;google+.gif" /&gt;</pre> <p>并非用图片的原始地址，也不是用 css 来缩小的，也就是 Google 自己去原始地址抓取后，缩放一下再传过来。看到地址里有两个参数值得注意</p> <ul> <li>一个是 <code>url</code>，看样子原始图片地址了，我随便找其它的图片地址替换一下，结果提示下载 p.txt的文件，保存，改扩展名为 jpg，果然是张图片。</li> <li>还有把 <code>resize_h</code>，看来是缩放图片的宽度，改为 0 试试，再下载，果然表示不缩放，对比一下原始图片的 md5，一样的。</li> </ul> <p> </p> <p> </p> <p>js 将页面图片通过google代理</p> <pre>javascript:(function(){
+              prefix = "https://images2-focus-opensocial.googleusercontent.com/gadgets/proxy?url="; 
+              suffix = "&amp;container=focus&amp;gadget=a&amp;no_expand=1&amp;resize_h=0&amp;rewriteMime=image%2F*"; 
+              images = document.getElementsByTagName("img"); 
+              for (var i = 0; i &lt; images.length; i++) {     
+                    if (images[i].src.indexOf(prefix) == -1) {         
+                         images[i].src = prefix + encodeURIComponent(images[i].src) + suffix;     
+                    } 
+              }
+            })();</pre> <p>链接：</p> <ul> <li>http://qixinglu.com/post/google_image_proxy.html</li> </ul></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/google">google</a></li> <li><a href="/tag/images">images</a></li> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/proxy">proxy</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-11-21T22:22:27.000Z">November 21, 2013</time> <h1><a href="/post/javascript-useless-settimeout-call-xxxxxxxxx/">useless setTimeout call(xxxxxxxxx ?)</a></h1> </header> <section class="post-main"><p>在js中使用了 setTimeout 定时执行函数，在frirefox中测试弹出了如下错误</p> <pre>useless setTimeout call (missing quotes around argument?)</pre> <p>函数如下</p> <pre>/***
+ * 
+ * 指定时间跳转到制定页面 时间缺省为0
+ * @param url 跳转页面
+ * @param time 等待时间
+ */
+function goUrl(url, time) {
+	var newTime;
+	if (null==time||''==time) newTime = 0; else newTime= time*1000;
+	window.setTimeout(doGoUrl(url), newTime);
+}
+
+/**
+ * 
+ * 执行跳转页面
+ * @param url 跳转的页面
+ */
+function doGoUrl(url) {
+	window.location.href=url;
+}</pre> <p>将 setTimeout 的第一个参数 执行的函数 function 包起来<br/> 修改如下</p> <pre>/***
+ * 
+ * 指定时间跳转到制定页面 时间缺省为0
+ * @param url 跳转页面
+ * @param time 等待时间
+ */
+function goUrl(url, time) {
+	var newTime;
+	if (null==time||''==time) newTime = 0; else newTime= time*1000;
+	window.setTimeout(function(){ doGoUrl(url); }, newTime);
+}
+
+/**
+ * 
+ * 执行跳转页面
+ * @param url 跳转的页面
+ */
+function doGoUrl(url) {
+	window.location.href=url;
+}</pre> <p><code>window.setTimeout(function(){ doGoUrl(url); }, newTime);</code></p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/settimeout">setTimeout</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-10-22T13:52:13.000Z">October 22, 2013</time> <h1><a href="/post/jquery-animate-page-scrolling/">jquery animate 页面滚动</a></h1> </header> <section class="post-main"><p>这里说的页面滚动是指在浏览器中页面跳转到指定的 dom 或者说指定的 id 位置。</p> <p>跳转到指定的 id 直接在 url 后面加上 #id名 就可跳转过去，不过这样是直接跳过去的 没有一个过程，感觉会很生硬。</p> <p>jquery animate 便可以解决这个问题</p> <p>用法如下</p> <pre>$('html, body').animate({scrollTop: $('#download').offset().top}, 1000);</pre> <p>滚动条向下滚到到 id 为 download 的位置停止滚动， 后面的 1000 是用的时间 为 1 秒</p> <p> </p> <pre><code>$("html, body").animate({ scrollTop: "300px" });</code></pre> <p>跳转到页面高度为 300px 的位置 。</p> <p>还有很多中用法。。。。去搜吧</p> <p> </p> <p>另外可以变通 写成一函数 用的时候直接调用这个函数就行了</p> <p>例如上面的第一个</p> <pre><code>function scrolear(id){
+    var stop = $("#"+id+"").offset().top;
+    var delay = 1000;
+    $('html, body').animate({scrollTop: stop}, delay);
+    return false;
+}</code></pre> <p> </p> <p>这样使用的时候传递一个 id 就能实现跳转的效果。</p> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/animate">animate</a></li> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/jquery">jquery</a></li> <li><a href="/tag/scroll">scroll</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-06-13T23:37:17.000Z">June 13, 2013</time> <h1><a href="/post/dwr-use-mode-2/">dwr 使用方法-返回javabean数据</a></h1> </header> <section class="post-main"><p>dwr 入门篇 <a href="/post/dwr-use-mode-1/">dwr 使用方法-初步</a>这段时间在使用的时候遇到了些问题，不过最后也解决了，详细说说dwr使用的步骤和方法。dwr.xml的配置</p> <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE dwr PUBLIC 
+    "-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN" 
+    "http://www.getahead.ltd.uk/dwr/dwr20.dtd"&gt;    
+	&lt;dwr&gt;			
+		&lt;allow&gt;
+			&lt;!-- creator为spring表示根据spring创建一个方法，JavaScript属性表示页面引用时的脚本对象名 --&gt;
+			&lt;create creator="spring" javascript="About"&gt;
+				&lt;!--这里的value值与spring中id="userBIZ"是同一个值 --&gt;
+				&lt;param name="beanName" value="aboutAction" /&gt;
+			&lt;/create&gt;
+			&lt;!--方法具有实体类返回值，那么就要为其创建一个bean，这个类就要根据match所指向的实体类进行创建 --&gt;
+			&lt;convert match="com.iaceob.entity.About" converter="bean"&gt;&lt;/convert&gt;
+		&lt;/allow&gt;	
+	&lt;/dwr&gt;</pre> <p> </p> <p>这里和之前写的不同的地方就是这里将事物交给spring管理了，就不必在写具体的类的地址了，写相应的类交给spring的id，这里就能或者类的地址找到相应的方法。</p> <p>这里dwr所找的是aboutAction也就对应着我项目中的com.iceob.action.AboutAction 所以到里面看看相应的方法，这里也可以不是action，直接指向dao就能直接操作数据库了，这里使用的是action，根据情况而定</p> <pre>	/**
+	 * 用于dwr访问数据action
+	 * @return About
+	 * @throws Exception
+	 * @author 生物烯丙菊
+	 */
+	public About getAboutData() throws Exception {
+		this.about = this.aboutService.getAboutData(1);
+		return this.about;
+	}</pre> <p> </p> <p>这里只使用了getAboutData方法，写这个方法要注意的是这个方法返回的是about这个实体类(之前有实例化)，因为这里查询的数据是是放到这个实体类，然后让前台去调用的，dwr也可以直接调用action的方法，不过通常action返回的是一个字符串然后交给struts2的配置文件去选择显示什么页面，也就不能让dwr显示数据。</p> <p>这个时候如果dwr的调试模式开启的话，就可以到调试页面去查看了，如下图</p> <p><img src="/img/dwr-use-mode-2/1.png"></p> <p> </p> <p>可以看到有 getAbout() Us() getAboutData() 这三个方法，</p> <p>getAbout() 实例化的about实体类的get方法</p> <p>us() 前台页面action方法</p> <p>getAboutData() 新建的dwr查找数据的方法</p> <p>这个时候如果点击getAbout() 后面的按钮的话返回的肯定是null</p> <p><img src="/img/dwr-use-mode-2/2.png"></p> <p>是因为这里about实体类还没有赋值，查询出来的当然是空<br/> 现在点击us方法</p> <p><img src="/img/dwr-use-mode-2/3.png"></p> <p>返回的是success，因为这里是前台使用的action方法，返回的string类型的字符串。</p> <p>这个时候在来点击getAbout() 后面的按钮</p> <p><img src="/img/dwr-use-mode-2/4.png"></p> <p>可以看到这个时候点击就有值了，是因为之前点击了us方法，us方法中将值赋给了about实体类，但是因为us是返回的string类型，就没有弹出窗口显示值了，现在在点击getabout的时候就有值了，同样点击getaboutdata方法之后getaboutdata也会有值，但是因为getaboutdata方法返回的就是about实体类，所以会直接弹出窗口显示值。</p> <p><img src="/img/dwr-use-mode-2/5.png"></p> <p> <br/> 上面说的可能有点饶了，要根据自己的代码环境去理解吧，不同环境不同对待。</p> <p>测试通过了接下来解释在网页显示的问题了</p> <p>页面中手先需要导入js js的地址在测试页面中都有给出， 分别是 util.js engine.js xxx.js // 最后一个js是名称是根据你在dwr.xml中的配置而得来的。</p> <p>导入js文件之后</p> <p>html中写代码如下</p> <pre>                            &lt;script type="text/javascript"&gt;
+                       	     &lt;!--
+                            	$(function(){
+                            		  About.getAboutData(callBackMenthod);    
+                            	});	                           	
+                            	
+                            	function callBackMenthod(data) {                            	                            	
+					document.getElementById("HomeAbout").innerHTML=data.content;									 
+                            	}                            	
+                            //--&gt;
+                            &lt;/script&gt;
+                            &lt;div id="HomeAbout"&gt;&lt;/div&gt;</pre> <p> </p> <p>上面的js流程就是</p> <p>$(function(){ }); // 让页面加载的时候自动运行使用了jquery</p> <p>About.getAboutData(callBackMenthod); // About便是那个自动生成的js的文件名 .getAboutData 是需要使用的方法callBackMenthod 是回调函数 这样就执行了dwr去调用java的方法去查询数据库，然后将至回调给指定的函数，让该函数去完成相应的事物</p> <p>function callBVackMenthod(data){ } // 回调函数，dwr 执行后会将值交给这个函数，执行相关操作<br/> document.getElementById("HomeAbout").innerHTML=data.content; // 将data中的content的内容写入到id为HomeAbout的标签中去<br/> </p> <p>这里说一下data</p> <p>data 就是dwr查询后的值，这里alert(data); 会发现弹出的窗口是一个object，因为返回的是json类型的数据</p> <p>{aboid:1,content:"u8FD9u91CCu662Fu5185u5BB9″,createtime:1371057600}</p> <p>需要使用返回值的时候</p> <pre>//其中data接收方法的返回值
+
+//对于JavaBean返回值，有两种方式处理
+
+//不知道属性名称时，使用如下方法
+
+for(var property in data){
+       alert("property:"+property);
+       alert(property+":"+data[property]);
+}
+
+//知道属性名称时，使用如下方法
+
+alert(data.username);
+alert(data.password);</pre> <p> </p> <p> </p> <p>返回javabean的方式使用方法就如上所述，具体使用的使用要具体对待，代码这东西不是一成不变的，dwr还有一种是返回list形式的，后面也会用到，等用到的时候在来写吧。</p> <p> </p> <p>dwr 的百科目录上介绍的就很好，建议去看看http://baike.baidu.com/view/73492.htm</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/ajax">ajax</a></li> <li><a href="/tag/dwr">dwr</a></li> <li><a href="/tag/j2ee">j2ee</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/jquery">jquery</a></li> <li><a href="/tag/js">js</a></li> <li><a href="/tag/spring">spring</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-06-13T23:33:54.000Z">June 13, 2013</time> <h1><a href="/post/dwr-use-mode-1/">dwr 使用方法-初步</a></h1> </header> <section class="post-main"><p>-------文章是从之前的博客中拷贝过来的，这次又使用dwr，也没用之前的博客了，那边的文章也没打算都搞过来，只感觉学习是循序渐进的如果一看dwr就从一些复杂的地方开始肯定不能很好的使用</p> <p><a href="http://hi.baidu.com/iaceob/item/5e5fbdfdca420400c7dc456e" target="_blank">http://hi.baidu.com/iaceob/item/5e5fbdfdca420400c7dc456e</a></p> <p> </p> <p>dwr 在java web开发中使用到主要是用于改善web页面与Java类交互的远程服务器端Ajax开源框架。</p> <p>这里是让dwr实现简单的hello world实例。</p> <p>首先导入dwr的jar包</p> <p>然后创建java类</p> <p>Hello.java</p> <pre>package name.iaceob.ajax.dwr;
+public class Hello {
+    public String sayHello(String name) {
+        return name + "", hello world!;
+    }
+}</pre> <p> </p> <p>web.xml</p> <pre>&lt;!-- Ajax Dwr 框架 --&gt;
+&lt;servlet&gt;
+    &lt;servlet-name&gt;dwr-invoker&lt;/servlet-name&gt;
+    &lt;servlet-class&gt;org.directwebremoting.servlet.DwrServlet&lt;/servlet-class&gt;
+    &lt;!-- 是否允许调试，如果要在浏览器中调试必须设置为 true 项目应用时应设为 false --&gt;
+    &lt;init-param&gt;
+        &lt;param-name&gt;debug&lt;/param-name&gt;
+        &lt;param-value&gt;true&lt;/param-value&gt;
+    &lt;/init-param&gt;
+    &lt;!-- 是否进行日志管理，如果是要设置此参数，通常可以省略 --&gt;
+    &lt;init-param&gt;
+        &lt;param-name&gt;logLevel&lt;/param-name&gt;
+        &lt;param-value&gt;WARN&lt;/param-value&gt;
+    &lt;/init-param&gt;
+    &lt;!-- 如果允许跨域请求，则必须将此值设置为false，默认为true --&gt;
+    &lt;init-param&gt;
+        &lt;param-name&gt;crossDomainSessionSecurity&lt;/param-name&gt;
+        &lt;param-value&gt;false&lt;/param-value&gt;
+    &lt;/init-param&gt;
+    &lt;!-- //这个是DWR2.0必须的,不然会报java.lang.IllegalArgumentException --&gt;
+    &lt;init-param&gt; 
+       &lt;param-name&gt; classes &lt;/param-name&gt;
+       &lt;param-value&gt; java.lang.Object &lt;/param-value&gt;
+    &lt;/init-param&gt;
+&lt;/servlet&gt;    
+&lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;dwr-invoker&lt;/servlet-name&gt;
+    &lt;url-pattern&gt;/dwr/*&lt;/url-pattern&gt;
+&lt;/servlet-mapping&gt;</pre> <p>在web.xml的同等级目录下创建dwr.xml文件</p> <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE dwr PUBLIC 
+    "-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN" 
+    "http://www.getahead.ltd.uk/dwr/dwr20.dtd"&gt;
+        
+&lt;dwr&gt;
+    &lt;allow&gt;
+        &lt;create creator="new" javaascript="hello"&gt;
+            &lt;param name="class" value="name.iaceob.ajax.dwr.Hello"&gt;&lt;/param&gt;
+            &lt;include method="sayHello" /&gt;
+        &lt;/create&gt;
+    &lt;/allow&gt;
+&lt;/dwr&gt;</pre> <p>这样配置就完成了，部署的tomcat的环境中，接下来在浏览器地址栏输入</p> <p>http://localhost:8080/dwrtest/dwr</p> <p>便能看到 dwr 测试连接<br/> 框架的最终目的，是为了实现需要的功能，接下来就是在页面上利用dwr框架实现ajax了。dwrsayhello.html</p> <pre>&lt;!DOCTYPE HTML&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;dwrsayhello.html&lt;/title&gt;
+          
+    &lt;meta http-equiv="keywords" content="keyword1,keyword2,keyword3"&gt;
+    &lt;meta http-equiv="description" content="this is my page"&gt;
+    &lt;meta http-equiv="content-type" content="text/html; charset=UTF-8"&gt;
+          
+    &lt;script type="text/javascript" src="/dwrtest/dwr/interface/Hello.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" src="/dwrtest/dwr/engine.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" src="/dwrtest/dwr/util.js"&gt;&lt;/script&gt;
+      
+    &lt;script type="text/javascript"&gt;
+      function getMessage(txt) {
+          var name=document.getElementById(txt).value;
+          Hello.sayHello(name,callBack);
+      }
+      function callBack(data) {
+          alert(data);
+          var Div = document.getElementById('message');
+          Div.innerText = data;
+          Div.style.display = "block";
+      }
+    &lt;/script&gt;
+          
+  &lt;/head&gt;
+        
+  &lt;body&gt;
+        &lt;center&gt;
+            &lt;input type="text" id="name" name="name"&gt;
+            &lt;input type="button" value="从服务器端取值" onclick="getMessage('name')"&gt;
+        &lt;/center&gt;
+        &lt;dir id="message"&gt;&lt;/dir&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</pre> <p>效果如下</p> <p> </p> <p><img src="/img/dwr-use-mode-1/1.png"><br/> 这样就能在页面实现ajax了。<br/> 这是我在学习时的编码包，包内有些文件和这里描述的不相同，但是同一个意思，也有较多的测试页面等等。最终实现了。<br/> 如果用我的包的话在浏览器输入 http://localhost:8080/experiment/dwrsayhello.html 便可测试。<br/> <a title="http://pan.baidu.com/share/link?shareid=249564&amp;uk=1409985539" href="http://pan.baidu.com/share/link?shareid=249564&amp;uk=1409985539" target="_blank">http://pan.baidu.com/share/link?shareid=249564&amp;uk=1409985539</a><br/> dwr功能很强大，这只是一个很简单的案例，为了学会使用这个框架，能更好的应用这个框架。学无止境！</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/ajax">ajax</a></li> <li><a href="/tag/dwr">dwr</a></li> <li><a href="/tag/j2ee">j2ee</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/jquery">jquery</a></li> <li><a href="/tag/ssh">ssh</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-06-01T17:04:06.000Z">June 1, 2013</time> <h1><a href="/post/use-ueditor-set-editor-height/">使用ueditor时，定义编辑器显示高度</a></h1> </header> <section class="post-main"><p>UEditor是由百度WEB前端研发部开发的所见即所得的开源富文本编辑器，具有轻量、可定制、用户体验优秀等特点。开源基于BSD协议，所有源代码在协议允许范围内可自由修改和使用。百度UEditor的推出，可以帮助不少网站开者在开发富文本编辑器所遇到的难题，节约开发者因开发富文本编辑器所需要的大量时间，有效降低了企业的开发成本。</p> <p>编辑器在使用的时候，默认的宽度是1000px，这对网页来说肯定是不合理的，当然如果一个页面中只需要调用一次编辑器的话可以第二处调用的时候可以在添加一个配置文件修改里面的宽度，但如果一个页面多出调用就不行了，也找到了有些资料说在调用的标签上加入css标签类似下面</p> <p>&lt;script type="text/plain" id="editor"&gt;&lt;/script&gt;</p> <p>但是使用的时候失败了，这么些不行。</p> <p>解决办法如下</p> <p>在初始化编辑器的时候，重写编辑器的宽度就行了</p> <pre>   &lt;script type="text/javascript"&gt;
+         var editor = new UE.ui.Editor({ initialFrameWidth:510   });
+         editor.render("editor");
+   &lt;/script&gt;</pre> <p>这样就修改了编辑器的宽度，还可以添加修改编辑器的高度，值宽度后面添加</p> <div></div> <div> <pre>   &lt;script type="text/javascript"&gt;
+         var editor = new UE.ui.Editor({ initialFrameWidth:510,initialFrameHeight:520   });
+         editor.render("editor");
+   &lt;/script&gt;</pre> </div> <div></div> <div> 这样一个页面多处调用高度就能改变了。 </div></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/ueditor">ueditor</a></li> <li><a href="/tag/富文本编辑器">富文本编辑器</a></li> </ul> </footer> </article> <menu class="page"> <li class="page-prev"> <a href="/tag/javascript/" title="Previous">Prev</a> </li> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

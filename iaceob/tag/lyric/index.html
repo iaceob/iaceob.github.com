@@ -1,0 +1,144 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>lyric - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2015-01-01T00:59:16.000Z">January 1, 2015</time> <h1><a href="/post/js-parse-lyric/">js 解析歌词</a></h1> </header> <section class="post-main"><p>这里解析歌词是根据这篇文章的基础进行修改的,完善了下代码.</p> <p>http://www.feelcss.com/html5-music-player-synchronous-display-lyrics.html</p> <p>建议先看看这篇文章, 在继续阅读下述内容.</p> <p>简单的说那篇文章中所述的方式确实可以解析歌曲, 但是稍有些不足的, 解析必须是标准的歌词文件以及歌词文件中时间是不可重复的, 如果歌词中有俩个时间在同一行就不能够正确解析了. 总之那只是一个思路, 然后这里就给具体完善下.</p> <p>解析流程大致如下</p> <pre>歌词
+      ----- 异常格式 -&gt; 按行切割 -&gt; 依次拼接html并返回
+      ----- 正常格式 -&gt; 按行切割 -&gt; 解析每一行歌词
+                                                              |
+                                                -------------------------------
+                                        歌曲信息                        歌词
+                                            |                    -------------------------
+                                            |                 一个时间           多个时间
+                                            |                      |                           |
+                                            |                      |                         拆开
+                                            |                      |                           |
+                                        -------------------------------------------------
+                                                 放入到一个统一的对象中
+                                                                   |
+                                      歌曲信息和歌词分开并且歌词排序返回
+                                                                   | 
+                                                  根据返回拼接成html并返回</pre> <p>那么就是代码实现了</p> <p>先把用到的正则解释下(正则也许是最反人类的代码了....测试了好久)</p> <pre>// 歌词中时间格式匹配
+lrctimeformat: /\[(\d*):(\d*)([\.|\:]\d*|)\]/
+// 获取一行歌词中 所有正确的时间格式
+lrclinetime: /\[\d*:\d*.\d*\]/g, 
+// 获取一行歌词中 歌词内容 例如 &lt;[01:02.01][02:10.03]aaa&gt; 匹配 aaa
+lrclinearticle: /\](?!\[\d*).*?(.*)/, 
+// 在一行歌词中匹配出来的时间的左右括号 获取时间值
+lrclinermformat1: /\[|\]/g, 
+// 和上方相同 只是多匹配了 时间值中的符号  删除这些符号后用于排序
+lrclinermformat2: /\[|\]|\:|\./g, 
+// 匹配歌词信息
+lrcinfo: /\[([a-zA-Z]*):(.*?)\]/</pre> <p>判断是否为标准的歌词文件可以使用 lrctimeformat</p> <pre>   // lrc 是歌词内容 如果匹配到了例如 [01:24]或者[01:24.21]这样格式的字符 就会返回匹配回来的数组, 如果没有就返回null
+    var n = lrc.match(conf.regex.lrctimeformat);
+   // 这里做俩个判断 一是 如果没检索到就表示 不是标准的歌词, 另外一个是 如果返回的数组是空的也不是标准的歌词, 这种语法见<a title="javascript 一些比较奇葩的语法" href="/post/javascript-some-of-the-more-bizarre-syntax/">这里</a>
+    if (!n||!n.length) {
+     // 不标准的歌词处理
+    } else {
+     // 标准歌词处理
+    }</pre> <p>不标准的歌词文件处理相对就简单了, 直接按行切割拼接html就成了</p> <p>在说标准歌词解析之前了 先说说整个歌词的处理相关</p> <p>歌词通常格式像这样</p> <pre>[ti:I Wish You Knew]
+[ar:Mariah Carey]
+[al:The Emancipation Of Mimi]
+[00:00.55]Mariah Carey 
+[00:01.47]
+[00:02.27]I Wish You Knew
+[00:09.92]
+[00:13.92]I've got to see you
+[00:17.14]Wherever you are
+[00:20.40]And I've got to be there
+...</pre> <p>上方为歌曲的相关信息然后以[00:00.00]这样开头的是歌词</p> <p>但是有时候为了,恩从代码的角度来说,叫歌词的复用, 一首歌重复的一句话会出现很多次的, 这时候, 歌词有可能会这样</p> <pre>[00:17.14][01:02.22]Wherever you are
+[00:20.40][01:05.35][02:04.30]And I've got to be there</pre> <p>这时候就需要将这些拆开成这样</p> <pre>[00:17.14]Wherever you are
+[01:02.22]Wherever you are
+[00:20.40]And I've got to be there
+[01:05.35]And I've got to be there
+[02:04.30]And I've got to be there</pre> <p>拆成这样后了 因为是在一个 for 中执行的, 这里的操作是加入到一个数组中, 然后 整体就像这样</p> <pre>[00:17.14]Wherever you are
+[01:02.22]Wherever you are
+[01:02.25]xxxx
+....
+[00:20.40]And I've got to be there
+[00:20.41]xxx
+....
+[01:05.35]And I've got to be there
+[01:05.40]xxx
+...
+[02:04.25]
+[02:04.30]And I've got to be there</pre> <p>这样歌词就乱了, 所以就需要对歌词进行排序, 排序的规则了就按照歌词播放的时间来排序了, 可是你说 [00:00.00] 这样怎么排序, 其实很简单, 把所有这些字符都剔除掉, 剩下的就是时间的字符串了, 然后对其进行转换 <code>Number.parseInt()</code></p> <pre>001714    1714
+010222    10222
+010225    10225
+....
+002040    2040
+002041    2041
+....
+010535    10535
+010540    10540
+....
+020425    20425
+020430    20430</pre> <p>这样就可以进行排序了, 然后了又需要歌词和歌曲播放同步, 歌曲的播放了是可以获取到播放到哪一秒了, 那歌词也需要这些信息, 这里了处理方法和前面这基本相同, 就是 剔除 [ ] 符号 然后剩下来的就像这样 00:17.14 01:02.22 然后剔除后面的毫秒数 00:17 01:02 在按照 : 切割 左边的就是 分 右边的就是秒 分*60+秒 就是当前这一行在歌曲播放的哪一秒的歌词</p> <p>这些都有了之后了 就定义一个统一的对象, 比如这样</p> <pre>{index: 1714, time: '00:17.14', lyric: 'xxxxxx'}</pre> <p>歌曲信息了就像这样</p> <pre>{key: 'ar', val: 'xxxx'}</pre> <p>好 前提工作都做好了, 现在开始解析, 直接用代码来解释吧</p> <pre>// 这个 lrcArr 就是 按行分割出来的数组 .split('\n')
+function parseLine(lrcArr){
+    var line, lt, la, lla=[];
+    for(var i=0; i&lt;lrcArr.length; i++) {
+        line = lrcArr[i]; 
+        // 判断是否为 歌曲信息 是的话 放入到 lla 中
+        if (isLrcInfo(line)) {
+            // toLoObject 就是前文中提到的 返回统一歌曲信息对象
+            lla.push(toLoObject(line));
+            continue;
+        }
+        // 获取一行中所有匹配上的时间格式
+        lt = line.match(lrclinetime);
+        // 获取一行中 歌词内容
+        la = line.match(lrclinearticle);
+        // 如果匹配出来的是null或者长度小于等于1 表示这一行没有或者 就一个时间 直接将这行加入到新的数组中
+        if (!lt||lt.length&lt;=1) {
+            /// tiLrcObject 就是统一个歌词统一对象
+            lla.push(toLrcObject(line));
+            continue;
+        }
+        /*
+        一行多个时间, 那这些时间的歌词都是一样的,
+        拼接后 转成 统一格式的数组放入到 lla 这个数组中
+         */
+        for(var j=0; j&lt;lt.length; j++)
+            lla.push(toLrcObject(lt[j] + la[1]));
+    }
+    /// 到这里了 lla 就是 被完全解析后的 歌词信息了 重复的也拆分了
+   /// 那么这时候要做的就是 将 lla 中的 歌曲信息和歌词去分开
+   /// 和 对歌词的排序了
+    return sortLrc(lla);
+};
+
+// 判断是否是歌曲信息
+function isLrcInfo(line){
+    // 这里就比较艺术了...
+    // lrcinfo 就是前面提到的 正则, 匹配是不是 歌曲信息的格式
+   // 首先 如果匹配上了 那返回的就是数组 否则就是null
+   // 那么 !null 表示不是歌曲信息 
+    // ![] 表示 是歌曲信息 
+    // 艺术的是什么了, 还是 <a title="javascript 一些比较奇葩的语法" href="/post/javascript-some-of-the-more-bizarre-syntax/">这个</a> 
+    // !null true
+    // ![]  false
+    // 所以在取反一次 那么 true 表示是歌曲信息 否则 就不是
+    return !!line.match(lrcinfo);
+};
+
+function sortLrc(lrcArr){
+        var line, li=[], la=[], tmp;
+        // 先将歌曲信息和歌词内容分开
+        // 如果存在 key 就放入 li 否则就是歌词信息
+        // 这个时候就不需要使用 isLrcInfo 来判断了, 毕竟正则效率不高, 而且前面也已经返回了统一的对象了 循环的时候判断lrcArr 有没有 key 这个属性就行了
+        //  分别 将歌曲信息和歌词放入到不同的变量去 li  la
+       // 例如la是歌词, 然后对la进行排序
+      return {info: li, lrcs: la};
+};
+</pre> <p>之后, 就剩下一件事了, 把 sortLrc 返回的这个对象 在解析成html就行了, 解析的时候 给 html 加个属性值就是 前面提到的 把时间转化成秒, 以同步歌曲播放显示的歌词</p> <pre>function parseTime(time){
+    var t = time.split('.')[0].split(':');
+    var min = Number.parseInt(t[0]),
+        sec = Number.parseInt(t[1]),
+        realMin = min*60+sec;
+    return realMin;
+};
+
+function joinLrc(arr){
+    var lah = '';
+    for(var i=0; i&lt;arr.length; i++) {
+        if (arr[i].index&lt;0) continue;
+        lah += '&lt;li data-time="'+parseTime(arr[i].time)+'"&gt;' + arr[i].lyric;
+    }
+    return lah;
+};</pre> <p>基本上事情就做完了, 后面就是和歌曲和歌词的同步了.</p> <p>好 就这样, 有点乱, 全部代码在 <a title="JavaScript 歌詞解析" href="//code.iaceob.name/code/347857775260471296.html" target="_blank">JavaScript 歌詞解析</a> , 这里就不放全部了= = 不占字数.</p> <p>还有. 谢谢开头提到的那博主了.</p> <p>======</p> <p>然后问题来了. 歌词滚动还没做好啊..</p> <p>该撤了. 一篇文章写了俩年......</p> <p>2015年了都= =</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/lrc">lrc</a></li> <li><a href="/tag/lyric">lyric</a></li> <li><a href="/tag/parse">parse</a></li> </ul> </footer> </article> <menu class="page"> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

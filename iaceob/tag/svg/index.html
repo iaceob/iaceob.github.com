@@ -1,0 +1,46 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>svg - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2013-12-15T03:31:15.000Z">December 15, 2013</time> <h1><a href="/post/css-gaussian-blur/">css 高斯模糊</a></h1> </header> <section class="post-main"><p>css 实现高斯模糊效果</p> <style type="text/css"><!--
+.demo-blur{ text-shadow: 0px 0px 10px rgba(51, 51, 51, 0.9); color: rgba(0, 0, 0, 0); opacity: 0.5; } .demo-gaussian-blur{ -webkit-filter: blur(6px); -moz-filter: blur(6px); -o-filter: blur(6px); -ms-filter: blur(6px); filter: blur(6px); }
+.demo-blur-shadow{text-shadow: 0px 20px 2px #abc000;}
+--></style> <p> </p> <p> </p> <p>演示：</p> <p>text-shadow 文字阴影方式</p> <p><img src="/img/css-gaussian-blur/1.png"></p> <p>google</p> <p>google</p> <p>这种方式也并不能完全说是高斯模糊 只是使用了 <code>text-shadow</code> 文字阴影 等配合使用 这样文字会有效果 但是图片则不会有效果</p> <pre>.demo-blur{ 
+    text-shadow: 0px 0px 10px rgba(51, 51, 51, 0.9); 
+    color: rgba(0, 0, 0, 0); 
+    opacity: 0.5; 
+}
+
+.demo-blur-shadow {
+    text-shadow: 0px 20px 2px #333333;
+}
+</pre> <p> </p> <p>css filter 过滤方式</p> <p><img src="/img/css-gaussian-blur/1.png"></p> <p>google</p> <pre>.demo-gaussian-blur{ 
+    -webkit-filter: blur(3px); 
+    -moz-filter: blur(3px); 
+    -o-filter: blur(3px); 
+    -ms-filter: blur(3px); 
+    filter: blur(3px); 
+}</pre> <p>支持对图片等包括 video 标签的模糊。</p> <p>但是 这种方法 目前支持的浏览器不多</p> <p><img src="/img/css-gaussian-blur/2.jpg"></p> <p>上图中绿色标识的浏览器都可以使用</p> <p> </p> <p>svg 方式</p> <pre>&lt;?xml version="1.0" encoding="utf-8"?&gt; 
+&lt;!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"&gt; 
+&lt;!--Scalable Vector Graphic--&gt; 
+&lt;svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ev="http://www.w3.org/2001/xml-events" baseProfile="full"&gt; 
+    &lt;defs&gt; 
+        &lt;filter id="blur"&gt; 
+            &lt;feGaussianBlur stdDeviation="10" /&gt; 
+        &lt;/filter&gt; 
+     &lt;/defs&gt; 
+     &lt;image xlink:href="http://x.x.x/yourimg.jpg" x="0" y="0" filter="url(#blur)" /&gt; 
+&lt;/svg&gt;</pre> <pre>.blur {	
+    filter: url(blur.svg#blur); /* FireFox, Chrome, Opera */
+
+    -webkit-filter: blur(10px); /* Chrome, Opera */
+       -moz-filter: blur(10px);
+        -ms-filter: blur(10px);    
+            filter: blur(10px);
+
+    filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius=10, MakeShadow=false); /* IE6~IE9 */
+}</pre> <pre>&lt;img src="xxx.jpg" /&gt;</pre> <p> </p> <p>StackBlur.js canvas</p> <p>css</p> <pre>.blur {		
+    filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius=10, MakeShadow=false); /* IE6~IE9 */
+}
+:root .blur {
+    display: none; /* IE9+, Firefox, Chrome, Opera - hidden */
+    filter: none; /* no IE9 */
+}</pre> <p>html</p> <pre> &lt;img src="xxx.jpg" id="blur" /&gt; 
+ &lt;canvas id="canvas"&gt;&lt;/canvas&gt;</pre> <p>js</p> <pre>&lt;script src="StackBlur.js"&gt;&lt;/script&gt; 
+&lt;script&gt; stackBlurImage( "blur", "canvas", 20, false ); &lt;/script&gt;</pre> <p> </p> <p>====</p> <p>综合来看</p> <p>使用文字阴影方式虽然效果没有其他方式好 但是目前大多浏览器都能够支持</p> <p>css filter 过滤的效果很好但是目前支持的浏览器不多</p> <p>svg方式效果也很好 而且浏览器都支持svg 但是svg使用略不爽(个人感觉。。。)</p> <p>StackBlur.js+canvas 是个亮点 canvas 标签是html5的标签 目前大多现代浏览器都能够支持了， stackblur.js 的模糊效果也很好</p> <p> </p> <p>相关链接：</p> <ul> <li> <p title="CSS3 filter 模糊滤镜的应用">http://mao.li/css3-blur-filter-pratice/</p> </li> <li> <p title="小tip-使用css将图片转换成模糊毛玻璃效果">http://www.zhangxinxu.com/wordpress/?p=3804</p> </li> <li> <p title="StackBlur.js">http://www.quasimondo.com/StackBlurForCanvas/StackBlur.js</p> </li> <li> <p title="StackBlurDemo">http://www.quasimondo.com/StackBlurForCanvas/StackBlurDemo.html</p> </li> <li> <p title="Item Blur Effect with CSS3 &amp; jQuery">http://tympanus.net/Tutorials/ItemBlur/</p> </li> </ul></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/blur">blur</a></li> <li><a href="/tag/canvas">canvas</a></li> <li><a href="/tag/css">css</a></li> <li><a href="/tag/filter">filter</a></li> <li><a href="/tag/gaussian">gaussian</a></li> <li><a href="/tag/html">html</a></li> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/svg">svg</a></li> </ul> </footer> </article> <menu class="page"> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

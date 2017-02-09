@@ -1,0 +1,21 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>ubuntu13.04 sublime3 中文输入法问题 - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2014-03-01T02:26:17.000Z">March 1, 2014</time> <h1>ubuntu13.04 sublime3 中文输入法问题</h1> </header> <section class="post-main"><p>sublime 在 ubuntu 或者说 linux 的环境中中文输入法不能正常使用解决方法:</p> <p>保存代码到文件sublime_imfix.c</p> <pre>#include &lt;gtk/gtkimcontext.h&gt;
+void gtk_im_context_set_client_window (GtkIMContext *context,
+          GdkWindow    *window)
+{
+  GtkIMContextClass *klass;
+  g_return_if_fail (GTK_IS_IM_CONTEXT (context));
+  klass = GTK_IM_CONTEXT_GET_CLASS (context);
+  if (klass-&gt;set_client_window)
+    klass-&gt;set_client_window (context, window);
+  g_object_set_data(G_OBJECT(context),"window",window);
+
+  if(!GDK_IS_WINDOW (window))
+    return;
+  int width = gdk_window_get_width(window);
+  int height = gdk_window_get_height(window);
+  if(width != 0 &amp;&amp; height !=0)
+    gtk_im_context_focus_in(context);
+}</pre> <p>编译成共享库</p> <pre>gcc -shared -o libsublime-imfix.so sublime_imfix.c  `pkg-config --libs --cflags gtk+-2.0` -fPIC</pre> <p>运行</p> <pre>LD_PRELOAD=./libsublime-imfix.so sublime_text</pre> <p>sublime text的运行命令为subl<br/> 将libsublime-imfix.so拷贝到sublime所在文件夹<br/> 将 /usr/bin/subl 文件修改如下</p> <pre>#!/bin/sh
+exec bash -c 'LD_PRELOAD=/opt/sublime_text/libsublime-imfix.so /opt/sublime_text/sublime_text' %F</pre> <p>同时 /usr/share/applications/sublime_text.desktop 的exec也修改成如上</p> <p>需要注意的是这里需要使用 fcitx 才可以 如果使用 ibus 仍然不行</p> <p>安装 fcitx 输入法</p> <pre>sudo add-apt-repository ppa:fcitx-team/nightly
+sudo apt-get update
+sudo apt-get install fcitx fcitx-googlepinyin</pre> <p><b>把系统的输入法改成fcitx</b><br/> System Setting &gt;&gt;Language surpport &gt;&gt; Language &gt;&gt; Keyborad input method system &gt;&gt; fcitx</p> <p>fictx开机自启动：<br/> System Setting &gt;&gt; Startup Applications &gt;&gt; Add</p> <p> </p> <p>又copy了一篇文章了 。。</p> <p>不过终于可以用了。。</p> <ul> <li>http://my.oschina.net/Khiyuan/blog/98713</li> <li>http://www.sublimetext.com/forum/viewtopic.php?f=3&amp;t=7006&amp;start=10#p41343</li> <li>http://bbs.chinahtml.com/t319624/</li> </ul></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/fcitx">fcitx</a></li> <li><a href="/tag/sublime">sublime</a></li> <li><a href="/tag/ubuntu">ubuntu</a></li> </ul> </footer> </article> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

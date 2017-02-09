@@ -1,0 +1,31 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>charset - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2013-10-22T15:53:17.000Z">October 22, 2013</time> <h1><a href="/post/mysql-create-database-set-character/">mysql 建库设置字符集</a></h1> </header> <section class="post-main"><p>不可否认。。。在ubuntu下，乱码出现的频率变得大多了。。。。</p> <p> </p> <p>创建库的时候设置库的编码 使数据库编码和项目编码统一 则不会乱码</p> <p> </p> <p> </p> <pre>mysql&gt; create database test_db character set utf8 collate utf8_bin;
+Query OK, 1 row affected (0.00 sec)
+
+mysql&gt; use test_db
+Database changed
+mysql&gt; status
+--------------
+mysql  Ver 14.14 Distrib 5.5.32, for debian-linux-gnu (i686) using readline 6.2
+
+Connection id:          92
+Current database:       test_db
+Current user:           root@localhost
+SSL:                    Not in use
+Current pager:          stdout
+Using outfile:          ''
+Using delimiter:        ;
+Server version:         5.5.30-log MySQL Community Server (GPL)
+Protocol version:       10
+Connection:             Localhost via UNIX socket
+Server characterset:    latin1
+Db     characterset:    utf8
+Client characterset:    utf8
+Conn.  characterset:    utf8
+UNIX socket:            /var/run/mysqld/mysqld.sock
+Uptime:                 4 hours 51 min 48 sec
+
+Threads: 7  Questions: 4139  Slow queries: 0  Opens: 252  Flush tables: 1  Open tables: 63  Queries per second avg: 0.236
+--------------
+
+mysql&gt; 
+</pre> <pre>create database test_db character set utf8 collate utf8_bin;</pre> <p>创建库的时候在后面设置库的字符集。</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/character">character</a></li> <li><a href="/tag/charset">charset</a></li> <li><a href="/tag/mysql">mysql</a></li> <li><a href="/tag/sql">sql</a></li> </ul> </footer> </article> <menu class="page"> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

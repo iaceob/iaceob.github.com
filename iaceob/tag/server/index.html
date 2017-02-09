@@ -1,0 +1,37 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>server - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2015-06-11T18:05:29.000Z">June 11, 2015</time> <h1><a href="/post/tomcat-multi-domain-binding/">tomcat 多域名綁定</a></h1> </header> <section class="post-main"><p>之前在说 nginx 反向代理时有说到 tomcat 的域名绑定操作, 详见 <a title="Nginx 反向代理" href="/post/nginx-proxy/" target="_blank">Nginx反向代理</a> 这里绑定域名是通过如下方式实现的.</p> <pre>&lt;Host name="local.host.com" appBase="webapps"
+          unpackWARs="true" autoDeploy="true"
+          xmlValidation="false" xmlNamespaceAware="false"&gt;
+       &lt;Context path="" docBase="/tomcat/webapps/text" debug="0"
+                 reloadable="true" crossContext="true"/&gt;
+&lt;/Host&gt;</pre> <p>意思就是 Host 标签中指定需要绑定的域名, 在其内部的 Context 标识改域名所绑定的项目.</p> <p>这么做虽然是可以实现目的, 但是当所绑定的域名和项目越多, tomcat 就会变得非常慢, 数据库连接也有可能会发生超出最大连接数 和 易发生<a title="tomcat路徑混淆" href="/post/tomcat-path-confusion/" target="_blank">混淆</a>; 原因就是 Host 标签中指定的 appBase 属性值是 webapps 目录.</p> <p>appBase 属性, 就是应用的基本目录.</p> <p>也就是说在绑定域名的时候 appBase 不改的话, 那么比如有如下的配置</p> <pre>&lt;Host name="tt1.host.com" appBase="webapps"
+          unpackWARs="true" autoDeploy="true"
+          xmlValidation="false" xmlNamespaceAware="false"&gt;
+       &lt;Context path="" docBase="/tomcat/webapps/tt1" debug="0"
+                 reloadable="true" crossContext="true"/&gt;
+&lt;/Host&gt;
+
+&lt;Host name="tt2.host.com" appBase="webapps"
+          unpackWARs="true" autoDeploy="true"
+          xmlValidation="false" xmlNamespaceAware="false"&gt;
+       &lt;Context path="" docBase="/tomcat/webapps/tt2" debug="0"
+                 reloadable="true" crossContext="true"/&gt;
+&lt;/Host&gt;
+
+&lt;Host name="tt3.host.com" appBase="webapps"
+          unpackWARs="true" autoDeploy="true"
+          xmlValidation="false" xmlNamespaceAware="false"&gt;
+       &lt;Context path="" docBase="/tomcat/webapps/tt3" debug="0"
+                 reloadable="true" crossContext="true"/&gt;
+&lt;/Host&gt;</pre> <p>结果是 tt1 tt2 tt3 都分别能够相互访问对方, 就如之前所说的混淆, 并且都是被启动多次的(不确定是不是都三次, 要验证可以在启动之前将 tomcat/logs 日志清空 然后启动 tomcat 查看日志便可以发现), 再说超出数据库的最大连接, 想想每个项目启动多次, 也就是说每个项目每启动一次就新开了数据库连接, 而且是成几何数增长的(当超出数据库连接后, 数据库便不能够在连上, 同样的数据库不能连接, 那项目也启动不成功), 同时还占用这非常高的系统资源.</p> <p>那么就需要修改下, appBase 默认加载的是是属性值中的目录下的 ROOT 目录, 也就是说 appBase="webapps" 就相当于 appBase="webapps/ROOT" .</p> <p>那么就可以这么来</p> <p>在 tomcat 根目录建立 app 目录, 以及这三个项目的子目录, 如下:</p> <pre>tomcat /
+| ---------- app /
+|               ------ tt1 /
+|                        ----- ROOT
+|               ------- tt2 /
+|                         ----- ROOT
+|               ------- tt3 /
+|                         ----- ROOT
+                      
+</pre> <p>然后在 server.xml 配置改成这样</p> <pre>&lt;Host name="tt1.host.com" appBase="app/tt1" unpackWARs="true" autoDeploy="true"&gt;&lt;/Host&gt;
+&lt;Host name="tt2.host.com" appBase="app/tt2" unpackWARs="true" autoDeploy="true"&gt;&lt;/Host&gt;
+&lt;Host name="tt3.host.com" appBase="app/tt3" unpackWARs="true" autoDeploy="true"&gt;&lt;/Host&gt;
+</pre> <p>然后分别将项目放入到相应的 ROOT 目录去.</p> <p>这样也实现了多域名, 并且还解决了之前的所有问题.</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/domain">domain</a></li> <li><a href="/tag/optimization">optimization</a></li> <li><a href="/tag/server">server</a></li> <li><a href="/tag/tomcat">tomcat</a></li> <li><a href="/tag/xml">xml</a></li> </ul> </footer> </article> <menu class="page"> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

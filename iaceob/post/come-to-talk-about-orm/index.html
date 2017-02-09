@@ -1,0 +1,77 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>再来谈谈 ORM - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2015-04-23T13:48:29.000Z">April 23, 2015</time> <h1>再来谈谈 ORM</h1> </header> <section class="post-main"><p>关于 ORM 的解释见 <a title="对象关系映射" href="http://zh.wikipedia.org/wiki/%E5%AF%B9%E8%B1%A1%E5%85%B3%E7%B3%BB%E6%98%A0%E5%B0%84" target="_blank">对象关系映射</a> .</p> <p>简单的来说就是对于每个项目上应用最广泛的数据库中每张表所对应的实体类, 实体类中每个变量对应这数据表中的每个字段. 并且有封装着简单的对数据库的访问, 也就是 CURD (create update read delete).</p> <p>这样确实是有很多好处的, 比如在实体类中对进行数据库操作的数据进行校验以及数据的正确性确认, 避免了插入一些危险的语句, Thinkphp 在这方面就做了有 自动验证 自动完成 等功能, 详见 Thinkphp 文档中说明.</p> <p>ORM 的一些比较出名的产品, 比如 java 中的 hibernate 框架. 实现了 ORM 的所有操作. 并且被用于众多大型项目中.</p> <p>但是真的需要用 ORM 方式来实现数据库操作吗 .</p> <p>就拿 hibernate 来说(已经很久没用了), 比如如下环境</p> <p>db 一个简单的用户表</p> <pre>create table person(
+ uid varchar(30) not null,
+ name nvarchar(50) not null,
+ password varchar(50) not null,
+ email nvarchar(50) not null,
+ gender tinyint,
+ ctime datetime,
+ primary key(uid)
+);</pre> <p>entity hibernate 中相应的实体类</p> <pre>public class Person(){
+ private String uid;
+ private String name;
+ private String password;
+ private String email;
+ private Short gender;
+ private Timestamp ctime;
+
+ public Person(){};
+
+ public String getUid(){ return this.uid; }
+ public String getName(){ return this.name; }
+ // .....
+ public void setUid(String uid){ this.uid=uid; }
+ public void setName(String name){ this.name=name; }
+
+ public String toString(){ return ''; };
+
+}</pre> <p>这个实体类就是用来描述数据表 person 的.</p> <p>比如现在有个需求要修改用户名, 那么实现肯定是通过语句</p> <pre>update person set name=? where uid=?</pre> <p>这样来实现的, hibernate 是怎么做的了, 首先先将这句 SQL 翻译成 HQL(hibernate 定义的一种数据库操作语句), 然后这里需要俩个字段相应的也就是实体类中 uid 和 name 变量, 因此 实体类中就需要有相应的构造器</p> <pre>public Person(String uid, String name){
+ this.uid = uid;
+ this.name = name;
+}</pre> <p>之后执行 HQL(已经不知道这个HQL该怎么写) 和实例化这个构造器就能够自动修改名称了.</p> <p>需求是完成了, 不过命名就只是一句 SQL 就能解决的事情却要搞得这么麻烦? 明明可以封装一个数据库操作类, 直接执行 SQL, 返回影响行数很简单的几句代码就能完成操作.</p> <p>好, 要说 java 本来就很繁琐, 那再来看看 php.</p> <p>当然 也就是前文提到的 thinkphp</p> <p>thinphp 提供了 D 和 M 函数来使用 Model 操作数据库.</p> <p>关于 M 和 D 的区别可以去观看 thinkphp 的文档.</p> <p>那么还是之前的这个表</p> <p>现有需求添加一个用户, 那么</p> <p>Model 添加 person 的 model 类</p> <pre>&lt;?php
+ class PersonModel extends Model{
+  protected $pk = 'uid';
+  protected $tableName = 'person';
+  protected $map = array(
+   'id' =&gt; 'uid',
+   'name' =&gt; 'name',
+   ...
+  );
+  protected $_validate = array(
+   array('id', 'require', 'id not null', 1);
+   // ...
+  );
+  protected $_auto = array(
+   array('ctime', 'getTime', 3, 'callback')
+  );
+
+  function getTime(){
+   return time();
+  }
+ }
+?&gt;</pre> <p>然后就是在具体的控制器中使用了</p> <pre>$model = D('Person');
+if (!$model-&gt;create()) echo $model-&gt;getError();die;
+echo $model-&gt;save() ? 'success' : $model-&gt;getError();</pre> <p>这样就完成了整个流程了, 也实现了需求.</p> <p>同时了 thinkphp 还提供了另外一种方式, 同样是这个需求, 来试试怎么完成.</p> <pre>$model = new Model();
+$sql = "insert into person(id, name, email, password, gender, ctime) values ('%s', '%s', '%s', '%s', %d, now())";
+$res = $model-&gt;execute($sql, array('1', 'test', 'test@example.com', md5('password'), 1));
+echo $res ? 'success' : $model-&gt;getError();</pre> <p>同样实现了这个需求, 这俩中方式到底是说着简便的 active record 模式还是这种原生的 sql 执行方式了?</p> <p>一目了然, 肯定是后者. 或许 ORM 这种方式确实存在着某些优势, 不过这些优势并不是选择这种方式的理由, 因为这种方式有个最大的弊端, 就是做不了复杂的多表业务逻辑操作.</p> <p>没错, 比如像 thinkphp 的 model 是提供 <code>-&gt;join();</code> 这种方式来进行关联的.像下面:<br/> 比如还有另外一张关联表, 存储这 用户所对应的城市 person_city | uid city<br/> 和一张城市的表 city | id name<br/> 现在想要查出用户所在的城市</p> <pre>$model = new Model();
+$arr = $model-&gt;table(C('DB_PREFIX') . 'person as p')
+             -&gt;field('p.name as person_name, c.name as city_id')
+             -&gt;join('left join ' . C('DB_PREFIX') . 'person_city as pc on p.uid=pc.uid')
+             -&gt;join('left join ' . C('DB_PREFIX') . 'city as c on pc.city=c.id')
+             -&gt;where(array('p.uid'=&gt;'1'))
+             -&gt;select();
+var_dump($arr);</pre> <p>这个查询出来的结果确实是我们想要的, 而且灵活的运用了 thinkphp model 的 active record 方式.</p> <p>那么再用原始的 sql 方式实现试试</p> <pre>$model = new Model();
+$sql = "select
+p.name as person_name, c.name as city_id
+from person as p
+left join person_city as pc on p.uid=pc.uid
+left join city as c on pc.city=c.id
+where p.uid='%s'";
+$arr = $model-&gt;query($sql, array('1'));
+var_dump($arr);die;</pre> <p>这是不是同样是需求所要的结果? 而且是不是相对于更加容易理解? 分析下来这段代码的意思就是先实例化一个 Model 对象, 然后定义一个 SQL 语句, 在执行这个 SQL 语句, 将返回的结果答应, 就是这么简单易解的方式. 而上面那个沉长的语句是什么意思了, 来一句一句分析下.</p> <p>首先实例化一个 Model 对象.</p> <pre>$model-&gt;table('xx') // 告诉 model 这是主表
+-&gt;field('xx') // 要查询这些字段
+-&gt;join('left join person_city') // 关联person_city这张表
+-&gt;join('left join city') // 关联 city 这张表
+-&gt;where('p.uid'=&gt;'1') // 查询的 条件
+-&gt;select() //   执行查询
+</pre> <p>这对于已经熟练使用的人来说是非常便于理解的, 不过如果是未接触过这种方式的人来说表达的意思很含糊, 不直观, 而且很多都是不必要的代码, 我相信基本上程序员都接触过 SQL, 而不可能所有人都接触过 active record 这种方式.</p> <p>另外这个简单的多表关联是可以实现, 如果是复杂的了? 比如之前写过的一篇文章 <a title="sql 中 full join 于 union" href="/post/sql-full-join-and-union/" target="_blank">sql 中 full join 于 union</a> 分别将 full join 和 union 实现的查询结果以 active model 的方式查询出来试试(thinkphp 还有另一种关联的方式, 不是通过 -&gt;join 而是使用关联模型)? 有理由相信就是这么简单的一句 sql 采用 关联模型 方式来实现, 这个模型会非常复杂, 而且还不容易理解.</p> <p>要知道, 包括 tinkphp 的 $model-&gt;table(‘xx’) 和 hibernate 的 hql , 数据库是不明白的, 所以说, thinkphp 和 hibernate 在提交数据库的时候还是会将这些翻译成数据库认识的 SQL 语句, 才能够正确的查询, 所以这不是在脱裤子放屁?<br/> 特别是 hibernate 的 hql 无中生有的造出了一种新的用法, 和 sql 完全不同, 而且 hibernate 还不能够建立 视图 的模型, 要知道数据库视图在实际项目中会频繁的用到.</p> <p>在比如, 你是一个开发人员用了 thinkphp 的关联模型或者是 java 的 hibernate 来实现操作数据的, 这个时候你有一个需求是非常复杂的数据库查询, 你并不会写, 所以你去问了 DBA 这个怎么写, DBA 花了 2 个小时终于把这个查询语句写出来了, 交给你, 这个时候你傻了, DBA 给你的是 SQL 语句, DBA 不一定会你所用的关联模型或者 HQL, 那么你还得用 2 个小时来把这句 SQL 翻译成 关联模型或者 HQL, 之后项目完成了, 上线了, 程序又会将 关联模型 或者 HQL 翻译成 SQL 传给数据库执行...</p> <p>所以这到底是简化了开发流程还是复杂了开发流程了.</p> <p>另一个想吐槽的是 thinkphp 的 C(‘DB_PREFIX’) , 就上文代码中使用过. 这个值获取数据库的表前缀, 配置在 config.php 中; 完全就是个鸡肋的设计, 你想啊, 项目上线后数据库表名怎么会该啊, 要到改数据的地步那相信就是数据库底层设计又问题了啊, 基础都又问题还怎么写代码? 另外万一一个库又俩种表前缀又怎么办?在定义一个 DB_PREFIX2 ? 别折腾了吧.... 又不实用 写的时候又麻烦 还得用连字符连起来, 给个特殊符号自动替换表前缀也比连字符强吧, 写起来多烦?</p> <p>--</p> <p>写这篇文章了, 其实最近有在看 nodejs , 查询了一些文章, 关于数据库操作, 数据库操作也是实用类似 Thinkphp 这种实现方式. 完全没明白, nodejs 是新世纪的语言为什么还存在着旧世纪的思维方式(或许是我没能明白这种方式的好处), 甚至还见到过 nodejs 封装一个实体存储数据, 哥哥....这不是java, java因为数据类型不能够直观的表达数据表才会有实体类封装, 一看实体就基本上能理解表(个人认为), 但是有看过 nodejs 的各种数据库驱动 包括 nosql 和 关系型数据库查询出来的数据返回都是标准的 js 对象啊... 已经可以直接调用的拉, 没必要在封装成实体了啊..</p> <p>大概就这些了, 反正关联模型这东西, 不要轻易去碰, 至少如果你的团队不大, 就几个人, 不要用这种方式, 会累死你还不一定能完成想要的结果.</p> <p>都说要精益求精, 化繁为简, sql 执行多么简单明了, 多去学习下 sql 语句吧. 那些各种 orm 框架说了支持多数据库, 不要被忽悠了, 除非是那种大型的商业级的项目可能会考虑到多数据库, 中小型项目一个数据库基本上就满足了, 因此你的代码更不就不需要去考虑对多数据库的支持, 再说 sql 语句大部分也是通用的, 只是个中有些语法上的区别, 总体都差不多.</p> <p>sql 语句能做很多事情, 并不比某种程序语言弱, 不要因为各种所谓的兼容等而忘却了根本, 还是那句 数据库是不认识任何 ORM 框架所提供的各种代码, 都是翻译成 SQL 语句提交给数据库的.</p> <p>本文代码并不一定完全正确, 只做演示说明.</p> <p>文末附上些连接:<br/> <a href="http://www.cnblogs.com/kuber/archive/2008/05/09/1188463.html" target="_blank">回复:什么是ActiveRecord</a><br/> <a href="https://github.com/amoa400/aa-mysql" target="_blank">aa-mysql</a></p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/activerecord">activerecord</a></li> <li><a href="/tag/hibernate">hibernate</a></li> <li><a href="/tag/hql">hql</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/model">model</a></li> <li><a href="/tag/orm">orm</a></li> <li><a href="/tag/php">php</a></li> <li><a href="/tag/sql">sql</a></li> <li><a href="/tag/thinkphp">thinkphp</a></li> </ul> </footer> </article> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

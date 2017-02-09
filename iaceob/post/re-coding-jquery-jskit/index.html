@@ -1,0 +1,30 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>重造轮(和谐)子之 jQuery [base] - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2015-07-01T01:08:17.000Z">July 1, 2015</time> <h1>重造轮(和谐)子之 jQuery [base]</h1> </header> <section class="post-main"><p>因为最近在做一些重造轮子的事情, 所以了, 索性把 jQuery 重新造一遍, 当然, 不可能全部都重造出来...</p> <p>重造 jQuery 主要是因为想要一个 js 的工具包, 然而了 jQuery 实在太大了, 而那些现成的做好的精简包, 比如 <a title="Zepto.js: the aerogel-weight jQuery-compatible JavaScript library" href="http://zeptojs.com/" target="_blank">zepto</a> , 又有些东西是不需要的, 所以就重造一个.</p> <p>好吧, 这里主要说说实现的方法.</p> <p>首先定义一个类, 也就是闭包的函数, 作为主方法, 并提供 prototype 供外部扩展函数, 并且主方法作为入口, 做出类似于 jQuery 的选择器入口.</p> <p>所以有如下代码</p> <pre>!(function(window, undefined){
+    'use strict';
+    function kit(select){
+        try {
+            return self.selector(select);
+        } catch (e) {
+            return null;
+        }
+    };
+    var self = kit.fn = kit.prototype = Object.create(Array.prototype);
+    window.jsKit = kit;
+})(window);
+</pre> <p>那么来分析下这段主方法的代码.</p> <p>首先是建一个闭包, 这里面有个 kit 的函数, 为入口函数, 并且将 kit 赋于 window 的 jsKit 变量上.</p> <p>先来看原型赋值这</p> <pre>    var self = kit.fn = kit.prototype = Object.create(Array.prototype);</pre> <p>这段的意思了, 就是将 kit 的原型设置为 类数组对象 然后将 kit 的原型赋予 kit.fn 接着继续赋给 self;</p> <p>关于类数组对象, 这个是 让 kit 的 prototype 带有数组的特性, 也就是 js 中的 Array like Object, 详细的这个分析这里就不描述了, 看以后在能不能写点这, 详细来分析.</p> <p>这个原型分配好了之后了, 其中 self 只是在当前闭包中使用 kit.fn 是外部使用的.</p> <p>再来看 kit 函数, 这里面只做了一件事</p> <pre> return self.selector(select);</pre> <p>self.selector 也就是选择器了.</p> <p>所以就在新建一个类(闭包)专门做选择器的实现, 然后作为扩展添加到这个主方法中.</p> <p>selector 实现就如下</p> <pre>!(function(window, kit, undefined){
+    'use strict';
+    var document = window.document;
+    var self = kit.fn;
+    function selector(select){
+        self.splice(0, self.length);
+        var allDom = document.querySelectorAll(select);
+        for(var i=allDom.length; i--&gt;0;)
+            self.push(allDom[i]);
+        return self;
+    };
+    self.selector = selector;
+})(window, jsKit);</pre> <p>一个非常简单的实现方式, 首先引入 jsKit , 使用 jsKit.fn 注册一个 selector 的函数, 函数的实现就是当前这个闭包中的 selector 函数.</p> <p>当然这个选择器偷懒直接使用了 document.querySelectorAll 方法了, 不够这个方法也基本上能满足大多数的需求了.</p> <p>query 出来的结果是一个 NodeList 的数据类型, 是不能够直接操作的, 因此就需要将这个 NodeList 数据转化为这里的 jsKit 类, 前面也说了 jsKit 的原型被设置未 类数组的对象, 所以能够使用数组的相关特性,因此这里直接对 NodeList 遍历, 并且 push 到 jsKit 中. 然后 return self; 也就是返回 jsKit 类, 这样做的目的就是为了实现原型链, 能够进行链式调用.</p> <p>需要注意的是 这里加了一行</p> <pre>self.splice(0, self.length);</pre> <p>这个的作用是清空数组, 这里也就是清空 jsKit, 因为 jsKit 在 push 后不释放的话, 在执行一次, 第二次会累加, 这也是 Array 的特性.</p> <p>所以一个简单的类似于 jQuery 的选择器就实现了.</p> <p>接下来可以进行 jQuery 和 jsKit 的简单测试了.</p> <p>比如</p> <pre>jQuery('li'); // Object[li, li, li]
+jsKit('li'); // Object[li, li, li]</pre> <p>返回的结果都是一样的.</p> <p>所以前提条件都有了, 接下来只要对 jsKit.fn 进行扩充就行了.</p> <p>像是 addClass</p> <pre>jsKit.fn.addClass = function(){
+  this.forEach(function(target){
+    console.log(target);
+  });
+};</pre> <p>调用的使用通过和 jQuery 一样的原型链方式</p> <pre>jsKit('li').addClass('test');</pre> <p> </p> <p>话就到这</p> <p>当然这只是一个非常简单的模拟啦, jQuery 很强大了, 代码写的很高深, 只是阅读就很复杂了, 比如这里的选择器实现只是简单的 querySelectAll , 而 jQuery 则提供了更多实用的功能, 而且 jQuery() 还支持对象等作为选择器, 因此这个还是需要完善的.</p> <p>jQuery 是很好使, 但是就是臃肿了点, 现在很多用 jQuery 的地方其实根本可以不需要, 只是用了 jQuery 的很少几个功能.</p> <p> </p> <p>所以 jsKit 继续优化吧.</p> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/harmony">harmony</a></li> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/jquery">jquery</a></li> <li><a href="/tag/js">js</a></li> <li><a href="/tag/recoding">recoding</a></li> </ul> </footer> </article> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

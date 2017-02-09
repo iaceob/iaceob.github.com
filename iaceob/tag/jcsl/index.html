@@ -1,0 +1,285 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>jcsl - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2014-09-09T22:27:41.000Z">September 9, 2014</time> <h1><a href="/post/js-css-asynchronous-loading-part-2/">js&&css 异步加载-2</a></h1> </header> <section class="post-main"><p>前面也说了.</p> <p>所有的代码都有个通病,功能越来越强悍但体积越来越庞大....</p> <p>好...也来强悍和庞大这个异步加载.....</p> <p>万恶.</p> <p>js的加载时不时还会有这样的需求.</p> <p>第二个js文件是第一个js文件的补充, 那么第二个js文件就需要依赖第一个js的某个功能,来最终实现某个目的.</p> <p>如果就只是使用前一篇文章的方法, 给一起加载了. 第二个js文件在解析的时候就会报错, 因为第一个js还没有完全解析完, 第二个文件就找不到依赖. 然后就报错了.</p> <p>说白了就是 并行加载 和 串行加载.</p> <p>并行加载就是所有文件一起加载</p> <p>串行加载就是一个一个加载.</p> <p>其实实现还是通过那个加载的状态判断</p> <p>并行加载在所有文件加载并且执行完毕后 执行回调.</p> <p>串行加载 一个文件加载并执行完毕后 在继续第二个文件,直到所有文件都完毕后在执行回调.</p> <p>那么就可以通过一个递归来实现这功能, 修改后的代码如下</p> <pre>!(function(window, undefined){
+    'use strict';
+    var scriptName = 'jcsl';
+    var version = 1;
+    var document = window.document;
+
+    function $() {};
+
+    /**
+     * 引入js或者css文件
+     * @param file 文件名
+     * @param callback 回调
+     **/
+    function loadFile(file, callback, category) { // mark
+        category = category||1;
+        switch(category) {
+        case 1:
+            loadFileParallel(file, callback);
+            break;
+        case 2:
+            loadFileSerial(file, callback);
+            break;
+        }
+    };
+
+    function loadFileSerial(files, callback) {
+        if (!files) throw 'load script fail: file&amp;&amp;mark is not null';
+        if (typeof(files)=='string') {
+            this.loadParallel(files, callback);
+            return;
+        }
+        var scripts = [];
+        try {
+            for(var i=0; i&lt;files.length; i++) {
+                switch(getFileSuffix(files[i])) {
+                case 'CSS':
+                    // css 
+                    excuteImportFile(files[i], 'CSS');
+                    break;
+                case 'JS':
+                    scripts.push(files[i]);
+                    break;
+                }
+            }
+            serialImport(scripts, 0, callback);
+        } catch(e) {
+            throw 'load script fail: load error; description:' + e;
+        }
+    };
+
+    function loadFileParallel(file, callback) {
+        if (!file) throw 'load script fail: file&amp;&amp;mark is not null';
+        var scripts = [];
+        try {
+            // 单文件或多文件加载
+            switch(typeof(file)) {
+            case 'object':
+                for(var i=file.length; (i--)&gt;0;) {
+                    scripts.push(excuteImportFile(file[i], getFileSuffix(file[i])));
+                }
+                break;
+            case 'string':
+                scripts.push(excuteImportFile(file, getFileSuffix(file)));
+                break;
+            default:
+                break;
+            }
+        } catch(e){
+            throw 'load script fail: load error; description:' + e;
+        }
+        // 文件引入后记录标识
+        // run.push(mark);
+        var scriptNum=0, loadNum=0;
+        // 获取引入的js文件数量
+        for(var i=scripts.length; (i--)&gt;0;) {
+            if (scripts[i].verify) scriptNum+=1;
+        };
+        // 依次判断引入的js是否引入完毕
+        for(var i=scripts.length; (i--)&gt;0;) {
+            if (!scripts[i].verify) continue;
+            // 加载完毕回调
+            scripts[i].fileref.onload = scripts[i].onreadystatechange = function(){
+                if (!0||this.readyState==='loaded'||this.readyState==='complete') {
+                    loadNum+=1; // 加载完毕数量
+                    // 加载完毕数量和加载的文件数量相同执行函数回调
+                    if (loadNum===scriptNum) {
+                        !callback||callback();
+                    };
+                };
+            };
+        };
+    };
+
+    /**
+     * 执行引入文件
+     * @param file 文件路径
+     * @param tyoe 文件类型
+     * */
+    function excuteImportFile(file, type){
+        // v js文件标识
+        var v=0, fileref;
+        switch(type.toUpperCase()) {
+        case 'JS':
+            fileref = document.createElement('script');
+            fileref.setAttribute('type','text/javascript');
+            fileref.setAttribute('src',file);
+            v=1;
+            break;
+        case 'CSS':
+            fileref = document.createElement('link');
+            fileref.setAttribute('rel','stylesheet');
+            fileref.setAttribute('type','text/css');
+            fileref.setAttribute('href',file);
+            break;
+        default:
+            break;
+        }
+        !fileref||document.getElementsByTagName('head')[0].appendChild(fileref);
+        return {verify: v, fileref: fileref};
+    };
+    
+    // 获取文件后缀名
+    function getFileSuffix(filename) {
+        filename = filename.split('?')[0];
+        return filename.substr(filename.lastIndexOf('.')+1, filename.length).toUpperCase();
+    };
+
+    function serialImport(files, index, callback) {
+        if (index&gt;=files.length){
+            !callback||callback();
+            return;
+        };
+        var eif = excuteImportFile(files[index], 'JS');
+        eif.fileref.onload = eif.fileref.onreadystatechange = function(){
+            if (!0||this.readyState==='loaded'||this.readyState==='complete') {
+                serialImport(files, index+1, callback);
+            };
+        };
+    };
+
+    $.prototype = {
+        version: version,
+        load: loadFile,
+        loadSerial: loadFileSerial,
+        loadParallel: loadFileParallel
+    };
+
+    window[scriptName] = new $();
+
+})(window);</pre> <p>也就是 这里新增的 loadFileSerial 函数</p> <p>loadFileSerial 函数中 判断是多文件还是一个文件 typeof(files), 单文件就直接通过并行加载即可, 多文件 根据后缀名判断是 css 或者 js , 如果是 css 就执行加载, js 就存入到一个临时的数组, 然后就走到那个递归的函数中.</p> <p>serialImport 进行文件的引入 , 然后根据引入返回添加的 script 标签的信息, 判断执行的状态, 执行完毕后加载下一个文件 index+1 , 直到 index 大于等于 files 这个数组的长度, 那么所有文件都执行完毕了, 执行回调.</p> <p> </p> <p>使用方法改动不大,之前的调用方式还是可用, 不传方式的话 默认是并行加载的</p> <pre>jcsl.load(['a.js', 'b.css', 'c.js'], function(){ //..; }, [1|2]); // 并行可以不用第三个参数  串行 第三个参数填2</pre> <p>当然也可以使用 原型中添加的 loadSerial 和 loadParallel 分别实现串行和并行加载, 传递的参数是一样的.</p> <p>没有ie...不知道ie能不能用.</p> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/async">async</a></li> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/jcsl">jcsl</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-09-04T23:57:45.000Z">September 4, 2014</time> <h1><a href="/post/js-css-asynchronous-loading-part-2-2/">js&&css 异步加载-1</a></h1> </header> <section class="post-main"><p>浏览器在执行js的时候会停止对页面的渲染,如果有一个js文件比较大,加载比较耗时,这个时候浏览器在下载这个js的时候,网页就会一片空白直到js下载并执行完成后才开始后面的操作, css相对来说各浏览器稍微好点.</p> <p>这时候可以通过异步加载来完成这个耗时较长的文件,页面渲染完毕后在进行js的下载执行.</p> <p>这样的插件也有很多. require.js head.js ...</p> <p>所有的代码都有个通病,功能越来越强悍但体积越来越庞大....</p> <p>也许这并不是最好的选择.</p> <p>异步加载的逻辑说白了就是在页面加载完成后,通过js下载另外的脚本文件,然后在执行后续的操作.</p> <p>代码如下</p> <pre>!(function(window, undefined){
+    'use strict';
+    var scriptName = 'jcsl';
+    var version = 1;
+    var document = window.document;
+
+    function $() {
+        /*
+        this.config = {
+            load: {
+                mark: {},
+                run: []
+            }
+        };
+        */
+    };
+
+    /**
+     * 引入js或者css文件
+     * @param file 文件名
+     * @param callback 回调
+     **/
+    function loadFile(file, callback) { // mark
+        // !mark
+        if (!file) throw 'load script fail: file&amp;&amp;mark is not null';
+        // var run = this.config.load.run;
+        // if (inArray(run, mark)) throw 'load script fail: mark is not found';
+        /*
+        for(var i=run.length; (i--)&gt;0;) {
+            // 检测文件是否已经被引入
+            if (run[i]==mark) {
+                console.info('load success: file already import');
+                return;
+            };
+        }
+        */
+        var scripts = [];
+        try {
+            // 单文件或多文件加载
+            switch(typeof(file)) {
+            case 'object':
+                for(var i=file.length; (i--)&gt;0;) {
+                    scripts.push(excuteImportFile(file[i], getFileSuffix(file[i])));
+                }
+                break;
+            case 'string':
+                scripts.push(excuteImportFile(file, getFileSuffix(file)));
+                break;
+            default:
+                break;
+            }
+        } catch(e){
+            throw 'load script fail: load error; description:' + e;
+        }
+        // 文件引入后记录标识
+        // run.push(mark);
+        var scriptNum=0, loadNum=0;
+        // 获取引入的js文件数量
+        for(var i=scripts.length; (i--)&gt;0;) {
+            if (scripts[i].verify) scriptNum+=1;
+        };
+        // 依次判断引入的js是否引入完毕
+        for(var i=scripts.length; (i--)&gt;0;) {
+            if (!scripts[i].verify) continue;
+            // 加载完毕回调
+            scripts[i].fileref.onload = scripts[i].fileref.onreadystatechange = function(){
+                if (!0||this.readyState==='loaded'||this.readyState==='complete') {
+                    loadNum+=1; // 加载完毕数量
+                    // 加载完毕数量和加载的文件数量相同执行函数回调
+                    if (loadNum===scriptNum) {
+                        !callback||callback();
+                    };
+                };
+            };
+        };
+    };
+
+
+    /**
+     * 执行引入文件
+     * @param file 文件路径
+     * @param tyoe 文件类型
+     * */
+    function excuteImportFile(file, type){
+        // v js文件标识
+        var v=0, fileref;
+        switch(type.toUpperCase()) {
+        case 'JS':
+            fileref = document.createElement('script');
+            fileref.setAttribute('type','text/javascript');
+            fileref.setAttribute('src',file);
+            v=1;
+            break;
+        case 'CSS':
+            fileref = document.createElement('link');
+            fileref.setAttribute('rel','stylesheet');
+            fileref.setAttribute('type','text/css');
+            fileref.setAttribute('href',file);
+            break;
+        default:
+            break;
+        }
+        !fileref||document.getElementsByTagName('head')[0].appendChild(fileref);
+        return {verify: v, fileref: fileref};
+    };
+    
+    // 获取文件后缀名
+    function getFileSuffix(filename) {
+        filename = filename.split('?')[0];
+        return filename.substr(filename.lastIndexOf('.')+1, filename.length).toUpperCase();
+    };
+
+    function inArray(arr, o) {
+      var s = String.fromCharCode(2);
+      var r = new RegExp(s+o+s);
+      return (r.test(s+arr.join(s)+s));
+    };
+
+    $.prototype = {
+        version: version,
+        load: loadFile
+    };
+
+    window[scriptName] = new $();
+
+})(window);</pre> <p>引入文件就是通过 document.createElement 创建一个 script 或者 link 标签 然后将标签嵌入到 head 标签中, 这样浏览器就会下载这个文件.</p> <p>关键在于那个回调何时执行的问题</p> <p>直接在引入js后就执行回调的话, 被引入的js里的内容是不能够立马执行的, 浏览器下载需要时间, 初始化也需要时间, 在这期间就直接使用了引入的那些函数,也许还并没有执行.</p> <p>要做的就是等待这些引入的脚本都执行完毕了,在来执行回调函数, 也就是判断引入的脚本的加载状态</p> <p>通过 createElement 创建的标签</p> <p>ie 浏览器 可以通过 onreadystatechange 函数 通过 readyState 判断加载的状态</p> <p>firefox/chrome 可以通过 onload 函数 无需在进行判断</p> <p>当执行加载完毕的脚本数量和js文件的数量相同在初始化完毕,执行回调继续后续的操作</p> <p>使用方式 在页面中加入这个脚本</p> <p>调用方式</p> <pre>jcsl.load('//test.com/res/test.js', function(){
+    // ...
+});
+// 或者 多文件
+jcsl.load([
+    '//test.com/res/test1.js',
+    '//test.com/res/test2.js',
+    '//test.com/res/style.css'
+], function(){
+    // ....
+});</pre> <p>类似于 head.js 的调用方式</p> <p>当然还可以继续优化这东西的.</p> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/async">async</a></li> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/jcsl">jcsl</a></li> </ul> </footer> </article> <menu class="page"> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

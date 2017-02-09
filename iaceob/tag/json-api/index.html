@@ -1,0 +1,229 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>json-api - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2013-12-21T06:13:56.000Z">December 21, 2013</time> <h1><a href="/post/wordpress-json-api/">wordpress json api</a></h1> </header> <section class="post-main"><p>initboot 2.0 已经开工了</p> <p>完全抛弃了1.0所有的逻辑，也并未按照大多wordpress模板遍历文章，而是全站使用json进行ajax展示文章</p> <p>initboot 2.0 依赖插件 JSON API 可以在 wordpress 插件库找到</p> <p>这里先记录下 json api 的使用：</p> <p>默认安装了json api插件 可以访问</p> <p>http://hostname/api/info</p> <p>查看json api的信息(后面这个api是可以修改的在设置-&gt;json api，需要开启php urlwriter)</p> <p>另外还有使用get参数方式(隐式模式)</p> <p>http://hostname/?json=1</p> <p>可以让当前页/文章用 JSON 格式输出</p> <p>例如：</p> <ul> <li>http://hostname/?json=1</li> <li>http://hostname/?p=47&amp;json=1</li> <li>http://hostname/tag/banana/?json=1</li> </ul> <p> </p> <ul> <li>最近的文章 http://hostname/?json=get_recent_posts</li> <li>取回 ID = 47 的文章 http://hostname/?json=get_post&amp;post_id=47</li> <li>取回 tag = banana 的文章 http://hostname/?json=get_tag_posts&amp;tag_slug=banana</li> </ul> <p>链接 http://hostname/?json=1 返回的json如下方</p> <pre>    {
+      "status": "ok",
+      "count": 1,
+      "count_total": 1,
+      "pages": 1,
+      "posts": [
+        {
+          "id": 1,
+          "type": "post",
+          "slug": "hello-world",
+          "url": "http://localhost/wordpress/?p=1",
+          "title": "Hello world!",
+          "title_plain": "Hello world!",
+          "content": "&lt;p&gt;Welcome to WordPress. This is your first post. Edit or delete it, then start blogging!&lt;/p&gt;n",
+          "excerpt": "Welcome to WordPress. This is your first post. Edit or delete it, then start blogging!n",
+          "date": "2009-11-11 12:50:19",
+          "modified": "2009-11-11 12:50:19",
+          "categories": [],
+          "tags": [],
+          "author": {
+            "id": 1,
+            "slug": "admin",
+            "name": "admin",
+            "first_name": "",
+            "last_name": "",
+            "nickname": "",
+            "url": "",
+            "description": ""
+          },
+          "comments": [
+            {
+              "id": 1,
+              "name": "Mr WordPress",
+              "url": "http://wordpress.org/",
+              "date": "2009-11-11 12:50:19",
+              "content": "&lt;p&gt;Hi, this is a comment.&amp;ltbr /&gt;To delete a comment, just log in and view the post's comments. There you will have the option to edit or delete them.&lt;/p&gt;n",
+              "parent": 0
+            }
+          ],
+          "comment_count": 1,
+          "comment_status": "open"
+        }
+      ]
+    }</pre> <p>count count_total pages<br/> 返回了 1 篇文章，目前显示 1 篇，一共有 1 页</p> <p>一些参数信息：</p> <h2>get_posts</h2> <p>可选参数</p> <p>count 每页显示的文章数量</p> <p>page 当前页码</p> <p>post_type 文章类型(....)</p> <p>获取文章列表 默认每页10篇文章</p> <pre>    http://hostname/?json=get_posts&amp;count=1&amp;page=2&amp;post_type=post
+
+    {
+      "status": "ok",
+      "count": 1,
+      "posts": [
+        { ... }
+      ]
+    }</pre> <h2>get_recent_posts</h2> <p>与 get_posts 相同</p> <h2>get_post</h2> <p>下面俩个参数必须要有一个</p> <p>id 或者 post_id 设置文章id</p> <p>slug 或者 post_slug 设置文章固定链接</p> <p>可选参数</p> <p>post_type 文章类型</p> <p>返回指定id或者指定url的文章 (url 为固定链接)</p> <pre>    http://hostname/?json=get_post&amp;id=10
+
+http://hostname/?json=get_post&amp;post_id=10
+
+
+http://hostname/?json=get_post&amp;slug=wordpress-json-api
+
+
+http://hostname/?json=get_post&amp;post_slug=wordpress-json-api
+
+    {
+      "status": "ok",
+      "post": { ... }
+    }</pre> <h2>get_page</h2> <p>同 get_psot 作用相同 返回单一的文章内容</p> <p>多了一个可选参数 children ...</p> <pre>    http://hostname/?json=get_page&amp;id=10
+
+http://hostname/?json=get_page&amp;page_id=10
+
+
+http://hostname/?json=get_page&amp;slug=wordpress-json-api
+
+
+http://hostname/?json=get_page&amp;post_slug=wordpress-json-api
+
+    {
+      "status": "ok",
+      "post": { ... }
+    }</pre> <h2>get_date_posts</h2> <p>返回指定日期文章 默认显示10篇文章</p> <p>data 必填参数 指定日期 日期格式 yyyy-mm-dd yyyymmdd yyyy/mm/dd yyyy-mm 都是可行的还有其他方式</p> <p>可选参数</p> <p>count</p> <p>page</p> <p>post_type</p> <pre>    http://hostname/?json=get_date_posts&amp;date=2013/05
+
+http://hostname/?json=get_date_posts&amp;date=2013-05
+
+
+http://hostname/?json=get_date_posts&amp;date=201305
+
+    {
+      "status": "ok",
+      "count": 10,
+      "count_total": 79,
+      "pages": 7,
+      "posts": [
+        { ... },
+        { ... },
+        ...
+      ]
+    }</pre> <h2>get_category_posts</h2> <p>返回指定分类文章</p> <p>比选参数(其一)</p> <p>id 或者 category_id 设置分类id</p> <p>slug 或者 category_slug 设置分类固定链接</p> <p>可选参数</p> <p>count</p> <p>page</p> <p>post_type</p> <pre>    http://hostname/?json=get_category_posts&amp;id=1
+
+http://hostname/?json=get_category_posts&amp;category_id=1
+
+
+http://hostname/?json=get_category_posts&amp;slug=wordpress
+
+
+http://hostname/?json=get_category_posts&amp;category_slug=wordpress
+
+    {
+      "status": "ok",
+      "count": 10,
+      "count_total": 79,
+      "pages": 7,
+      "category": { ... }
+      "posts": [
+        { ... },
+        { ... },
+        ...
+      ]
+    }</pre> <h2>get_tag_posts</h2> <p>返回指定标签文章</p> <p>比选参数(其一)</p> <p>id 或者 tag_id 设置分类id</p> <p>slug 或者 tag_slug 设置标签固定链接</p> <p>可选参数</p> <p>count</p> <p>page</p> <p>post_type</p> <pre>    http://localhost/app/wordpress/?json=get_category_posts&amp;id=1
+
+http://hostname/?json=get_category_posts&amp;tag_id=1
+
+
+http://hostname/?json=get_category_posts&amp;slug=wordpress
+
+
+http://hostname/?json=get_category_posts&amp;tag_slug=wordpress
+
+    {
+      "status": "ok",
+      "count": 10,
+      "count_total": 79,
+      "pages": 7,
+      "tag": { ... }
+      "posts": [
+        { ... },
+        { ... },
+        ...
+      ]
+    }</pre> <h2>get_author_posts</h2> <p>返回指定用户文章</p> <p>比选参数(其一)</p> <p>id 或者 author_id 设置分类id</p> <p>slug 或者 author_slug 设置用户名</p> <p>可选参数</p> <p>count</p> <p>page</p> <p>post_type</p> <pre>    http://localhost/app/wordpress/?json=get_category_posts&amp;id=1
+
+http://hostname/?json=get_category_posts&amp;author_id=1
+
+
+http://hostname/?json=get_category_posts&amp;slug=username
+
+
+http://hostname/?json=get_category_posts&amp;author_slug=username
+
+    {
+      "status": "ok",
+      "count": 10,
+      "count_total": 79,
+      "pages": 7,
+      "author": { ... }
+      "posts": [
+        { ... },
+        { ... },
+        ...
+      ]
+    }</pre> <h2>get_search_results</h2> <p>然会搜索结果</p> <p>search 必填参数 搜索内容</p> <p>可选参数</p> <p>count</p> <p>page</p> <p>post_type</p> <pre>    http://hostname/?json=get_search_results&amp;search=wordpress
+    {
+      "status": "ok",
+      "count": 10,
+      "count_total": 79,
+      "pages": 7,
+      "posts": [
+        { ... },
+        { ... },
+        ...
+      ]
+    }</pre> <h2>get_date_index</h2> <p>返回日期归档</p> <pre>    {
+      "status": "ok",
+      "permalinks": [
+        "...",
+        "...",
+        "..."
+      ],
+      "tree": {
+        "2009": {
+          "09": 17,
+          "10": 20,
+          "11": 7
+        }
+      }</pre> <p>返回的数据结构是 response.tree.[year].[month].[number of posts]</p> <h2>get_category_index</h2> <p>返回分类目录</p> <p>可选参数</p> <p>parent 子目录 如果填写了该参数 那么返回的值是 当前这个目录包括所有子目录的结果<br/> 比如目录</p> <pre>/--+
+   |--web(id:1)
+       |--html
+       |--css
+   |--os(id:2)
+       |--windows
+       |--liunx
+   |--app(id:3)</pre> <p>那么没有parent参数 所有的分类都会返回 如果 parent=1 只返回 web html css 三个目录</p> <pre>    http://hostname/?json=get_category_index
+
+http://hostname/?json=get_category_index&amp;parent=13
+
+    {
+      "status": "ok",
+      "count": 3,
+      "categories": [
+        { ... },
+        { ... },
+        { ... }
+      ]
+    }</pre> <h2>get_tag_index</h2> <p>返回所有标签数据</p> <pre>    {
+      "status": "ok",
+      "count": 3
+      "tags": [
+        { ... },
+        { ... },
+        { ... }
+      ]
+    }</pre> <h2>get_author_index</h2> <p>返回所有用户数据</p> <pre>    {
+      "status": "ok",
+      "count": 3,
+      "authors": [
+        { ... },
+        { ... },
+        { ... }
+      ]
+    }</pre> <h2>get_page_index</h2> <p>.......</p> <pre>    {
+      "status": "ok",
+      "pages": [
+        { ... },
+        { ... },
+        { ... }
+      ]
+    }</pre> <h2>get_nonce</h2> <p>Returns a WordPress nonce value, required to call some data manipulation methods.</p> <p>必须有这俩个参数。。。</p> <p>controller - the JSON API controller for the method you will use the nonce for<br/> method` - the method you wish to call (currently `create_post` is the only method that requires a nonce)</p> <pre>    {
+      "status": "ok",
+      "controller": "posts",
+      "method": "create_post",
+      "nonce": "cefe01efd4"
+    }</pre> <h2>submit_comment</h2> <p>提交评论</p> <p>必须参数</p> <p>post_id 文章id<br/> name 评论人姓名<br/> email 评论人邮箱<br/> content 评论内容</p> <p>选则参数<br/> redirect 重定向<br/> redirect_ok 重定向成功 url 地址<br/> redirect_error 重定向失败url地址<br/> redirect_pending 重定向指定地址</p> <h2>get_sidebar</h2> <p>返回侧栏小工具</p> <p>sidebar_id 必须参数 小工具id</p> <p> </p> <p>========</p> <p>callback</p> <p>http://hostname/api/get_recent_posts/?callback=show_posts_widget&amp;read_more=More&amp;count=3</p> <p>http://hostname/?get_recent_posts&amp;callback=show_posts_widget&amp;read_more=More&amp;count=3</p> <p>返回近期文章放入到 show_posts_widget 输出 JSONP</p> <p>http://hostname/api/posts/create_post/?callback_error=http%3A%2F%2Fwww.example.org%2Fhelp.html</p> <p>指定操作失败跳转的页面</p> <p> </p> <p>=======</p> <pre>id, type, slug, url, title, title_plain, content, excerpt, date, modified, categories, tags, author, comments, attachments, comment_count, comment_status, thumnail, custom_fields....</pre> <p>可以用 include 或者 exclude 这些请求参数来限制一下返回的资料。究竟什么内容能 inlcude 或者 exclude，可以查看<a href="http://wordpress.org/plugins/json-api/other_notes/#4.1.-Post-response-object" target="_blank">插件官方文件 - 响应对象</a></p> <pre>http://hostname/?json=get_recent_posts/?include=title,url</pre> <p> </p> <p> </p> <p>有点乱。。。</p> <p>不过大概这么些内容</p> <p>详细的内容 下载插件 查看 readme.txt 文档</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/initboot">initboot</a></li> <li><a href="/tag/json">json</a></li> <li><a href="/tag/json-api">json-api</a></li> <li><a href="/tag/wordpress">wordpress</a></li> </ul> </footer> </article> <menu class="page"> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

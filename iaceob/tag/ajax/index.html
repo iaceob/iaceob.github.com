@@ -1,0 +1,166 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>ajax - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2013-06-16T18:49:10.000Z">June 16, 2013</time> <h1><a href="/post/dwr-use-mode-3/">dwr 使用方法-返回list数据</a></h1> </header> <section class="post-main"><p>之前对使用dwr已经写了两篇文章，前面介绍的是调用返回JavaBean的java方法,前台在使用的时候回调函数中使用data.[属性名称]，这里要说的是返回的是list数据。</p> <p>后台操作部分都是相同的，流程一样，不过后台返回的要是一个list。</p> <pre>	/**
+	 * 查询数据集合，用于展示
+	 * @return List
+	 * @author 生物烯丙菊
+	 */
+	public List getList() throws Exception {
+
+		this.TopList = this.listService.getTopList();
+		return this.TopList;
+	}</pre> <p> </p> <p>这是一个action返回的是toplist这个是之前实例化的一个list实例。</p> <p>dwr.xml</p> <pre>		&lt;allow&gt;
+			&lt;create creator="spring" javascript="Ajax"&gt;
+				&lt;param name="beanName" value="listAction" /&gt;
+			&lt;/create&gt;
+			&lt;convert match="com.xx.entity.List" converter="bean" /&gt;
+		&lt;/allow&gt;</pre> <p> </p> <p>到这里前台就能拿到dwr查询的数据了</p> <p>html</p> <pre>	&lt;script type="text/javascript"&gt;
+	&lt;!--
+
+	  	Ajax.getList($.callBackListTop);
+
+		$.callBacklistTop = function(data){  
+	       for(var i=0;i&lt;data.length;i++){
+				$("#newList").append('&lt;li&gt;&lt;span&gt;ID:'+data[i].id+' and title is:'+data[i].title+'&lt;/span&gt;&lt;/li&gt;');
+			}
+		}
+	//&gt;
+	&lt;/script&gt;
+    &lt;ul id="newList"&gt;&lt;/ul&gt;
+</pre> <p> </p> <p> 页面打开即加载 这里是去执行dwr中getList这个接口，这里会去查询action中定义的方法，然后去查询数据库，返回list的值。</p> <p>Ajax.getList($.callBackListTop); // dwr查询之后将值赋给callBackListTop这个函数 这里使用的是jquery方式建立的函数</p> <p>$.callBackListTop = function(data){ ... } // 回调函数data是传递过来的值；</p> <p>for(var i=0;i&lt;length;i++){ ... } // 对传递过来的值 进行遍历，因为传递过来的是一个list数组；</p> <p>$("#newList").append(‘...’); // 给id为newList追加内容；</p> <p>在使用的时候 data[i].id data[i].title 后面的为属性的名称。</p> <p> </p> <p>在遍历之前可以先弹出看一看值，如下</p> <pre>	&lt;script type="text/javascript"&gt;
+	&lt;!--
+
+	  	Ajax.getList($.callBackListTop);
+
+		$.callBacklistTop = function(data){  
+	            alert (data[0].id);
+                     alert (data[0].title);
+		}
+	//&gt;
+	&lt;/script&gt;</pre> <p>弹出list中第一条内容，从0开始计数的。</p> <p> </p> <p>到这里dwr返回list数据，进行展示，就介绍完了，大体的使用步骤就如上，使用的时候要看具体的环境使用，这里使用的jquery也可以直接使用javascript。</p> <p>同时dwr的功能是很强悍的，还有很多功能，以后使用的时候在记录，比如表单中最常见的ajax验证也可以通过dwr来实现。</p> <p>后续使用在记录。</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/ajax">ajax</a></li> <li><a href="/tag/dwr">dwr</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/jquery">jquery</a></li> <li><a href="/tag/spring">spring</a></li> <li><a href="/tag/ssh">ssh</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-06-13T23:37:17.000Z">June 13, 2013</time> <h1><a href="/post/dwr-use-mode-2/">dwr 使用方法-返回javabean数据</a></h1> </header> <section class="post-main"><p>dwr 入门篇 <a href="/post/dwr-use-mode-1/">dwr 使用方法-初步</a>这段时间在使用的时候遇到了些问题，不过最后也解决了，详细说说dwr使用的步骤和方法。dwr.xml的配置</p> <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE dwr PUBLIC 
+    "-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN" 
+    "http://www.getahead.ltd.uk/dwr/dwr20.dtd"&gt;    
+	&lt;dwr&gt;			
+		&lt;allow&gt;
+			&lt;!-- creator为spring表示根据spring创建一个方法，JavaScript属性表示页面引用时的脚本对象名 --&gt;
+			&lt;create creator="spring" javascript="About"&gt;
+				&lt;!--这里的value值与spring中id="userBIZ"是同一个值 --&gt;
+				&lt;param name="beanName" value="aboutAction" /&gt;
+			&lt;/create&gt;
+			&lt;!--方法具有实体类返回值，那么就要为其创建一个bean，这个类就要根据match所指向的实体类进行创建 --&gt;
+			&lt;convert match="com.iaceob.entity.About" converter="bean"&gt;&lt;/convert&gt;
+		&lt;/allow&gt;	
+	&lt;/dwr&gt;</pre> <p> </p> <p>这里和之前写的不同的地方就是这里将事物交给spring管理了，就不必在写具体的类的地址了，写相应的类交给spring的id，这里就能或者类的地址找到相应的方法。</p> <p>这里dwr所找的是aboutAction也就对应着我项目中的com.iceob.action.AboutAction 所以到里面看看相应的方法，这里也可以不是action，直接指向dao就能直接操作数据库了，这里使用的是action，根据情况而定</p> <pre>	/**
+	 * 用于dwr访问数据action
+	 * @return About
+	 * @throws Exception
+	 * @author 生物烯丙菊
+	 */
+	public About getAboutData() throws Exception {
+		this.about = this.aboutService.getAboutData(1);
+		return this.about;
+	}</pre> <p> </p> <p>这里只使用了getAboutData方法，写这个方法要注意的是这个方法返回的是about这个实体类(之前有实例化)，因为这里查询的数据是是放到这个实体类，然后让前台去调用的，dwr也可以直接调用action的方法，不过通常action返回的是一个字符串然后交给struts2的配置文件去选择显示什么页面，也就不能让dwr显示数据。</p> <p>这个时候如果dwr的调试模式开启的话，就可以到调试页面去查看了，如下图</p> <p><img src="/img/dwr-use-mode-2/1.png"></p> <p> </p> <p>可以看到有 getAbout() Us() getAboutData() 这三个方法，</p> <p>getAbout() 实例化的about实体类的get方法</p> <p>us() 前台页面action方法</p> <p>getAboutData() 新建的dwr查找数据的方法</p> <p>这个时候如果点击getAbout() 后面的按钮的话返回的肯定是null</p> <p><img src="/img/dwr-use-mode-2/2.png"></p> <p>是因为这里about实体类还没有赋值，查询出来的当然是空<br/> 现在点击us方法</p> <p><img src="/img/dwr-use-mode-2/3.png"></p> <p>返回的是success，因为这里是前台使用的action方法，返回的string类型的字符串。</p> <p>这个时候在来点击getAbout() 后面的按钮</p> <p><img src="/img/dwr-use-mode-2/4.png"></p> <p>可以看到这个时候点击就有值了，是因为之前点击了us方法，us方法中将值赋给了about实体类，但是因为us是返回的string类型，就没有弹出窗口显示值了，现在在点击getabout的时候就有值了，同样点击getaboutdata方法之后getaboutdata也会有值，但是因为getaboutdata方法返回的就是about实体类，所以会直接弹出窗口显示值。</p> <p><img src="/img/dwr-use-mode-2/5.png"></p> <p> <br/> 上面说的可能有点饶了，要根据自己的代码环境去理解吧，不同环境不同对待。</p> <p>测试通过了接下来解释在网页显示的问题了</p> <p>页面中手先需要导入js js的地址在测试页面中都有给出， 分别是 util.js engine.js xxx.js // 最后一个js是名称是根据你在dwr.xml中的配置而得来的。</p> <p>导入js文件之后</p> <p>html中写代码如下</p> <pre>                            &lt;script type="text/javascript"&gt;
+                       	     &lt;!--
+                            	$(function(){
+                            		  About.getAboutData(callBackMenthod);    
+                            	});	                           	
+                            	
+                            	function callBackMenthod(data) {                            	                            	
+					document.getElementById("HomeAbout").innerHTML=data.content;									 
+                            	}                            	
+                            //--&gt;
+                            &lt;/script&gt;
+                            &lt;div id="HomeAbout"&gt;&lt;/div&gt;</pre> <p> </p> <p>上面的js流程就是</p> <p>$(function(){ }); // 让页面加载的时候自动运行使用了jquery</p> <p>About.getAboutData(callBackMenthod); // About便是那个自动生成的js的文件名 .getAboutData 是需要使用的方法callBackMenthod 是回调函数 这样就执行了dwr去调用java的方法去查询数据库，然后将至回调给指定的函数，让该函数去完成相应的事物</p> <p>function callBVackMenthod(data){ } // 回调函数，dwr 执行后会将值交给这个函数，执行相关操作<br/> document.getElementById("HomeAbout").innerHTML=data.content; // 将data中的content的内容写入到id为HomeAbout的标签中去<br/> </p> <p>这里说一下data</p> <p>data 就是dwr查询后的值，这里alert(data); 会发现弹出的窗口是一个object，因为返回的是json类型的数据</p> <p>{aboid:1,content:"u8FD9u91CCu662Fu5185u5BB9″,createtime:1371057600}</p> <p>需要使用返回值的时候</p> <pre>//其中data接收方法的返回值
+
+//对于JavaBean返回值，有两种方式处理
+
+//不知道属性名称时，使用如下方法
+
+for(var property in data){
+       alert("property:"+property);
+       alert(property+":"+data[property]);
+}
+
+//知道属性名称时，使用如下方法
+
+alert(data.username);
+alert(data.password);</pre> <p> </p> <p> </p> <p>返回javabean的方式使用方法就如上所述，具体使用的使用要具体对待，代码这东西不是一成不变的，dwr还有一种是返回list形式的，后面也会用到，等用到的时候在来写吧。</p> <p> </p> <p>dwr 的百科目录上介绍的就很好，建议去看看http://baike.baidu.com/view/73492.htm</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/ajax">ajax</a></li> <li><a href="/tag/dwr">dwr</a></li> <li><a href="/tag/j2ee">j2ee</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/jquery">jquery</a></li> <li><a href="/tag/js">js</a></li> <li><a href="/tag/spring">spring</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2013-06-13T23:33:54.000Z">June 13, 2013</time> <h1><a href="/post/dwr-use-mode-1/">dwr 使用方法-初步</a></h1> </header> <section class="post-main"><p>-------文章是从之前的博客中拷贝过来的，这次又使用dwr，也没用之前的博客了，那边的文章也没打算都搞过来，只感觉学习是循序渐进的如果一看dwr就从一些复杂的地方开始肯定不能很好的使用</p> <p><a href="http://hi.baidu.com/iaceob/item/5e5fbdfdca420400c7dc456e" target="_blank">http://hi.baidu.com/iaceob/item/5e5fbdfdca420400c7dc456e</a></p> <p> </p> <p>dwr 在java web开发中使用到主要是用于改善web页面与Java类交互的远程服务器端Ajax开源框架。</p> <p>这里是让dwr实现简单的hello world实例。</p> <p>首先导入dwr的jar包</p> <p>然后创建java类</p> <p>Hello.java</p> <pre>package name.iaceob.ajax.dwr;
+public class Hello {
+    public String sayHello(String name) {
+        return name + "", hello world!;
+    }
+}</pre> <p> </p> <p>web.xml</p> <pre>&lt;!-- Ajax Dwr 框架 --&gt;
+&lt;servlet&gt;
+    &lt;servlet-name&gt;dwr-invoker&lt;/servlet-name&gt;
+    &lt;servlet-class&gt;org.directwebremoting.servlet.DwrServlet&lt;/servlet-class&gt;
+    &lt;!-- 是否允许调试，如果要在浏览器中调试必须设置为 true 项目应用时应设为 false --&gt;
+    &lt;init-param&gt;
+        &lt;param-name&gt;debug&lt;/param-name&gt;
+        &lt;param-value&gt;true&lt;/param-value&gt;
+    &lt;/init-param&gt;
+    &lt;!-- 是否进行日志管理，如果是要设置此参数，通常可以省略 --&gt;
+    &lt;init-param&gt;
+        &lt;param-name&gt;logLevel&lt;/param-name&gt;
+        &lt;param-value&gt;WARN&lt;/param-value&gt;
+    &lt;/init-param&gt;
+    &lt;!-- 如果允许跨域请求，则必须将此值设置为false，默认为true --&gt;
+    &lt;init-param&gt;
+        &lt;param-name&gt;crossDomainSessionSecurity&lt;/param-name&gt;
+        &lt;param-value&gt;false&lt;/param-value&gt;
+    &lt;/init-param&gt;
+    &lt;!-- //这个是DWR2.0必须的,不然会报java.lang.IllegalArgumentException --&gt;
+    &lt;init-param&gt; 
+       &lt;param-name&gt; classes &lt;/param-name&gt;
+       &lt;param-value&gt; java.lang.Object &lt;/param-value&gt;
+    &lt;/init-param&gt;
+&lt;/servlet&gt;    
+&lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;dwr-invoker&lt;/servlet-name&gt;
+    &lt;url-pattern&gt;/dwr/*&lt;/url-pattern&gt;
+&lt;/servlet-mapping&gt;</pre> <p>在web.xml的同等级目录下创建dwr.xml文件</p> <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE dwr PUBLIC 
+    "-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN" 
+    "http://www.getahead.ltd.uk/dwr/dwr20.dtd"&gt;
+        
+&lt;dwr&gt;
+    &lt;allow&gt;
+        &lt;create creator="new" javaascript="hello"&gt;
+            &lt;param name="class" value="name.iaceob.ajax.dwr.Hello"&gt;&lt;/param&gt;
+            &lt;include method="sayHello" /&gt;
+        &lt;/create&gt;
+    &lt;/allow&gt;
+&lt;/dwr&gt;</pre> <p>这样配置就完成了，部署的tomcat的环境中，接下来在浏览器地址栏输入</p> <p>http://localhost:8080/dwrtest/dwr</p> <p>便能看到 dwr 测试连接<br/> 框架的最终目的，是为了实现需要的功能，接下来就是在页面上利用dwr框架实现ajax了。dwrsayhello.html</p> <pre>&lt;!DOCTYPE HTML&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;dwrsayhello.html&lt;/title&gt;
+          
+    &lt;meta http-equiv="keywords" content="keyword1,keyword2,keyword3"&gt;
+    &lt;meta http-equiv="description" content="this is my page"&gt;
+    &lt;meta http-equiv="content-type" content="text/html; charset=UTF-8"&gt;
+          
+    &lt;script type="text/javascript" src="/dwrtest/dwr/interface/Hello.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" src="/dwrtest/dwr/engine.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" src="/dwrtest/dwr/util.js"&gt;&lt;/script&gt;
+      
+    &lt;script type="text/javascript"&gt;
+      function getMessage(txt) {
+          var name=document.getElementById(txt).value;
+          Hello.sayHello(name,callBack);
+      }
+      function callBack(data) {
+          alert(data);
+          var Div = document.getElementById('message');
+          Div.innerText = data;
+          Div.style.display = "block";
+      }
+    &lt;/script&gt;
+          
+  &lt;/head&gt;
+        
+  &lt;body&gt;
+        &lt;center&gt;
+            &lt;input type="text" id="name" name="name"&gt;
+            &lt;input type="button" value="从服务器端取值" onclick="getMessage('name')"&gt;
+        &lt;/center&gt;
+        &lt;dir id="message"&gt;&lt;/dir&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</pre> <p>效果如下</p> <p> </p> <p><img src="/img/dwr-use-mode-1/1.png"><br/> 这样就能在页面实现ajax了。<br/> 这是我在学习时的编码包，包内有些文件和这里描述的不相同，但是同一个意思，也有较多的测试页面等等。最终实现了。<br/> 如果用我的包的话在浏览器输入 http://localhost:8080/experiment/dwrsayhello.html 便可测试。<br/> <a title="http://pan.baidu.com/share/link?shareid=249564&amp;uk=1409985539" href="http://pan.baidu.com/share/link?shareid=249564&amp;uk=1409985539" target="_blank">http://pan.baidu.com/share/link?shareid=249564&amp;uk=1409985539</a><br/> dwr功能很强大，这只是一个很简单的案例，为了学会使用这个框架，能更好的应用这个框架。学无止境！</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/ajax">ajax</a></li> <li><a href="/tag/dwr">dwr</a></li> <li><a href="/tag/j2ee">j2ee</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/jquery">jquery</a></li> <li><a href="/tag/ssh">ssh</a></li> </ul> </footer> </article> <menu class="page"> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

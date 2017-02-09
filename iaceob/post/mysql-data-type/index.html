@@ -1,0 +1,129 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>mysql 数据类型 - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2013-12-15T05:35:38.000Z">December 15, 2013</time> <h1>mysql 数据类型</h1> </header> <section class="post-main"><p>mysql 数据类型</p> <p> </p> <p>mysql 数据类型有很多</p> <p>各个数据类型的作用也不同，下面的文字部分都是在网路中copy过来的，谈些看法</p> <p>tinyint 从 0 到 255 的整型数据。存储大小为 1 字节。</p> <p>smallint 从 -2^15 (-32,768) 到 2^15 - 1 (32,767) 的整型数据。存储大小为 2 个字节。</p> <p>int 从 -2^31 (-2,147,483,648) 到 2^31 - 1 (2,147,483,647) 的整型数据(所有数字)。存储大小为 4 个字节。</p> <p>bigint 从 -2^63 (-9223372036854775808) 到 2^63-1 (9223372036854775807) 的整型数据(所有数字)。存储大小为 8 个字节。</p> <p> </p> <p>tinyint 最大数字为 255</p> <p>smallint 最大数字为 32767</p> <p>int 最大数字为 2147483647</p> <p>bigint 最大数字未 9223372036854775807</p> <p>tinyint 3个数字 可以用来作为已知长度的数据 比如性别 <code>sex tinyint(1)</code> 至少感觉这样比char或者varchar效率要高</p> <p>smallint 也应同tinyint一样 存储已知长度的数据</p> <p>int 类型最多只能存储10个数字这样手机号码千万不能用此类型 否则数据存储的就不正确了</p> <p>bigint 能不用就不用 这么长的数字在各个后台程序中也不好使用 很容易发生问题 java 在使用这个bigint的时候 有个 BigInteger 类来读取</p> <p> </p> <p> </p> <p>char 最大长度是255字符</p> <p>varchar的最大长度65535是指能存储的字节数，其实最多只能存储65532个字节，还有3个字节用于存储长度。</p> <p>tinytext 最大长度为255(2^8-1)个字符。</p> <p>text和varchar基本相同。text会忽略指定的大小这和varchar有所不同，text不能有默认值。最大长度为65535(2^16-1)个字符。</p> <p>longtext 最大长度为4294967295(2^32-1)个字符。</p> <p> </p> <p>char varchar 可能是使用最多的数据类型 char 和 varchar 都可以存储字符但是俩者有不同之处</p> <p>char 会自动截取空格 varchar 不会截取</p> <p>char 不会产生磁盘碎片 varchar 会产生磁盘碎片</p> <pre>mysql&gt; create table tb_char_test(
+    -&gt; content char(10)
+    -&gt; ) charset=utf8;
+Query OK, 0 rows affected (0.13 sec)
+
+mysql&gt; insert into tb_char_test values('0');
+Query OK, 1 row affected (0.14 sec)
+
+mysql&gt; insert into tb_char_test values('012345');
+Query OK, 1 row affected (0.07 sec)
+
+mysql&gt; insert into tb_char_test values('0123456789');
+Query OK, 1 row affected (0.11 sec)
+
+mysql&gt; insert into tb_char_test values('01234567890');
+Query OK, 1 row affected, 1 warning (0.09 sec)
+
+mysql&gt; insert into tb_char_test values('0           ');
+Query OK, 1 row affected (0.08 sec)
+
+mysql&gt; insert into tb_char_test values('0      1 2');
+Query OK, 1 row affected (0.05 sec)
+
+mysql&gt; insert into tb_char_test values('0   1  2   3 4');
+Query OK, 1 row affected, 1 warning (0.12 sec)
+
+mysql&gt; insert into tb_char_test value('中文一中文二中文三中文四');
+Query OK, 1 row affected, 1 warning (0.08 sec)
+
+mysql&gt; select * from tb_char_test_2;
++--------------------------------+
+| content                        |
++--------------------------------+
+| 中文一中文二中文三中             |
++--------------------------------+
+1 row in set (0.00 sec)
+
+mysql&gt; select * from tb_char_test;
++-----------------------------+
+| content                     |
++-----------------------------+
+| 0                           |
+| 012345                      |
+| 0123456789                  |
+| 0123456789                  |
+| 0                           |
+| 0      1 2                  |
+| 0   1  2                    |
+| 中文一中文二中文三中          |
++-----------------------------+
+8 rows in set (0.00 sec)
+
+mysql&gt; select length(content) from tb_char_test;
++-----------------+
+| length(content) |
++-----------------+
+|               1 |
+|               6 |
+|              10 |
+|              10 |
+|               1 |
+|              10 |
+|               8 |
+|              10 |
++-----------------+
+8 rows in set (0.00 sec)</pre> <p>创建了一个表 tb_char_test 有字段 content 长度为10</p> <p>首先添加了几条条数据 分别是 0 , 012345 , 01234567890 , 0 , 0 1 2 , 0 1 2 3 4 , 中文一中文二中文三中文四</p> <p>查询后发现 01234567890 最后的0被截取了 因为content最大的长度为10 而这条数据长度为11就吧最后的0给截取了</p> <p>中文数据 中文四 的中之后的字都截取了 中文一中文二中文三中 是10个字符</p> <p>使用 mysql length 查询数据的长度发现</p> <p>0 的长度为1那么0后面的空格都被截取了 其他用空格的数据也是如此</p> <p> </p> <pre>mysql&gt; create table tb_varchar_test(
+    -&gt; content varchar(10)
+    -&gt; ) charset=utf8;
+Query OK, 0 rows affected (0.21 sec)
+
+mysql&gt; insert into tb_varchar_test values('0');
+Query OK, 1 row affected (0.13 sec)
+
+mysql&gt; insert into tb_varchar_test values('0   1');
+Query OK, 1 row affected (0.08 sec)
+
+mysql&gt; delete from tb_varchar_test where content='0   1';
+Query OK, 1 row affected (0.10 sec)
+
+mysql&gt; insert into tb_varchar_test values('012345');
+Query OK, 1 row affected (0.13 sec)
+
+mysql&gt; insert into tb_varchar_test values('0123456789');
+Query OK, 1 row affected (0.12 sec)
+
+mysql&gt; insert into tb_varchar_test values('01234567890');
+Query OK, 1 row affected, 1 warning (0.09 sec)
+
+mysql&gt; insert into tb_varchar_test values('0           ');
+Query OK, 1 row affected, 1 warning (0.14 sec)
+
+mysql&gt; insert into tb_varchar_test values('0      1 2');
+Query OK, 1 row affected (0.11 sec)
+
+mysql&gt; insert into tb_varchar_test values('0   1  2   3 4');
+Query OK, 1 row affected, 1 warning (0.08 sec)
+
+mysql&gt; insert into tb_varchar_test values('中文一中文二中文三中文四');
+Query OK, 1 row affected, 1 warning (0.10 sec)
+
+mysql&gt; select * from tb_varchar_test;
++--------------------------------+
+| content                        |
++--------------------------------+
+| 0                              |
+| 012345                         |
+| 0123456789                     |
+| 0123456789                     |
+| 0                              |
+| 0      1 2                     |
+| 0   1  2                       |
+| 中文一中文二中文三中             |
++--------------------------------+
+8 rows in set (0.00 sec)
+
+mysql&gt; select length(content) from tb_varchar_test;
++-----------------+
+| length(content) |
++-----------------+
+|               1 |
+|               6 |
+|              10 |
+|              10 |
+|              10 |
+|              10 |
+|              10 |
+|              30 |
++-----------------+
+8 rows in set (0.00 sec)</pre> <p>创建了一个varchar测试表</p> <p>添加的数据和char表都是相同的</p> <p>查询后发现 01234567890 的0被截取了 中文数据也被截取了</p> <p>炸一看和char没什么区别</p> <p>查询lenght后发现 还是有区别的</p> <p>char 和 varchar 表的 第5 7 8 条的数据长度是不同的</p> <p>char 分别是 1 8 10</p> <p>varchar 分别是 10 10 30</p> <p>varchar 在存储的时候将空格考虑进去了 因此 5 7 俩条数据长度为10，在存储中文的时候，一个汉字字符用utf8占用3字节，十个字符长度就是3*10</p> <p> </p> <p>从效率角度出发 在选择 char 和 varchar 的时候 根据当前字段需要存储的数据有多长而去选择 比如 用户名 长度不会超过 20 那么char将是不错的选择 用户密码如果是md5值的话所有的值长度都是固定的那么就选择用char，而varchar的选择是在数据不固定的场合，比如用户留言，留言的长度不确定有多长 有可能是几个字 有可能几百字</p> <p>char 的选择 在数据为固定长度或者长度相近</p> <p>varchar 的选择 在数据未不固定长度或者相对较长</p> <p>text 为长文本存储 能存储的数据比varchar多 比如博客文章的存储可以使用text，如果文章很长的话可用考虑 longtext 等</p> <p> </p> <p> </p> <p> </p> <p>enum 枚举</p> <p>枚举类型是mysql特有的类型</p> <p>可以作为已知类型判断用 如 性别 sex enum(‘F’,’M’)</p> <p>虽然 enum 提供了更高效的类型 但是在选择enum的时候 要慎用</p> <p>见文下链接</p> <p> </p> <p> </p> <p> </p> <p> </p> <p> </p> <p>date 一个日期。支持的范围是’1000-01-01’到’9999-12-31’。MySQL以’YYYY-MM-DD’格式来显示DATE值，但是允许你使用字符串或数字把值赋给DATE列。</p> <p>datetime 一个日期和时间组合。支持的范围是’1000-01-01 00:00:00’到 ‘9999-12-31 23:59:59’。MySQL以’YYYY-MM-DD HH:MM:SS’格式来显示DATETIME值，但是允许你使用字 符串或数字把值赋给DATETIME的列。</p> <p>timestamp 一个时间戳记。范围是’1970-01-01 00:00:00’到2037年的某时。MySQL以 YYYYMMDDHHMMSS、YYMMDDHHMMSS、YYYYMMDD或YYMMDD格式来显示TIMESTAMP值，取决于是否M是14(或省 略)、12、8或6，但是允许你使用字符串或数字把值赋给TIMESTAMP列。一个TIMESTAMP列对于记录一个INSERT或UPDATE操作的 日期和时间是有用的，因为如果你不自己给它赋值，它自动地被设置为最近操作的日期和时间。你以可以通过赋给它一个NULL值设置它为当前的日期和时间。</p> <p>time 一个时间。范围是’-838:59:59’到’838:59:59’。MySQL以’HH:MM:SS’格式来显示TIME值，但是允许你使用字符串或数字把值赋给TIME列。</p> <p> </p> <p>mysql 提供了很多存储时间的类型 但是我在使用的时候都没用使用这些类型 而是使用了 char 作为存储时间的类型 通常我存储的时间都是时间戳而不是被转后后的时间，像 1387056741 的一条数据 解析后的时间是 2013-12-15 05-32-21 而不是存储的 像 2013-12-15 05：32：21 ，在使用时间的时候时间戳的应用会更灵活 。</p> <p>时间戳是自 1970 年 1 月 1 日(08:00:00 GMT)至当前时间的总秒数。</p> <p>之所以用char没用int</p> <p>java 中使用 System.currentTimeMillis(); 返回的是 1970-1-1 到现在的毫秒数而不是秒数</p> <p>php 中time()获取的是秒数</p> <p>虽然可以把 System.currentTimeMillis(); 封装下 。。。 想想还是算了。</p> <p> </p> <p> </p> <ul> <li> <p title="mysql的char,varchar,text,blob的几点个人理解">http://www.blogguy.cn/show-809-1.html</p> </li> <li> <p title="慎用mysql的enum字段">http://my.oschina.net/u/234530/blog/68275</p> </li> </ul> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/database">database</a></li> <li><a href="/tag/mysql">mysql</a></li> <li><a href="/tag/type">type</a></li> </ul> </footer> </article> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

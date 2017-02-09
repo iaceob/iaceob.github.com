@@ -1,0 +1,299 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>生物烯丙菊 - 达文西手电筒 - 第 5 頁</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2014-06-20T22:14:22.000Z">June 20, 2014</time> <h1><a href="/post/javascript-variable/">javascript 变量</a></h1> </header> <section class="post-main"><p>在js中变量的作用和其他语言的定义是相同的.</p> <p>只不过在使用方面是有着区别的</p> <p>js的变量定义 使用 <code>var</code> 关键字.</p> <p>并且 js 的变量是不需要指定类型的.</p> <p>虽然说不需要指定类型, 在使用的时候还是需要区分的, 字符串是需要 双引号或者单引号的, 而数字类型则不需要.</p> <pre>var x=2; 
+var y=3;
+alert(x+y); // 5</pre> <p>在js中 int 和 string 是可以相加的 意思是连接符, 首先会将数字当作字符串来看待, 然后把俩个字符串连接起来</p> <pre>var x=2;
+var y=' test'
+alert(x+y); // '2 test'</pre> <p> </p> <p> </p> <p>多个变量可以连续定义 使用 , 进行区分</p> <pre>var x=2, y=2, z=x+y;
+alert(x); // 2
+alert(y); // 2
+alert(z); // 4</pre> <p> </p> <p> </p> <p>当同一个变量被声明了俩次, 如果第二次声明没有给变量赋值的话, 该变量还会保留第一次赋的值</p> <pre>var x=2;
+var x;
+alert(x); //2
+var x=4;
+alert(x); // 4
+</pre> <p> </p> <p> </p> <p>js 对大小写是比较敏感的, 大写和小写表示不同的变量</p> <pre>var x=2, X=3;
+alert(x); // 2
+alert(X); // 3</pre> <p> </p> <p> </p> <p>js中表示 "空" 的类型</p> <p>有多种表现方式</p> <pre>'' 
+null 
+undefined</pre> <p>这个该怎么去解释了... " 和 null 在大多数语言中都是有这种表达方式的, 而 undefined则不是, undefined 这种类型的出现, 比如说 定义了 一个变量x却没有给x赋值,或者就没有定义x这个变量,使用x的时候返回的就是这个.</p> <p> </p> <p> </p> <p>在来说说变量的作用域</p> <p>简单的区分的话 也就是局部变量和全局变量的概念(当然是废话)</p> <pre>var a=2; // 全局
+function test1(){
+    var a=3; // test1 局部变量
+    function test1_1(){
+        var a=4; // test1_1 局部变量
+        return a;
+    }
+  return test1_1();
+}
+
+test1(); // 4</pre> <p>定义了全局变量a和test1函数,test1函数定义了变量a和test1_1函数并且返回test1_1函数, test1_1定义了变量a返回a<br/> 执行test1函数 最终返回的是4, 也就是说最终返回的是test1_1函数中的a变量<br/> 如果说 test1_1 函数中的 不定义a变量那么返回的就是 test1 中定义的a变量, 同样 test1中如果没有定义a变量就到外面找全局定义的a变量 如果都没有 那么就会返回变量未定义错误</p> <pre>var a=2; // 全局
+function test1(){
+    var a=3; // test1 局部变量
+    function test1_1(){
+        // var a=4; // test1_1 局部变量
+        return a;
+    }
+  return test1_1();
+}
+test1(); // 3
+
+
+function test1(){
+    // var a=3; // test1 局部变量
+    function test1_1(){
+        // var a=4; // test1_1 局部变量
+        return a;
+    }
+  return test1_1();
+}
+test1(); // a is not defined
+
+</pre> <p>js 查找变量会由内部一直到外部进行查找到最近一个变量并返回,如果没有定义那么返回的就是undefined</p> <p> </p> <p> </p> <p>js没有代码块内作用域的概念<br/> 例如</p> <pre>var a=2;
+for(var b=3; (b--)&gt;0;){
+  if(b==a) {
+    var c=3;
+    var d=c+a;
+  }
+  console.log(b); // 2 1 0 
+}
+console.log(a); // 2
+console.log(c); // 3
+console.log(d); // 5</pre> <p>也就是说在for if中定义的变量外部都是可以获取的,这一点区别于强类型的语言.</p> <p> </p> <p> </p> <p>外部定义的变量在所有的函数中都是有定义的</p> <pre>var x=1;
+function test(){
+console.log(x); // undefined 在函数外部定义了x变量, 函数中就会产生x这个隐藏的变量,这里打印出来的x是undefined也就是说函数内部未对x进行赋值
+x=2;
+console.log(x); // 2 上方对x进行了赋值
+}
+
+// ==== 或者如下
+function test(){
+    var x=1;
+    function test_1(){
+       console.log(x); // undefined
+       x = 2; 
+       console.log(x); // 2
+    }
+}
+</pre> <p>上述代码等同于</p> <pre>function test(){
+    var x;
+    console.log(x);
+    x=2;
+    console.log(x);
+}
+</pre> <p> </p> <p> </p> <p>全局变量都是属于 window 对象的.</p> <pre>var x=2;
+console.log(x);
+console.log(window.x);
+</pre> <p>不仅仅包括自己定义的变量, 所有的直接使用的变量都是属于window对象的.<br/> 比如 window.docuemnt 等.</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/var">var</a></li> <li><a href="/tag/variable">variable</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-06-19T21:50:47.000Z">June 19, 2014</time> <h1><a href="/post/js_start/">先从js开始.</a></h1> </header> <section class="post-main"><p>谈谈自己的理解.<br/> 想不好开场白...<br/> 从最基本的开始吧.</p> <p>js 是一种面向对象的语言.<br/> 首先先来说 <strong>use strict</strong> 开始说起,<br/> 我的理解就是 use strict 是 js 代码更规范话. 否则js的语法是可以非常混乱不严谨的.<br/> 例如这样</p> <pre>a = 2
+b=4
+alert(a+b)</pre> <p>这样对于js的解析引擎来说是没有问题的,可以正确的解析.<br/> 而定义了 use strict 上述代码就属于错误代码.</p> <pre>'use strict'
+a=2
+b=4
+alert(a+b)</pre> <p>这样是会解析失败的, 正确的写法</p> <pre>'use strict';
+var a=2;
+var b=4;
+alter(a+b);</pre> <p>这样的好处是当代码变得很多/复杂的时候便于方便阅读/调试等等,不会发生变量多而导致的一些不可察觉的错误出现,同时也能养成一个良好的书写代码习惯.<br/> 关于 ‘use strict’ 的位置,也并不是固定的, 放置与顶部或者某个函数的内部, 也就是相对的作用域不同, 顶部的话 表示着所有的js都使用这种方式,而函数内部的话 当前函数使用此方式解析.</p> <p>变量的作用域<br/> 同大多数语言相同, 定义于外部的变量为公共变量 函数内部的变量为局部变量 外部是不能访问 操作局部变量.</p> <p>数组和对象<br/> 先从数组开始<br/> 在js中数组的表现方式是 [] , 这就是一个空的数组, 或者实例Array函数 new Array();<br/> 获取数组中的数据也是使用遍历的方式</p> <pre>var names = ['tom', 'jan', 'jason', 'bynn'];
+for(var i=names.length; (i--)&gt;0;) {
+    console.log(names[i]);
+}
+console.log(names.length);
+// 输出结果:
+bynn
+jason
+jan
+tom
+4
+</pre> <p>在是对象<br/> 对象的表现方式是 {} 或者实例Object函数 new Object();<br/> 对象里面的数据的书写方式与json的书写方式相同 {key: value}<br/> 获取对象里的数据使用 .key 或者 [key]<br/> 俩者在不同情况中使用<br/> 如果 key 为字符串类型可以使用 . 语法获取value值 而如果 key 是 int double 等类型 使用 . 语法获取是不能获取到的, 因为从强类型的语言来说, 变量是不允许使用纯数字和首字母是不允许为数字的. 因此在对象中获取值 使用 [] 在任何情况下都是没有问题的.<br/> 此外在对象书写中 key 可以没有引号或单引号或双引号, 而value 除了在int double boolean之外则不行 value是object类型的数据.<br/> 当然 包括数组和对象在内都是可以嵌套使用的., 也就是数组中可以有对象和数组 对象中可以有对象和数组</p> <pre>// 正确情况
+var o={a:1}; // true a=1
+var o={a:'a'}; // true a='a'
+var o={a:2.0}; // true a=2.0
+var o={a:true}; // true a=true
+var o={1:1}; // true 1=1
+var o={1.0:(Object)}; // true 1.0=Object类型数据
+var o={a:{a1:'av'}}; // true a = {a1:'av'}
+var o={a:[{ar1:'ar1v'}, {ar2: 'ar2v'}]}; // true a=[{ar1:'ar1v'}, {ar2: 'ar2v'}]
+// 错误情况
+var o={a:a} // false
+</pre> <p>原型的扩充<br/> 属于叫嘛来着.<br/> 书写方式</p> <pre>class_name.prototype.method_name = function(argument) {
+    // body...
+};
+// class_name    函数名称
+// method_name    补充的方法名称
+// argument  参数
+//  body... 补充的方法体
+</pre> <p>也就是说给现有的某个函数添加新的功能<br/> 例如 String 函数没有 format 方法,那么就可以给 String 的原型添加该方法来实现某些操作</p> <pre>String.prototype.format = function() {
+alert(this);
+};
+
+这样使用
+var a = 'test';
+a.format();
+这样就会弹出a变量的内容
+方法体中的 this 表示的 当前变量的内容.
+</pre> <p>对象添加方法<br/> 给一个对象中添加方法有俩中方式<br/> 第一种:</p> <pre>var obj = {test: function(){alert('test')}};
+obj.test()  // 会弹出 test
+// obj 中没有 test2 这个方法 这个时候就可以直接使用 . 语法添加
+obj.test2 = function(){alert('test2');}
+obj.test2(); // 弹出 test2
+</pre> <p>第二种:</p> <pre>var obj = {
+test: test(),
+test2: test2()
+}
+function test(){
+alert('test');
+}
+function test2() {
+alert('test2');
+}
+</pre> <p>可以实现相同的功能.</p> <p>闭包<br/> 这是js所特有的一种特性也是实现js面向对象的直接体现.<br/> 下面是一个简单的闭包示例</p> <pre>function f1(){
+   var d = 1;
+   function f2(){
+       return d;
+  }
+ return f2();
+}
+var res = f1();
+res();
+// 执行f1函数 将返回1, f2函数最为f1的内部函数, 从外部是访问不了的,也就是说 对外开放的只有f1函数.
+// f2 函数 就是闭包的体现
+</pre> <p>在如</p> <pre>function f1(){
+    var d=1;
+    addfunc = function(){d+=1;};
+   function f2(){
+      return d;
+  }
+  return f2();
+}
+var res = f1();
+res(); // 1
+addfunc();
+res(); // 2
+// f2 这个闭包的函数是一直存在于内存中的
+// 当第一次执行f1函数的时候 f1 函数内部会调用f2函数 f2 函数返回d变量 之后f1在返回f2函数 输出的也就是 f1
+// 接着 执行 addfunc 这个匿名函数 给 d+1 
+// 第二次在访问f1这个函数因为d被+1 f2 会在内存中读取被操作后的d,被返回 再次获取到的值就是 2
+</pre> <p>========<br/> 一些基本的应用在这里, 但是这并不能很完善的讲述js.<br/> 先从这里开始.<br/> 之后在来详细叙述这些内容</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/closure">closure</a></li> <li><a href="/tag/javascript">javascript</a></li> <li><a href="/tag/syntax">syntax</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-06-09T15:27:21.000Z">June 9, 2014</time> <h1><a href="/post/long-times/">有好几个月了吧 …</a></h1> </header> <section class="post-main"><p>域名都还转不过来.....</p> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/undefined">undefined</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-04-13T16:44:47.000Z">April 13, 2014</time> <h1><a href="/post/re-create-the-wheels-in-xml-sql/">重造轮子之 sql in xml</a></h1> </header> <section class="post-main"><p>Slxlme<br/> 重造轮子之 sql in xml<br/> jfinal 存放sql于xml文件中进行sql管理</p> <p>作用是将sql写到xml文件中便于sql的管理<br/> 其中xml文件可以分为多个文件 避免一个文件存储时 因为太多而不便于维护<br/> 多个xml结构需相同<br/> xml 的默认节点配置如下</p> <pre>&lt;xlslme&gt;
+  &lt;container name="a"&gt;
+      &lt;sql id="bb"&gt;&lt;/sql&gt;
+  &lt;/container&gt;
+  ....
+&lt;xlsme&gt;</pre> <p>xml的存放路径默认在 src 目录下<br/> xml文件后缀默认采用 .sql.xml<br/> 节点名称可以更改 属性也可以更改 但是更改后 在config中配置扩展的时候需要和更改的节点名 属性名相同<br/> 存放sql的sql标签更改后无需在这里配置<br/> 获取sql使用 SqlKit.getSql("a.bb");</p> <p>在 jfinal 加入配置<br/> me.add(new SlxlmePlugin(arg0, arg1, ....));<br/> 相关配置在 SlxlmePlugin 中有说明</p> <p>项目地址: https://github.com/iaceob/slxlme</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/java">java</a></li> <li><a href="/tag/jfinal">jfinal</a></li> <li><a href="/tag/recoding">recoding</a></li> <li><a href="/tag/sql">sql</a></li> <li><a href="/tag/xml">xml</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-03-08T20:10:51.000Z">March 8, 2014</time> <h1><a href="/post/too-impetuous/">太浮躁。。。</a></h1> </header> <section class="post-main"><p>甚至在写这的时候都有这种感觉</p> <p>球精不球多</p> <p> </p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/undefined">undefined</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-03-01T02:26:17.000Z">March 1, 2014</time> <h1><a href="/post/ubuntu13-04-sublime-3-chinese-input-method/">ubuntu13.04 sublime3 中文输入法问题</a></h1> </header> <section class="post-main"><p>sublime 在 ubuntu 或者说 linux 的环境中中文输入法不能正常使用解决方法:</p> <p>保存代码到文件sublime_imfix.c</p> <pre>#include &lt;gtk/gtkimcontext.h&gt;
+void gtk_im_context_set_client_window (GtkIMContext *context,
+          GdkWindow    *window)
+{
+  GtkIMContextClass *klass;
+  g_return_if_fail (GTK_IS_IM_CONTEXT (context));
+  klass = GTK_IM_CONTEXT_GET_CLASS (context);
+  if (klass-&gt;set_client_window)
+    klass-&gt;set_client_window (context, window);
+  g_object_set_data(G_OBJECT(context),"window",window);
+
+  if(!GDK_IS_WINDOW (window))
+    return;
+  int width = gdk_window_get_width(window);
+  int height = gdk_window_get_height(window);
+  if(width != 0 &amp;&amp; height !=0)
+    gtk_im_context_focus_in(context);
+}</pre> <p>编译成共享库</p> <pre>gcc -shared -o libsublime-imfix.so sublime_imfix.c  `pkg-config --libs --cflags gtk+-2.0` -fPIC</pre> <p>运行</p> <pre>LD_PRELOAD=./libsublime-imfix.so sublime_text</pre> <p>sublime text的运行命令为subl<br/> 将libsublime-imfix.so拷贝到sublime所在文件夹<br/> 将 /usr/bin/subl 文件修改如下</p> <pre>#!/bin/sh
+exec bash -c 'LD_PRELOAD=/opt/sublime_text/libsublime-imfix.so /opt/sublime_text/sublime_text' %F</pre> <p>同时 /usr/share/applications/sublime_text.desktop 的exec也修改成如上</p> <p>需要注意的是这里需要使用 fcitx 才可以 如果使用 ibus 仍然不行</p> <p>安装 fcitx 输入法</p> <pre>sudo add-apt-repository ppa:fcitx-team/nightly
+sudo apt-get update
+sudo apt-get install fcitx fcitx-googlepinyin</pre> <p><b>把系统的输入法改成fcitx</b><br/> System Setting &gt;&gt;Language surpport &gt;&gt; Language &gt;&gt; Keyborad input method system &gt;&gt; fcitx</p> <p>fictx开机自启动：<br/> System Setting &gt;&gt; Startup Applications &gt;&gt; Add</p> <p> </p> <p>又copy了一篇文章了 。。</p> <p>不过终于可以用了。。</p> <ul> <li>http://my.oschina.net/Khiyuan/blog/98713</li> <li>http://www.sublimetext.com/forum/viewtopic.php?f=3&amp;t=7006&amp;start=10#p41343</li> <li>http://bbs.chinahtml.com/t319624/</li> </ul></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/fcitx">fcitx</a></li> <li><a href="/tag/sublime">sublime</a></li> <li><a href="/tag/ubuntu">ubuntu</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-02-23T22:21:23.000Z">February 23, 2014</time> <h1><a href="/post/solve-ubuntu-thinkphp-connect-mssql-chinese-distortion/">ubuntu thinkphp 连接 mssql 中文乱码解决</a></h1> </header> <section class="post-main"><p>thinkphp 版本 3.1.3</p> <p>sqlserver 默认编码是 gb2312 而php或者说thinkphp的默认编码是utf-8那么在数据库中查询出来的数据展示的时候将会乱码</p> <p>在 php.ini 中或者在 freetds.conf 中设置 编码都不能够解决乱码这个问题</p> <p>解决方法是在查询出结果后对数据进行转码</p> <p>找到 ThinkPHP/Lib/Core/Db.class.php</p> <p>在其中添加如下转码函数</p> <pre>public function iconv2utf8($Result) {
+    $Row = array();
+    $key1=array_keys($Result);
+    $key2 = array_keys($Result[$key1[0]]);
+    for($i=0;$i&lt;count($key1);$i++) {
+        for( $j=0; $j&lt;count( $key2 ); $j++ ) {
+            $Row[ $key1[ $i ] ][ $key2[ $j ] ] = iconv( 'gb2312', 'utf-8', $Result[ $key1[ $i ] ][ $key2[ $j ] ] );
+        }
+    }
+    return $Row;
+}</pre> <p>utf8 转 gbk</p> <pre>    public  function iconv2gbk($string) {
+        return iconv( 'utf-8','gb2312' ,$string );
+    }</pre> <p>之后找到 select 函数</p> <p>在</p> <pre>$result   = $this-&gt;query($sql,$this-&gt;parseBind(!empty($options['bind'])?$options['bind']:array()));</pre> <p>行下面添加</p> <pre>if ( C( 'DB_TYPE' ) == 'mssql' ) {
+    $result = self::iconv2utf8($result);
+}</pre> <p>对数据进行转码</p> <p>完整函数如下</p> <pre>    /**
+     * 查找记录
+     * @access public
+     * @param array $options 表达式
+     * @return mixed
+     */
+    public function select($options=array()) {
+        $this-&gt;model  =   $options['model'];
+        $sql    = $this-&gt;buildSelectSql($options);
+        $cache  =  isset($options['cache'])?$options['cache']:false;
+        if($cache) { // 查询缓存检测
+            $key    =  is_string($cache['key'])?$cache['key']:md5($sql);
+            $value  =  S($key,'',$cache);
+            if(false !== $value) {
+                return $value;
+            }
+        }
+        $result   = $this-&gt;query($sql,$this-&gt;parseBind(!empty($options['bind'])?$options['bind']:array()));
+        if ( C( 'DB_TYPE' ) == 'mssql' ) {
+            $result = self::iconv2utf8($result);
+        }
+        if($cache &amp;&amp; false !== $result ) { // 查询缓存写入
+            S($key,$result,$cache);
+        }
+        return $result;
+    }</pre> <p>插入 以及 更新数据乱码解决</p> <p>找到 parseSet 函数</p> <p>在 foreach 循环下添加</p> <pre>   if ( C( 'DB_TYPE' ) == 'mssql' ) {
+        $val = $this-&gt;iconv2gbk( $val );
+   }</pre> <p>完整代码如下:</p> <pre>    /**
+     * set分析
+     * @access protected
+     * @param array $data
+     * @return string
+     */
+    protected function parseSet($data) {
+        foreach ($data as $key=&gt;$val){
+            if ( C( 'DB_TYPE' ) == 'mssql' ) {
+                $val = $this-&gt;iconv2gbk( $val );
+            }
+            if(is_array($val) &amp;&amp; 'exp' == $val[0]){
+                $set[]  =   $this-&gt;parseKey($key).'='.$val[1];
+            }elseif(is_scalar($val) || is_null(($val))) { // 过滤非标量数据
+              if(C('DB_BIND_PARAM') &amp;&amp; 0 !== strpos($val,':')){
+                $name   =   md5($key);
+                $set[]  =   $this-&gt;parseKey($key).'=:'.$name;
+                $this-&gt;bindParam($name,$val);
+              }else{
+                $set[]  =   $this-&gt;parseKey($key).'='.$this-&gt;parseValue($val);
+              }
+            }
+        }
+        return ' SET '.implode(',',$set);
+    }</pre> <p>找到 insert 函数</p> <p>在 foreach 下添加</p> <pre>    if ( C( 'DB_TYPE' ) == 'mssql' ) {
+        $val = $this-&gt;iconv2gbk( $val );    
+    }</pre> <p>完整代码如下:</p> <pre>    /**
+     * 插入记录
+     * @access public
+     * @param mixed $data 数据
+     * @param array $options 参数表达式
+     * @param boolean $replace 是否replace
+     * @return false | integer
+     */
+    public function insert($data,$options=array(),$replace=false) {
+        $values  =  $fields    = array();
+        $this-&gt;model  =   $options['model'];
+        foreach ($data as $key=&gt;$val){
+            if ( C( 'DB_TYPE' ) == 'mssql' ) {
+                $val = $this-&gt;iconv2gbk( $val );    
+            }
+            if(is_array($val) &amp;&amp; 'exp' == $val[0]){
+                $fields[]   =  $this-&gt;parseKey($key);
+                $values[]   =  $val[1];
+            }elseif(is_scalar($val) || is_null(($val))) { // 过滤非标量数据
+              $fields[]   =  $this-&gt;parseKey($key);
+              if(C('DB_BIND_PARAM') &amp;&amp; 0 !== strpos($val,':')){
+                $name       =   md5($key);
+                $values[]   =   ':'.$name;
+                $this-&gt;bindParam($name,$val);
+              }else{
+                $values[]   =  $this-&gt;parseValue($val);
+              }                
+            }
+        }
+        $sql   =  ($replace?'REPLACE':'INSERT').' INTO '.$this-&gt;parseTable($options['table']).' ('.implode(',', $fields).') VALUES ('.implode(',', $values).')';
+        $sql   .= $this-&gt;parseLock(isset($options['lock'])?$options['lock']:false);
+        $sql   .= $this-&gt;parseComment(!empty($options['comment'])?$options['comment']:'');
+        return $this-&gt;execute($sql,$this-&gt;parseBind(!empty($options['bind'])?$options['bind']:array()));
+    }</pre> <p>做完这些 基本上和mssql交互就不会乱码了</p> <p>当然 如果怕动了那源码导致查询出现问题 可以将原Db.class.php 改名为 DbSrc.class.php 并且 修改 class 为</p> <pre>class DbSrc { ... }</pre> <p>然后新建个名为 Db.class.php 的文件 继承 DbSrc 将上述的几个函数放进去就可以了</p> <p>但是效率。。。</p> <p>坑爹。。</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/freetds">freetds</a></li> <li><a href="/tag/mssql">mssql</a></li> <li><a href="/tag/php">php</a></li> <li><a href="/tag/thinkphp">thinkphp</a></li> <li><a href="/tag/ubuntu">ubuntu</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-02-23T19:17:14.000Z">February 23, 2014</time> <h1><a href="/post/ubuntu-php-connect-mssql/">ubuntu php 连接 mssql</a></h1> </header> <section class="post-main"><p>ubuntu 中使用 php 连接 mssql</p> <pre>sudo apt-get install libsybdb5 freetds-common php5-sybase
+
+sudo service apache2 restart</pre> <p>安装完成后重启apache然后查看 phpinfo 中是否有 mssql</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/freetds">freetds</a></li> <li><a href="/tag/mssql">mssql</a></li> <li><a href="/tag/php">php</a></li> <li><a href="/tag/sqlserver">sqlserver</a></li> <li><a href="/tag/ubuntu">ubuntu</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-02-17T20:22:49.000Z">February 17, 2014</time> <h1><a href="/post/move-house-again/">再一次搬家！</a></h1> </header> <section class="post-main"><p>好 不搬了。。</p> <p>好好写写</p> <p>。。。。 收录的记录好像都没了</p> <p>慢慢写吧</p> <p>域名也终于续费了</p> <p>好多 Hello World !</p> <p>initboot 要抓紧了 。。。 这主题响应好慢。。</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/house">house</a></li> <li><a href="/tag/move">move</a></li> <li><a href="/tag/undefined">undefined</a></li> </ul> </footer> </article> <article class="post"> <header class="post-head"> <time datetime="2014-02-17T12:12:50.000Z">February 17, 2014</time> <h1><a href="/post/hello-world-5/">世界，你好！</a></h1> </header> <section class="post-main"><p>欢迎使用WordPress。这是系统自动生成的演示文章。编辑或者删除它，然后开始您的博客！</p></section> <footer class="post-foot"> <ul class="post-tags"> </ul> </footer> </article> <menu class="page"> <li class="page-prev"> <a href="/page/4" title="Previous">Prev</a> </li> <li class="page-next"> <a href="/page/6" title="Next">Next</a> </li> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

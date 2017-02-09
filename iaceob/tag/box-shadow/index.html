@@ -1,0 +1,32 @@
+<!doctype html> <html> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="icon" href="/favicon.svg"> <title>box-shadow - 生物烯丙菊</title> <link rel="stylesheet" href="/css/style.css"> </head> <body> <header class="head"> <h1 class="head-title"><a href="/">生物烯丙菊</a></h1> <h3 class="head-description"> <span class="flashlight">达文西手电筒</span> </h3> <ul class="head-nav"> <li><a href="/">Home</a></li> <li><a href="/archives">Archives</a></li> <li><a href="http://blog.3u3.me">幾文山</a></li> </ul> </header> <main class="main"> <article class="post"> <header class="post-head"> <time datetime="2013-12-20T10:02:02.000Z">December 20, 2013</time> <h1><a href="/post/how-box-shadow-works-in-css/">How Box-Shadow Works in CSS</a></h1> </header> <section class="post-main"><p>box-shadown works in css</p> <h2>The html:</h2> <pre>&lt;html&gt;
+    &lt;head&gt;    
+        &lt;title&gt;box-shadow works in css&lt;/title&gt;
+    &lt;/head&gt; 
+    &lt;body&gt; 
+        &lt;div id="main"&gt; 
+            &lt;h1&gt;Create Box Shadows&lt;/h1&gt; 
+            &lt;h2&gt;Using CSS Styles&lt;/h2&gt; 
+        &lt;/div&gt; 
+    &lt;/body&gt; 
+&lt;/html&gt;</pre> <h2>The CSS:</h2> <pre>body{     
+    background:#fff; 
+} 
+h1, h2{     
+    font-family:"Gill Sans", "Gill Sans MT", "Myriad Pro", "DejaVuSans Condensed", Helvetica, Arial, sans-serif;     
+    text-shadow: -2px -2px 2px rgba( 0, 0, 0, .5);     
+    color: #eee;     
+    text-align:center;     
+    padding-top: 20px; 
+} 
+#main{ 
+    background:#fff; height: 200px; 
+    box-shadow: -1px 2px 5px 3px #05EDFB; 
+}</pre> <h2>The Result:</h2> <style type="text/css"><!--
+#main-box-shadow-test{ background:#fff; height: 200px; box-shadow: -1px 2px 5px 3px #05EDFB; }  .box-shadow-style h1, .box-shadow-style h2{ font-family:"Gill Sans", "Gill Sans MT", "Myriad Pro", "DejaVuSans Condensed", Helvetica, Arial, sans-serif; text-shadow: -2px -2px 2px rgba( 0, 0, 0, .5); color: #eee; text-align:center; padding-top: 20px; }
+--></style> <div id="main-box-shadow-test"> <h1>Create Box Shadows</h1> <h2>Using CSS Styles</h2> </div> <p> </p> <pre>#main{
+    background:#fff;
+    height: 200px;
+    box-shadow: inset -1px 2px 5px 3px #05EDFB;
+}</pre> <style type="text/css"><!--
+#main-box-shadow-test-2{ background:#fff; height: 200px; box-shadow: inset -1px 2px 5px 3px #05EDFB; }
+--></style> <div id="main-box-shadow-test-2"> <h1>Create Box Shadows</h1> <h2>Using CSS Styles</h2> </div> <p> </p> <p> </p> <p> </p> <p> </p> <ul> <li> <p title=" How Box-Shadow Works in CSS">http://www.webdesignblog.co/how-box-shadow-works-in-css/</p> </li> </ul></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/box-shadow">box-shadow</a></li> <li><a href="/tag/css">css</a></li> <li><a href="/tag/html">html</a></li> </ul> </footer> </article> <menu class="page"> </menu> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>
