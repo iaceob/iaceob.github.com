@@ -36,4 +36,4 @@ include /etc/nginx/sites-enabled/*;
     location / {
         proxy_pass http://local.host.com;
     }
-}</pre> <p>这时候在去 访问 host.com 加载的文件路径就是正确的了.</p> <p>request 获取的域名就是 local.host.com 并且不是二级目录, 那么 nginx 转发出去就不会存在路径问题.</p> <p>虽然是可以用了, 不过感觉这种实现方式...</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/nginx">nginx</a></li> <li><a href="/tag/proxy">proxy</a></li> <li><a href="/tag/tomcat">tomcat</a></li> </ul> </footer> </article> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>
+}</pre> <p>这时候在去 访问 host.com 加载的文件路径就是正确的了.</p> <p>request 获取的域名就是 local.host.com 并且不是二级目录, 那么 nginx 转发出去就不会存在路径问题.</p> <p>虽然是可以用了, 不过感觉这种实现方式...</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/nginx/">nginx</a></li> <li><a href="/tag/proxy/">proxy</a></li> <li><a href="/tag/tomcat/">tomcat</a></li> </ul> </footer> </article> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>

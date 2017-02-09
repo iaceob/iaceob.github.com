@@ -45,4 +45,4 @@
 ---------
 用时65622毫秒；65.622秒
 
-</pre> <p>只有几条数据的时候 就比较快 数据一多 耗时都是30-40左右。。。</p> <p>这特么还是本地测试。。。。</p> <p>之后看了下 hibernate 生成的 sql 发现查询b的时候把a也给查了而且只要是有数据的全部都给查了 这特么怎么能不慢 。。。。</p> <p>检查后发现b实体类中关联a类采用了懒加载</p> <p>把懒加载去掉后 再次去执行</p> <p>有了质的提高 不过 数据多了 还是有点慢 但是 比懒加载快很多！！！！</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/hibernate">hibernate</a></li> <li><a href="/tag/java">java</a></li> <li><a href="/tag/lazy">lazy</a></li> <li><a href="/tag/load">load</a></li> </ul> </footer> </article> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>
+</pre> <p>只有几条数据的时候 就比较快 数据一多 耗时都是30-40左右。。。</p> <p>这特么还是本地测试。。。。</p> <p>之后看了下 hibernate 生成的 sql 发现查询b的时候把a也给查了而且只要是有数据的全部都给查了 这特么怎么能不慢 。。。。</p> <p>检查后发现b实体类中关联a类采用了懒加载</p> <p>把懒加载去掉后 再次去执行</p> <p>有了质的提高 不过 数据多了 还是有点慢 但是 比懒加载快很多！！！！</p></section> <footer class="post-foot"> <ul class="post-tags"> <li><a href="/tag/hibernate/">hibernate</a></li> <li><a href="/tag/java/">java</a></li> <li><a href="/tag/lazy/">lazy</a></li> <li><a href="/tag/load/">load</a></li> </ul> </footer> </article> </main> <footer class="foot"> <div>&copy;2017 iaceob</div> </footer> </body> </html>
