@@ -36,6 +36,8 @@
 </li>
 <li><p>RESTful 模式与非 RESTful 的 ActionKey 是不可共用的.<br>这个描述可能比较模糊, 但是要表达的意思是, 如果 ActionKey 中的 url 是采用 RESTful 风格写的, 但是却没有开启 RESTful 模式, 就会发生问题, 非 RESTful 模式是不去分析 url 中参数的.</p>
 </li>
+<li><p>无需再使用 POST GET 拦截器<br>JFinal 提供了 GET POST 拦截器, 用以指定某个路由只能某中请求, 但是开启 RESTful 模式后, 在路由匹配是就已经限定了指定的 method 访问, 因此无需再使用 <code>@Before(POST.class)</code> 这样的代码.</p>
+</li>
 </ol>
 <p>使用方式大抵如此, 剩下还有一些可能会令人不爽的小问题.</p>
 <ol>
