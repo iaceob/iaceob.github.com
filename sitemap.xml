@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://blog.3u3.me/post/hello-world/</loc>
+    
+    <lastmod>2017-05-29T17:13:21.644Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://blog.3u3.me/post/which-city/</loc>
     
     <lastmod>2017-05-29T17:09:50.296Z</lastmod>
@@ -271,13 +278,6 @@
     <loc>http://blog.3u3.me/post/excerpt-river-town-summer-part-1/</loc>
     
     <lastmod>2016-03-04T15:11:51.726Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://blog.3u3.me/post/hello-world/</loc>
-    
-    <lastmod>2016-02-28T14:09:43.401Z</lastmod>
     
   </url>
   
