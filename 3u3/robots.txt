@@ -40,4 +40,4 @@ Disallow: /
 User-agent: *
 Disallow: /iaceob/
 
-Sitemap: http://blog.3u3.me/sitemap.xml
+Sitemap: https://blog.3u3.me/sitemap.xml
