@@ -1,0 +1,2 @@
+# disable search engine access home
+Disallow: /home/
