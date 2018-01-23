@@ -1,0 +1,686 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <title>渲染 · GitBook</title>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.0">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="template_render.html" />
+    
+    
+    <link rel="prev" href="ey_router.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../../">
+            
+                <a href="../../">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="../../wrapper/">
+            
+                <a href="../../wrapper/">
+            
+                    
+                    包裝器
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="../../wrapper/conf.html">
+            
+                <a href="../../wrapper/conf.html">
+            
+                    
+                    配置加載器
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="../../wrapper/db.html">
+            
+                <a href="../../wrapper/db.html">
+            
+                    
+                    資料庫
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.3" data-path="../../wrapper/http.html">
+            
+                <a href="../../wrapper/http.html">
+            
+                    
+                    HTTP 客戶端
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.4" data-path="../../wrapper/json.html">
+            
+                <a href="../../wrapper/json.html">
+            
+                    
+                    JSON
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.5" data-path="../../wrapper/log.html">
+            
+                <a href="../../wrapper/log.html">
+            
+                    
+                    日誌
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.6" data-path="../../wrapper/nosql/">
+            
+                <a href="../../wrapper/nosql/">
+            
+                    
+                    NOSQL
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.6.1" data-path="../../wrapper/nosql/redis.html">
+            
+                <a href="../../wrapper/nosql/redis.html">
+            
+                    
+                    Redis
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.7" data-path="../../wrapper/template.html">
+            
+                <a href="../../wrapper/template.html">
+            
+                    
+                    模板
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.8" data-path="../../wrapper/toolkit.html">
+            
+                <a href="../../wrapper/toolkit.html">
+            
+                    
+                    工具庫
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.9" data-path="../../wrapper/xml.html">
+            
+                <a href="../../wrapper/xml.html">
+            
+                    
+                    XML
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="../../repeater/">
+            
+                <a href="../../repeater/">
+            
+                    
+                    Repeater
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    Yosart
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1" >
+            
+                <span>
+            
+                    
+                    擴展
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1.1" data-path="ey_bea.html">
+            
+                <a href="ey_bea.html">
+            
+                    
+                    拦截器
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.1.2" data-path="ey_router.html">
+            
+                <a href="ey_router.html">
+            
+                    
+                    路由
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.4.1.3" data-path="render.html">
+            
+                <a href="render.html">
+            
+                    
+                    渲染
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.1.4" data-path="template_render.html">
+            
+                <a href="template_render.html">
+            
+                    
+                    模板
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.1.5" data-path="assets.html">
+            
+                <a href="assets.html">
+            
+                    
+                    靜態資源
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.1.6" data-path="yemgr.html">
+            
+                <a href="yemgr.html">
+            
+                    
+                    Yosart 管理
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2" >
+            
+                <span>
+            
+                    
+                    插件
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.2.1" data-path="../plugin/conf.html">
+            
+                <a href="../plugin/conf.html">
+            
+                    
+                    配置中心
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.2" data-path="../plugin/db.html">
+            
+                <a href="../plugin/db.html">
+            
+                    
+                    資料庫
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.3" data-path="../plugin/json.html">
+            
+                <a href="../plugin/json.html">
+            
+                    
+                    JSON
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" data-path="../../other.html">
+            
+                <a href="../../other.html">
+            
+                    
+                    其他
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6" data-path="../../thanks.html">
+            
+                <a href="../../thanks.html">
+            
+                    
+                    鳴謝
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="../.." >渲染</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="&#x6E32;&#x67D3;&#x64F4;&#x5C55;">&#x6E32;&#x67D3;&#x64F4;&#x5C55;</h1><p>&#x9019;&#x88CF;&#x8AAA;&#x7684;&#x6E32;&#x67D3;&#x64F4;&#x5C55;&#x4E26;&#x975E;&#x662F;&#x55AE;&#x500B;, &#x6B64;&#x8655;&#x5C07;&#x5217;&#x51FA; Yosart &#x9ED8;&#x8A8D;&#x652F;&#x6301;&#x7684;&#x6E32;&#x67D3;&#x64F4;&#x5C55;.</p><p>&#x5728; Yosart &#x4E2D;, &#x6E32;&#x67D3;&#x652F;&#x6301;&#x5217;&#x8868;:</p><table>
+<thead>
+<tr><th> RENDER </th>
+<th> Yosart support </th>
+</tr></thead><tbody>
+<tr><td style="text-align:left"> render </td>
+<td style="text-align:left"> YES </td>
+</tr><tr><td style="text-align:left"> renderText </td>
+<td style="text-align:left"> YES </td>
+</tr><tr><td style="text-align:left"> renderHtml </td>
+<td style="text-align:left"> YES </td>
+</tr><tr><td style="text-align:left"> renderTemplate </td>
+<td style="text-align:left"> NO </td>
+</tr><tr><td style="text-align:left"> renderJson </td>
+<td style="text-align:left"> NO </td>
+</tr><tr><td style="text-align:left"> renderFile </td>
+<td style="text-align:left"> YES </td>
+</tr><tr><td style="text-align:left"> renderXml </td>
+<td style="text-align:left"> NO </td>
+</tr><tr><td style="text-align:left"> redirect </td>
+<td style="text-align:left"> YES </td>
+</tr><tr><td style="text-align:left"> forward </td>
+<td style="text-align:left"> YES </td>
+</tr><tr><td style="text-align:left"> renderError </td>
+<td style="text-align:left"> YES</td>
+</tr></tbody></table>
+
+<p><code>Yosart support</code> &#x5217;&#x7232; <code>YES</code> &#x7684;&#x6E32;&#x67D3;&#x7232; Yosart &#x9ED8;&#x8A8D;&#x652F;&#x6301;&#x7684;&#x6E32;&#x67D3;&#x64F4;&#x5C55;, &#x5176;&#x4ED6;&#x64F4;&#x5C55;&#x9700;&#x8981;&#x53E6;&#x5916;&#x7684;&#x64F4;&#x5C55;&#x652F;&#x6301;.</p><p>&#x5176;&#x4E2D;&#x9700;&#x8981;&#x7279;&#x5225;&#x6CE8;&#x610F;&#x7684;&#x662F; <code>render</code> &#x4EE5;&#x53CA; <code>forward</code></p><ul><li><p>render</p><p>&#x6B64;&#x6E32;&#x67D3;&#x4E26;&#x975E;&#x9032;&#x884C;&#x6A21;&#x677F;&#x6E32;&#x67D3;, &#x800C;&#x662F;&#x5B57;&#x7B26;&#x4E32;&#x6E32;&#x67D3;, &#x53EF;&#x4EE5;&#x6307;&#x5B9A; contentType</p></li>
+<li><p>forward</p><p>&#x6E32;&#x67D3;&#x64F4;&#x5C55;&#x9700;&#x8981;&#x7279;&#x5225;&#x6CE8;&#x610F;&#x7684;&#x662F; <code>forward</code> &#x6E32;&#x67D3;, &#x662F;&#x4E0D;&#x652F;&#x6301;&#x63D2;&#x4EF6;&#x7684;, <code>forward</code> &#x5BE6;&#x969B;&#x4E0A;&#x662F;&#x5167;&#x90E8;&#x8DF3;&#x8F49;, &#x6703;&#x8D70;&#x5230;&#x6700;&#x7D42;&#x8DF3;&#x8F49;&#x7684;&#x65B9;&#x6CD5;&#x9032;&#x884C;&#x6E32;&#x67D3;.</p></li></ul>
+<p>&#x9664; Yosart &#x63D0;&#x4F9B;&#x7684;&#x6E32;&#x67D3;&#x63A5;&#x53E3;&#x4E4B;&#x5916;, &#x4E5F;&#x53EF;&#x4EE5;&#x6DFB;&#x52A0;&#x81EA;&#x5B9A;&#x7FA9;&#x6E32;&#x67D3;&#x63D2;&#x4EF6;.</p><p>&#x81EA;&#x5B9A;&#x7FA9;&#x5F88;&#x7C21;&#x55AE;, &#x53EA;&#x9700;&#x8981;&#x5BE6;&#x73FE;&#x6E32;&#x67D3;&#x63A5;&#x53E3;&#x5373;&#x53EF;, &#x4F8B;&#x5982;&#x4E00;&#x500B;&#x7C21;&#x55AE;&#x7684;&#x6848;&#x4F8B;:</p><p><strong>ExampleRenderExt</strong></p><pre><code class="lang-java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ExampleRenderExt</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">YmRenderExt</span> </span>{
+
+  <span class="hljs-meta">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">renderType</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;example&quot;</span>;
+  }
+
+  <span class="hljs-meta">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> YoRender <span class="hljs-title">renderer</span><span class="hljs-params">(Request req, Kv attr, Object... args)</span> </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> ExampleRender(req, attr, args);
+  }
+
+  <span class="hljs-meta">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">name</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;ExampleRender&quot;</span>;
+  }
+
+  <span class="hljs-meta">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">version</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;1&quot;</span>;
+  }
+}
+</code></pre>
+<p><strong>ExampleRender</strong></p><pre><code class="lang-java"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ExampleRender</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">YoRender</span> </span>{
+
+  <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> Request req;
+  <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> String data;
+  <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> Charset charset;
+
+  TextRender(Request req, Kv attr, Object[] args) {
+    <span class="hljs-keyword">this</span>.req = req;
+    <span class="hljs-keyword">this</span>.text = (String) args[<span class="hljs-number">0</span>];
+    <span class="hljs-keyword">this</span>.charset = args[<span class="hljs-number">1</span>] == <span class="hljs-keyword">null</span> ? EoConst.CHARSET : (Charset) args[<span class="hljs-number">1</span>];
+  }
+
+  <span class="hljs-meta">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> HttpStatus <span class="hljs-title">stat</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> HttpStatus.OK;
+  }
+
+  <span class="hljs-meta">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">contentType</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;text/plain&quot;</span>;
+  }
+
+  <span class="hljs-meta">@Override</span>
+  <span class="hljs-keyword">public</span> Header[] headers() {
+    <span class="hljs-keyword">return</span> CollectionKit.emptyArray(Header.class);
+  }
+
+  <span class="hljs-meta">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> ResponseBody <span class="hljs-title">render</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> ResponseBody.create(<span class="hljs-keyword">this</span>.text, <span class="hljs-keyword">this</span>.charset);
+  }
+
+}</code></pre>
+<p>&#x5728; Yosart &#x5553;&#x52D5;&#x6642;&#x52A0;&#x5165;&#x8A72;&#x6E32;&#x67D3;&#x64F4;&#x5C55;</p><pre><code class="lang-java">Yosart.createServer()
+  .ext(<span class="hljs-keyword">new</span> ExampleRenderExt())
+  .listen()</code></pre>
+<p>Control &#x4EE5;&#x53CA; Action &#x4E2D;&#x4F7F;&#x7528;:</p><pre><code class="lang-java">Renderer.with(req).use(<span class="hljs-string">&quot;example&quot;</span>).render(<span class="hljs-string">&quot;Some data&quot;</span>).end();</code></pre>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="ey_router.html" class="navigation navigation-prev " aria-label="Previous page: 路由">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="template_render.html" class="navigation navigation-next " aria-label="Next page: 模板">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"渲染","level":"1.4.1.3","depth":3,"next":{"title":"模板","level":"1.4.1.4","depth":3,"path":"yosart/ext/template_render.md","ref":"yosart/ext/template_render.md","articles":[]},"previous":{"title":"路由","level":"1.4.1.2","depth":3,"path":"yosart/ext/ey_router.md","ref":"yosart/ext/ey_router.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"yosart/ext/render.md","mtime":"2018-01-23T03:12:09.955Z","type":"markdown"},"gitbook":{"version":"3.2.0","time":"2018-01-23T03:26:40.259Z"},"basePath":"../..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../../gitbook/gitbook.js"></script>
+    <script src="../../gitbook/theme.js"></script>
+    
+        
+        <script src="../../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+
