@@ -1,20 +1,24 @@
 
 <!DOCTYPE HTML>
-<html lang="" >
+<html lang="zh-hans" >
     <head>
-        <title>静态资源 · GitBook</title>
         <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>静态资源 · Enoa</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
-        <meta name="generator" content="GitBook 3.2.0">
-        
+        <meta name="generator" content="GitBook 3.2.3">
+        <meta name="author" content="iaceob">
         
         
     
     <link rel="stylesheet" href="../../gitbook/style.css">
 
     
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-anchors/plugin.css">
+                
             
                 
                 <link rel="stylesheet" href="../../gitbook/gitbook-plugin-highlight/website.css">
@@ -71,7 +75,7 @@
         
             
 <div id="book-search-input" role="search">
-    <input type="text" placeholder="Type to search" />
+    <input type="text" placeholder="输入并搜索" />
 </div>
 
             
@@ -477,7 +481,7 @@
 
     <li>
         <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
-            Published with GitBook
+            本书使用 GitBook 发布
         </a>
     </li>
 </ul>
@@ -515,10 +519,15 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="&#x9759;&#x6001;&#x8D44;&#x6E90;&#x6269;&#x5C55;">&#x9759;&#x6001;&#x8D44;&#x6E90;&#x6269;&#x5C55;</h1><p>&#x9759;&#x6001;&#x8D44;&#x6E90;&#x6269;&#x5C55;&#x5B9E;&#x73B0;&#x81EA; <code>YmAssetsExt</code>, &#x6B64;&#x6269;&#x5C55;&#x76F8;&#x5E94;&#x9759;&#x6001;&#x6587;&#x6863;&#x901A;&#x8FC7; <code>renderFile</code> &#x5B9E;&#x73B0;.</p><p>&#x4F7F;&#x7528;:</p><pre><code class="lang-java">Yosart.createServer()
+                                <h1 id="&#x9759;&#x6001;&#x8D44;&#x6E90;&#x6269;&#x5C55;"><a name="&#x9759;&#x6001;&#x8D44;&#x6E90;&#x6269;&#x5C55;" class="plugin-anchor" href="#&#x9759;&#x6001;&#x8D44;&#x6E90;&#x6269;&#x5C55;"><i class="fa fa-link" aria-hidden="true"></i></a>&#x9759;&#x6001;&#x8D44;&#x6E90;&#x6269;&#x5C55;</h1>
+<p>&#x9759;&#x6001;&#x8D44;&#x6E90;&#x6269;&#x5C55;&#x5B9E;&#x73B0;&#x81EA; <code>YmAssetsExt</code>, &#x6B64;&#x6269;&#x5C55;&#x76F8;&#x5E94;&#x9759;&#x6001;&#x6587;&#x6863;&#x901A;&#x8FC7; <code>renderFile</code> &#x5B9E;&#x73B0;.</p>
+<p>&#x4F7F;&#x7528;:</p>
+<pre><code class="lang-java">Yosart.createServer()
   .assets(<span class="hljs-string">&quot;/assets&quot;</span>, Paths.get(EnvKit.get(<span class="hljs-string">&quot;java.io.tmpdir&quot;</span>)), <span class="hljs-keyword">true</span>)
-  .listen()</code></pre>
+  .listen()
+</code></pre>
 <p>Yosart &#x9ED8;&#x8BA4;&#x63D0;&#x4F9B;&#x7684;&#x9759;&#x6001;&#x8D44;&#x6E90;&#x6269;&#x5C55;&#x662F;&#x901A;&#x8FC7; <code>EyAssetsExt</code> &#x5B9E;&#x73B0;, <code>assets</code> &#x65B9;&#x6CD5;&#x4F1A;&#x53BB;&#x67E5;&#x627E;&#x6CE8;&#x518C;&#x7684;&#x9759;&#x6001;&#x8D44;&#x6E90;&#x6269;&#x5C55;, &#x5982;&#x679C;&#x60F3;&#x8981;&#x5176;&#x4ED6;&#x6269;&#x5C55;&#x901A;&#x8FC7;&#x5B9E;&#x73B0; <code>YmAssetsExt</code> &#x5E76;&#x52A0;&#x5165;&#x5230; <code>ext</code> &#x4E2D;.</p>
+
                                 
                                 </section>
                             
@@ -561,7 +570,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"静态资源","level":"1.4.1.5","depth":3,"next":{"title":"Yosart 管理","level":"1.4.1.6","depth":3,"path":"yosart/ext/yemgr.md","ref":"yosart/ext/yemgr.md","articles":[]},"previous":{"title":"模板","level":"1.4.1.4","depth":3,"path":"yosart/ext/template_render.md","ref":"yosart/ext/template_render.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"yosart/ext/assets.md","mtime":"2018-01-23T03:12:09.951Z","type":"markdown"},"gitbook":{"version":"3.2.0","time":"2018-01-23T03:28:18.637Z"},"basePath":"../..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"静态资源","level":"1.4.1.5","depth":3,"next":{"title":"Yosart 管理","level":"1.4.1.6","depth":3,"path":"yosart/ext/yemgr.md","ref":"yosart/ext/yemgr.md","articles":[]},"previous":{"title":"模板","level":"1.4.1.4","depth":3,"path":"yosart/ext/template_render.md","ref":"yosart/ext/template_render.md","articles":[]},"dir":"ltr"},"config":{"plugins":["ga","anchors"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"ga":{"configuration":"auto","token":"UA-XXXX-Y"},"anchors":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"iaceob","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Enoa","language":"zh-hans","gitbook":"*","description":"Enoa 中文文档"},"file":{"path":"yosart/ext/assets.md","mtime":"2018-01-23T05:33:21.665Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-01-23T05:49:28.153Z"},"basePath":"../..","book":{"language":""}});
         });
     </script>
 </div>
@@ -569,6 +578,10 @@
         
     <script src="../../gitbook/gitbook.js"></script>
     <script src="../../gitbook/theme.js"></script>
+    
+        
+        <script src="../../gitbook/gitbook-plugin-ga/plugin.js"></script>
+        
     
         
         <script src="../../gitbook/gitbook-plugin-search/search-engine.js"></script>

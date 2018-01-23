@@ -1,20 +1,24 @@
 
 <!DOCTYPE HTML>
-<html lang="" >
+<html lang="zh-tw" >
     <head>
-        <title>HTTP 客戶端 · GitBook</title>
         <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>HTTP 客戶端 · Enoa</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
-        <meta name="generator" content="GitBook 3.2.0">
-        
+        <meta name="generator" content="GitBook 3.2.3">
+        <meta name="author" content="iaceob">
         
         
     
     <link rel="stylesheet" href="../gitbook/style.css">
 
     
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-anchors/plugin.css">
+                
             
                 
                 <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
@@ -71,7 +75,7 @@
         
             
 <div id="book-search-input" role="search">
-    <input type="text" placeholder="Type to search" />
+    <input type="text" placeholder="輸入並搜尋" />
 </div>
 
             
@@ -477,7 +481,7 @@
 
     <li>
         <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
-            Published with GitBook
+            本書使用 GitBook 釋出
         </a>
     </li>
 </ul>
@@ -515,7 +519,14 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="http-&#x5BA2;&#x6236;&#x7AEF;">HTTP &#x5BA2;&#x6236;&#x7AEF;</h1><p>HTTP &#x5BA2;&#x6236;&#x7AEF;&#x662F;&#x500B;&#x5C1A;&#x672A;&#x5B8C;&#x6210;&#x7684;&#x7D44;&#x4EF6;, &#x539F;&#x8A08;&#x5283;&#x8A72;&#x7D44;&#x4EF6;&#x5C07;&#x6703;&#x5C0D; <code>HttpClient</code> <code>OkHttp</code> &#x7B49; HTTP &#x5BA2;&#x6236;&#x7AEF;&#x9032;&#x884C;&#x5C01;&#x88DD;, &#x4F46;&#x662F;, &#x9019;&#x4E9B;&#x6846;&#x67B6;&#x672C;&#x8EAB;&#x90FD;&#x76F8;&#x5C0D;&#x5B8C;&#x5584;&#x4E14;&#x4F7F;&#x7528;&#x65B9;&#x5F0F;&#x4E0A;&#x5B8C;&#x5168;&#x4E0D;&#x76F8;&#x540C;, &#x82E5;&#x5728;&#x8003;&#x616E;&#x7570;&#x6B65;&#x8ACB;&#x6C42;, &#x53EA;&#x6703;&#x8B8A;&#x5F97;&#x66F4;&#x8907;&#x96DC;. &#x56E0;&#x6B64;, &#x6C7A;&#x5B9A; enoa-http &#x5C07;&#x6703;&#x5C0D; HttpHelper &#x9032;&#x884C;&#x5347;&#x7D1A;, &#x66AB;&#x505C; HttpHelper &#x7684;&#x5347;&#x7D1A;&#x63A5;&#x5165;&#x5230; enoa &#x7684;&#x9AD4;&#x7CFB;&#x4E2D;.</p><h2 id="httphelper">HttpHelper</h2><p>HttpHelper &#x662F;&#x57FA;&#x65BC; Java &#x81EA;&#x8EAB;&#x7684; HttpURLConnection &#x9032;&#x884C;&#x5C01;&#x88DD;&#x7684; HTTP &#x5BA2;&#x6236;&#x7AEF;, &#x65E9;&#x671F;&#x51FA;&#x73FE;&#x7684;&#x76EE;&#x7684;&#x662F;&#x7232;&#x4E86;&#x5F4C;&#x88DC; HttpClient &#x7684;&#x9AD8; IO &#x6D88;&#x8017;&#x554F;&#x984C;, &#x89E3;&#x6C7A; Java &#x722C;&#x87F2;&#x5927;&#x91CF;&#x7684;&#x8ACB;&#x6C42;&#x5F8C; HttpClient &#x5728;&#x7D50;&#x679C;&#x5206;&#x6790;&#x662F;&#x9AD8; IO &#x6D88;&#x8017;&#x4F54;&#x7528;&#x904E;&#x591A;&#x7684;&#x7CFB;&#x7D71;&#x8CC7;&#x6E90;, &#x7D93;&#x6B77;&#x904E;&#x6BCF;&#x65E5;&#x904E;&#x767E;&#x842C;&#x7D1A;&#x6578;&#x64DA;&#x7684;&#x8003;&#x9A57;. &#x4E26;&#x63D0;&#x4F9B;&#x7C21;&#x55AE;&#x7684; API.</p><p>&#x9AD8;&#x6D88;&#x8017;&#x4E5F;&#x540C;&#x6A23;&#x5B58;&#x5728; OkHttp &#x4E2D;, &#x7279;&#x5225;&#x662F;&#x5728;&#x722C;&#x87F2;&#x65B9;&#x9762;, &#x901A;&#x5E38;&#x722C;&#x87F2;&#x7A0B;&#x5E8F;&#x90FD;&#x6703;&#x5207;&#x63DB;&#x4EE3;&#x7406; IP &#x89E3;&#x6C7A;&#x722C;&#x53D6;&#x7DB2;&#x7AD9;&#x5C01;&#x7981;&#x554F;&#x984C;, &#x800C; OkHttp &#x7684;&#x4EE3;&#x7406;&#x9700;&#x8981;&#x5728;&#x5275;&#x5EFA; Client &#x6642;&#x5C31;&#x9700;&#x8981;&#x6307;&#x5B9A;, &#x5F8C;&#x7E8C;&#x66F4;&#x6539;&#x5C31;&#x5F97;&#x91CD;&#x65B0;&#x5275;&#x5EFA; Client &#x9020;&#x6210;&#x8CC7;&#x6E90;&#x7684;&#x6D6A;&#x8CBB;, &#x592A;&#x983B;&#x7E41;&#x751A;&#x81F3;&#x5C0E;&#x81F4;&#x5167;&#x5B58;&#x6EA2;&#x51FA;&#x932F;&#x8AA4;. (&#x7576;&#x7136;&#x5982;&#x679C;&#x4F60;&#x7684;&#x4EE3;&#x7406;&#x662F;&#x56FA;&#x5B9A; IP &#x5C31;&#x53E6;&#x7576;&#x5225;&#x8AD6;&#x4E86;)</p><p>HttpHelper &#x5730;&#x5740;: <a href="https://github.com/iaceob/http-helper" target="_blank">http-helper</a></p><p>HeepHelper &#x5C07;&#x5728;&#x5F8C;&#x7E8C;&#x7248;&#x672C;&#x4E2D;&#x63A5;&#x5165;.</p>
+                                <h1 id="http-&#x5BA2;&#x6236;&#x7AEF;"><a name="http-&#x5BA2;&#x6236;&#x7AEF;" class="plugin-anchor" href="#http-&#x5BA2;&#x6236;&#x7AEF;"><i class="fa fa-link" aria-hidden="true"></i></a>HTTP &#x5BA2;&#x6236;&#x7AEF;</h1>
+<p>HTTP &#x5BA2;&#x6236;&#x7AEF;&#x662F;&#x500B;&#x5C1A;&#x672A;&#x5B8C;&#x6210;&#x7684;&#x7D44;&#x4EF6;, &#x539F;&#x8A08;&#x5283;&#x8A72;&#x7D44;&#x4EF6;&#x5C07;&#x6703;&#x5C0D; <code>HttpClient</code> <code>OkHttp</code> &#x7B49; HTTP &#x5BA2;&#x6236;&#x7AEF;&#x9032;&#x884C;&#x5C01;&#x88DD;, &#x4F46;&#x662F;, &#x9019;&#x4E9B;&#x6846;&#x67B6;&#x672C;&#x8EAB;&#x90FD;&#x76F8;&#x5C0D;&#x5B8C;&#x5584;&#x4E14;&#x4F7F;&#x7528;&#x65B9;&#x5F0F;&#x4E0A;&#x5B8C;&#x5168;&#x4E0D;&#x76F8;&#x540C;, &#x82E5;&#x5728;&#x8003;&#x616E;&#x7570;&#x6B65;&#x8ACB;&#x6C42;, &#x53EA;&#x6703;&#x8B8A;&#x5F97;&#x66F4;&#x8907;&#x96DC;. &#x56E0;&#x6B64;, &#x6C7A;&#x5B9A; enoa-http &#x5C07;&#x6703;&#x5C0D; HttpHelper &#x9032;&#x884C;&#x5347;&#x7D1A;, &#x66AB;&#x505C; HttpHelper &#x7684;&#x5347;&#x7D1A;&#x63A5;&#x5165;&#x5230; enoa &#x7684;&#x9AD4;&#x7CFB;&#x4E2D;.</p>
+<h2 id="httphelper"><a name="httphelper" class="plugin-anchor" href="#httphelper"><i class="fa fa-link" aria-hidden="true"></i></a>HttpHelper</h2>
+<p>HttpHelper &#x662F;&#x57FA;&#x65BC; Java &#x81EA;&#x8EAB;&#x7684; HttpURLConnection &#x9032;&#x884C;&#x5C01;&#x88DD;&#x7684; HTTP &#x5BA2;&#x6236;&#x7AEF;, &#x65E9;&#x671F;&#x51FA;&#x73FE;&#x7684;&#x76EE;&#x7684;&#x662F;&#x7232;&#x4E86;&#x5F4C;&#x88DC; HttpClient &#x7684;&#x9AD8; IO &#x6D88;&#x8017;&#x554F;&#x984C;, &#x89E3;&#x6C7A; Java &#x722C;&#x87F2;&#x5927;&#x91CF;&#x7684;&#x8ACB;&#x6C42;&#x5F8C; HttpClient &#x5728;&#x7D50;&#x679C;&#x5206;&#x6790;&#x662F;&#x9AD8; IO &#x6D88;&#x8017;&#x4F54;&#x7528;&#x904E;&#x591A;&#x7684;&#x7CFB;&#x7D71;&#x8CC7;&#x6E90;, &#x7D93;&#x6B77;&#x904E;&#x6BCF;&#x65E5;&#x904E;&#x767E;&#x842C;&#x7D1A;&#x6578;&#x64DA;&#x7684;&#x8003;&#x9A57;. &#x4E26;&#x63D0;&#x4F9B;&#x7C21;&#x55AE;&#x7684; API.</p>
+<p>&#x9AD8;&#x6D88;&#x8017;&#x4E5F;&#x540C;&#x6A23;&#x5B58;&#x5728; OkHttp &#x4E2D;, &#x7279;&#x5225;&#x662F;&#x5728;&#x722C;&#x87F2;&#x65B9;&#x9762;, &#x901A;&#x5E38;&#x722C;&#x87F2;&#x7A0B;&#x5E8F;&#x90FD;&#x6703;&#x5207;&#x63DB;&#x4EE3;&#x7406; IP &#x89E3;&#x6C7A;&#x722C;&#x53D6;&#x7DB2;&#x7AD9;&#x5C01;&#x7981;&#x554F;&#x984C;, &#x800C; OkHttp &#x7684;&#x4EE3;&#x7406;&#x9700;&#x8981;&#x5728;&#x5275;&#x5EFA; Client &#x6642;&#x5C31;&#x9700;&#x8981;&#x6307;&#x5B9A;, &#x5F8C;&#x7E8C;&#x66F4;&#x6539;&#x5C31;&#x5F97;&#x91CD;&#x65B0;&#x5275;&#x5EFA; Client &#x9020;&#x6210;&#x8CC7;&#x6E90;&#x7684;&#x6D6A;&#x8CBB;, &#x592A;&#x983B;&#x7E41;&#x751A;&#x81F3;&#x5C0E;&#x81F4;&#x5167;&#x5B58;&#x6EA2;&#x51FA;&#x932F;&#x8AA4;. (&#x7576;&#x7136;&#x5982;&#x679C;&#x4F60;&#x7684;&#x4EE3;&#x7406;&#x662F;&#x56FA;&#x5B9A; IP &#x5C31;&#x53E6;&#x7576;&#x5225;&#x8AD6;&#x4E86;)</p>
+<p>HttpHelper &#x5730;&#x5740;: <a href="https://github.com/iaceob/http-helper" target="_blank">http-helper</a></p>
+<p>HeepHelper &#x5C07;&#x5728;&#x5F8C;&#x7E8C;&#x7248;&#x672C;&#x4E2D;&#x63A5;&#x5165;.</p>
+
                                 
                                 </section>
                             
@@ -558,7 +569,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"HTTP 客戶端","level":"1.2.3","depth":2,"next":{"title":"JSON","level":"1.2.4","depth":2,"path":"wrapper/json.md","ref":"wrapper/json.md","articles":[]},"previous":{"title":"資料庫","level":"1.2.2","depth":2,"path":"wrapper/db.md","ref":"wrapper/db.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"wrapper/http.md","mtime":"2018-01-23T03:12:09.955Z","type":"markdown"},"gitbook":{"version":"3.2.0","time":"2018-01-23T03:26:40.259Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"HTTP 客戶端","level":"1.2.3","depth":2,"next":{"title":"JSON","level":"1.2.4","depth":2,"path":"wrapper/json.md","ref":"wrapper/json.md","articles":[]},"previous":{"title":"資料庫","level":"1.2.2","depth":2,"path":"wrapper/db.md","ref":"wrapper/db.md","articles":[]},"dir":"ltr"},"config":{"plugins":["ga","anchors"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"ga":{"configuration":"auto","token":"UA-XXXX-Y"},"anchors":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"iaceob","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Enoa","language":"zh-tw","gitbook":"*","description":"Enoa 中文文檔"},"file":{"path":"wrapper/http.md","mtime":"2018-01-23T03:12:09.955Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-01-23T05:47:53.452Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
@@ -566,6 +577,10 @@
         
     <script src="../gitbook/gitbook.js"></script>
     <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-ga/plugin.js"></script>
+        
     
         
         <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>

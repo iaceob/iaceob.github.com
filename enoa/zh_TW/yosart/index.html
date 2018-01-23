@@ -1,20 +1,24 @@
 
 <!DOCTYPE HTML>
-<html lang="" >
+<html lang="zh-tw" >
     <head>
-        <title>Yosart · GitBook</title>
         <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Yosart · Enoa</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
-        <meta name="generator" content="GitBook 3.2.0">
-        
+        <meta name="generator" content="GitBook 3.2.3">
+        <meta name="author" content="iaceob">
         
         
     
     <link rel="stylesheet" href="../gitbook/style.css">
 
     
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-anchors/plugin.css">
+                
             
                 
                 <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
@@ -69,7 +73,7 @@
         
             
 <div id="book-search-input" role="search">
-    <input type="text" placeholder="Type to search" />
+    <input type="text" placeholder="輸入並搜尋" />
 </div>
 
             
@@ -475,7 +479,7 @@
 
     <li>
         <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
-            Published with GitBook
+            本書使用 GitBook 釋出
         </a>
     </li>
 </ul>
@@ -513,26 +517,99 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="yosart">Yosart</h1><p>Yosart &#x662F;&#x4E00;&#x500B;&#x57FA;&#x65BC; Repeater &#x7684; Web &#x6846;&#x67B6;, Yosart &#x7684;&#x6D89;&#x53CA;&#x6975;&#x5176;&#x7CBE;&#x7C21;, &#x5176;&#x6838;&#x5FC3;&#x53EA;&#x662F;&#x63D0;&#x4F9B;&#x57FA;&#x672C;&#x7684; Web &#x670D;&#x52D9;&#x7684;&#x63A5;&#x53E3;, &#x5269;&#x4E0B;&#x7684;&#x4EA4;&#x7D66;&#x63D2;&#x4EF6;&#x6216;&#x64F4;&#x5C55;&#x53BB;&#x5BE6;&#x73FE;.</p><h2 id="&#x7D50;&#x69CB;&#x5716;">&#x7D50;&#x69CB;&#x5716;</h2><p>&#x9084;&#x8A18;&#x5F97; Repeater &#x7684;&#x7D50;&#x69CB;&#x5716;&#x55CE;? Yosart &#x662F; Repeater &#x7684;&#x4E0A;&#x6E38;&#x9AD8;&#x7D1A;&#x61C9;&#x7528;, &#x5BE6;&#x73FE;&#x4E86; Repeater &#x63D0;&#x4F9B;&#x7684; <code>EoxAccessor</code> &#x63A5;&#x53E3;, &#x589E;&#x52A0;&#x4E86;&#x8DEF;&#x7531;, &#x6E32;&#x67D3;&#x7B49;&#x529F;&#x80FD;.</p><p><img alt="Yosart" src="https://raw.githubusercontent.com/iaceob/gallery/master/enoa/yosart.png"></p><p>&#x5716;&#x4E2D;&#x53F3;&#x5074;&#x4FBF;&#x662F; Yosart &#x7684;&#x7D50;&#x69CB;&#x5716;, &#x63A5;&#x5165;&#x5230; Repeater &#x9AD4;&#x7CFB;&#x4E2D;.</p><p>&#x9996;&#x5148;&#x4F86;&#x770B;&#x770B; Yosart &#x4E2D;&#x91CD;&#x8981;&#x7684;&#x5E7E;&#x500B;&#x63A5;&#x53E3;&#x548C;&#x985E;</p><ul><li><p>OysartAccessor</p><p>Yosart &#x8A2A;&#x554F;&#x5668;, &#x63D0;&#x4F9B;&#x7D66; Repeater, &#x7528;&#x65BC;&#x63A5;&#x6536;&#x8ACB;&#x6C42;</p></li>
-<li><p>OyResource</p><p>Yosart &#x6240;&#x6709;&#x63A7;&#x5236;&#x5668;&#x5206;&#x6790;&#x5F8C;&#x7684;&#x8CC7;&#x6E90;, &#x5305;&#x62EC; <code>YoAction</code> &#x4EE5;&#x53CA; <code>YoControl</code></p></li>
-<li><p>YoExt</p><p>Yosart &#x64F4;&#x5C55;&#x63A5;&#x5165;&#x63A5;&#x53E3;</p></li>
-<li><p>YoPlugin</p><p>Yosart &#x63D2;&#x4EF6;&#x52A0;&#x5165;&#x63A5;&#x53E3;</p></li></ul>
-<h2 id="&#x6838;&#x5FC3;">&#x6838;&#x5FC3;</h2><p>Yosart &#x6838;&#x5FC3;&#x90E8;&#x5206;&#x5747;&#x5728; <code>io.enoa.yosart.kernel</code> &#x5305;&#x4E0B;, kernel &#x4E0B;&#x7684;&#x6240;&#x6709;&#x5305;, &#x4EE5;&#x4E0B;&#x6838;&#x5FC3;&#x4FBF;&#x662F; Yosart &#x6240;&#x505A;&#x7684;&#x4E8B;, &#x62CB;&#x537B;&#x9019;&#x4E9B;&#x6838;&#x5FC3;, &#x5269;&#x4E0B;&#x7684;&#x5168;&#x90E8;&#x4EA4;&#x7D66; &#x63D2;&#x4EF6; &#x6216; &#x64F4;&#x5C55; &#x9032;&#x884C;&#x8655;&#x7406;.</p><h3 id="anno">anno</h3><p>&#x8A3B;&#x89E3;&#x5305;, Yosart &#x63D0;&#x4F9B;&#x7684;&#x8A3B;&#x89E3;, &#x50C5;&#x6709;&#x4E00;&#x500B; Action &#x8A3B;&#x89E3;, &#x8A72;&#x8A3B;&#x89E3;&#x7528;&#x65BC;&#x7533;&#x660E;&#x63A5;&#x53E3; uri &#x5730;&#x5740;, &#x4EE5;&#x53CA;&#x5141;&#x8A31;&#x7684; http method.</p><h3 id="data">data</h3><p>&#x6578;&#x64DA;&#x627F;&#x8F09;&#x5BE6;&#x9AD4;&#x985E;</p><h3 id="ext">ext</h3><p>&#x95DC;&#x65BC; Yosart &#x7684;&#x64F4;&#x5C55;, &#x9700;&#x8981;&#x660E;&#x767D;, &#x6240;&#x6709;&#x7684;&#x64F4;&#x5C55;&#x5747;&#x4F86;&#x81EA;&#x65BC; <code>YoExt</code>, &#x4E0D;&#x904E; <code>YoExt</code> &#x4E26;&#x4E0D;&#x662F;&#x88AB;&#x76F4;&#x63A5;&#x5BE6;&#x73FE;&#x7684;, &#x800C;&#x662F;&#x901A;&#x904E;&#x5177;&#x9AD4;&#x4E0D;&#x540C;&#x7684;&#x63A5;&#x53E3;&#x5BE6;&#x73FE;, &#x4F8B;&#x5982; &#x6E32;&#x67D3;&#x64F4;&#x5C55; (<code>YmRenderExt</code>) &#x8DEF;&#x7531;&#x64F4;&#x5C55; (<code>YoRouterExt</code>) &#x7B49;, &#x8A73;&#x7D30;&#x898B; <a href="#&#x64F4;&#x5C55;">&#x64F4;&#x5C55;</a></p><h3 id="http">http</h3><p>Yosart &#x57FA;&#x65BC; Repeater , &#x4F46;&#x662F; Repeater &#x7684; Request &#x50C5;&#x50C5;&#x662F;&#x7C21;&#x55AE;&#x7684; http &#x8ACB;&#x6C42;&#x4FE1;&#x606F;, &#x4F46;&#x662F;&#x5C0D;&#x65BC; Web &#x6846;&#x67B6;&#x800C;&#x8A00;&#x9019;&#x4E9B;&#x662F;&#x4E0D;&#x5920;&#x7684;, Yosart &#x652F;&#x6301; Restful &#x98A8;&#x683C;&#x7684; API, &#x9019;&#x4E9B; Repeater &#x4E26;&#x6C92;&#x6709;&#x505A;, &#x4E14; Repeater &#x4E5F;&#x672A;&#x63D0;&#x4F9B;&#x5C07;&#x8ACB;&#x6C42;&#x53C3;&#x6578;&#x8F49;&#x63DB;&#x7232;&#x5BE6;&#x9AD4;&#x7684;&#x65B9;&#x6CD5;, http &#x5305;&#x4E0B;&#x662F; Yosart &#x5C0D; Repeater &#x7684; Request &#x7684;&#x9AD8;&#x7D1A;&#x5C01;&#x88DD;.</p><h3 id="mount">mount</h3><p>mount &#x4E2D;&#x53EA;&#x6709;&#x4E00;&#x500B; <code>OyMountd</code> &#x985E;, &#x5728;&#x6B63;&#x5E38;&#x7684;&#x696D;&#x52D9;&#x908F;&#x8F2F;&#x958B;&#x767C;&#x4E2D;&#x662F;&#x7528;&#x4E0D;&#x5230;&#x7684;. Yosart &#x63D0;&#x4F9B;&#x4E00;&#x500B;&#x4FE1;&#x606F;&#x8F38;&#x51FA;&#x7684;&#x9801;&#x9762; (&#x5F8C;&#x7E8C;&#x6703;&#x8AAA;&#x9053;). &#x800C; <code>OyMountd</code> &#x662F;&#x5C07;&#x5176;&#x4ED6;&#x7D44;&#x4EF6;&#x7684;&#x4FE1;&#x606F;&#x639B;&#x8F09;&#x5230; Yosart &#x4E2D;.</p><h3 id="render">render</h3><p>&#x6240;&#x6709;&#x6E32;&#x67D3;&#x64F4;&#x5C55;&#x6700;&#x7D42;&#x6E32;&#x67D3;&#x7684;&#x8FD4;&#x56DE;&#x63A5;&#x53E3; <code>YoRender</code></p><h3 id="resources">resources</h3><p>Action &#x8CC7;&#x6E90;&#x5305;,  <code>YoAction</code> , <code>YoRouter</code> &#x4EE5;&#x53CA; <code>YoControl</code> &#x5747;&#x5B9A;&#x7FA9;&#x518D;&#x6B64;, &#x4E5F;&#x5305;&#x542B;&#x6240;&#x6709; Action &#x8CC7;&#x6E90;&#x7684;&#x5206;&#x6790;, &#x6700;&#x7D42;&#x8655;&#x7406;&#x6210; <code>OyResource</code></p><h2 id="resp">Resp</h2><p>Yosart &#x9664;&#x4E86;&#x6838;&#x5FC3;&#x5305;&#x4E4B;&#x5916;, &#x9084;&#x63D0;&#x4F9B;&#x4E86; Response &#x69CB;&#x9020;&#x5668;, <code>io.enoa.yosart.resp</code> &#x5305;&#x4E0B;, &#x5B58;&#x5728;&#x5169;&#x7A2E;&#x69CB;&#x9020;&#x5668;</p><ul><li>Resp
+                                <h1 id="yosart"><a name="yosart" class="plugin-anchor" href="#yosart"><i class="fa fa-link" aria-hidden="true"></i></a>Yosart</h1>
+<p>Yosart &#x662F;&#x4E00;&#x500B;&#x57FA;&#x65BC; Repeater &#x7684; Web &#x6846;&#x67B6;, Yosart &#x7684;&#x6D89;&#x53CA;&#x6975;&#x5176;&#x7CBE;&#x7C21;, &#x5176;&#x6838;&#x5FC3;&#x53EA;&#x662F;&#x63D0;&#x4F9B;&#x57FA;&#x672C;&#x7684; Web &#x670D;&#x52D9;&#x7684;&#x63A5;&#x53E3;, &#x5269;&#x4E0B;&#x7684;&#x4EA4;&#x7D66;&#x63D2;&#x4EF6;&#x6216;&#x64F4;&#x5C55;&#x53BB;&#x5BE6;&#x73FE;.</p>
+<h2 id="&#x7D50;&#x69CB;&#x5716;"><a name="&#x7D50;&#x69CB;&#x5716;" class="plugin-anchor" href="#&#x7D50;&#x69CB;&#x5716;"><i class="fa fa-link" aria-hidden="true"></i></a>&#x7D50;&#x69CB;&#x5716;</h2>
+<p>&#x9084;&#x8A18;&#x5F97; Repeater &#x7684;&#x7D50;&#x69CB;&#x5716;&#x55CE;? Yosart &#x662F; Repeater &#x7684;&#x4E0A;&#x6E38;&#x9AD8;&#x7D1A;&#x61C9;&#x7528;, &#x5BE6;&#x73FE;&#x4E86; Repeater &#x63D0;&#x4F9B;&#x7684; <code>EoxAccessor</code> &#x63A5;&#x53E3;, &#x589E;&#x52A0;&#x4E86;&#x8DEF;&#x7531;, &#x6E32;&#x67D3;&#x7B49;&#x529F;&#x80FD;.</p>
+<p><img src="https://raw.githubusercontent.com/iaceob/gallery/master/enoa/yosart.png" alt="Yosart"></p>
+<p>&#x5716;&#x4E2D;&#x53F3;&#x5074;&#x4FBF;&#x662F; Yosart &#x7684;&#x7D50;&#x69CB;&#x5716;, &#x63A5;&#x5165;&#x5230; Repeater &#x9AD4;&#x7CFB;&#x4E2D;.</p>
+<p>&#x9996;&#x5148;&#x4F86;&#x770B;&#x770B; Yosart &#x4E2D;&#x91CD;&#x8981;&#x7684;&#x5E7E;&#x500B;&#x63A5;&#x53E3;&#x548C;&#x985E;</p>
+<ul>
+<li><p>OysartAccessor</p>
+<p>Yosart &#x8A2A;&#x554F;&#x5668;, &#x63D0;&#x4F9B;&#x7D66; Repeater, &#x7528;&#x65BC;&#x63A5;&#x6536;&#x8ACB;&#x6C42;</p>
 </li>
-<li>Renderer
-</li></ul>
-<p>&#x5340;&#x5225;&#x662F;, Renderer &#x6240;&#x69CB;&#x9020;&#x7684;&#x5167;&#x5BB9;&#x90FD;&#x662F;&#x901A;&#x904E;&#x6E32;&#x67D3;&#x64F4;&#x5C55;&#x9032;&#x884C;&#x6E32;&#x67D3;&#x7684;&#x5167;&#x5BB9;, &#x800C; Resp &#x53EF;&#x4EE5;&#x69CB;&#x9020;&#x6E32;&#x67D3;&#x5167;&#x5BB9;&#x4E4B;&#x5916;, &#x9084;&#x652F;&#x6301; Response &#x76F8;&#x95DC;&#x503C;&#x7684;&#x8A2D;&#x5B9A;, &#x5305;&#x62EC; Header Cookie &#x7B49;.</p><h2 id="restful">Restful</h2><p>Yosart &#x652F;&#x6301; Restful &#x98A8;&#x683C;&#x63A5;&#x53E3;, &#x63A5;&#x53E3; uri &#x5B9A;&#x7FA9;&#x9075;&#x5FAA;&#x4EE5; <code>:</code> &#x8868;&#x660E;&#x53C3;&#x6578;&#x540D;, &#x4F8B;&#x5982;&#x4EE5;&#x4E0B;&#x6848;&#x4F8B;</p><pre><code class="lang-text">GET  /api/user/:id
-PUT  /api/user/:id</code></pre>
-<p>&#x5373;&#x53EF;&#x901A;&#x904E; Request &#x4E2D; <code>variable(&quot;id&quot;)</code> &#x7684;&#x65B9;&#x5F0F;&#x7372;&#x53D6;.</p><h2 id="&#x63D2;&#x4EF6;--&#x64F4;&#x5C55;">&#x63D2;&#x4EF6; &amp; &#x64F4;&#x5C55;</h2><p>&#x95DC;&#x65BC;&#x63D2;&#x4EF6;&#x548C;&#x64F4;&#x5C55;&#x7684;&#x5340;&#x5225;, &#x65E9;&#x4E9B;&#x5E74;&#x5728; firefox &#x8CBC;&#x5427;&#x4E2D;&#x6709;&#x4E00;&#x53E5;&#x8A71;&#x63CF;&#x8FF0;&#x7684;&#x5F88;&#x597D; <code>&#x6269;&#x5C55;&#x8D1F;&#x8D23;&#x6269;&#x5F00;&#x6765;, &#x63D2;&#x4EF6;&#x8D1F;&#x8D23;&#x63D2;&#x8FDB;&#x53BB;.</code></p><h3 id="&#x63D2;&#x4EF6;">&#x63D2;&#x4EF6;</h3><p>Yosart &#x63D2;&#x4EF6;, &#x53EA;&#x9700;&#x8981;&#x5BE6;&#x73FE; <code>YoPlugin</code> &#x63A5;&#x53E3;&#x5373;&#x53EF;, &#x5553;&#x52D5;&#x6642;, &#x52A0;&#x5165;&#x5230; Yosart &#x4E2D;.</p><h3 id="&#x64F4;&#x5C55;">&#x64F4;&#x5C55;</h3><p>Yosart &#x64F4;&#x5C55;&#x76EE;&#x524D;&#x652F;&#x6301;&#x7684;&#x6709;</p><ul><li><p>YmAssetsExt</p><p>&#x975C;&#x614B;&#x8CC7;&#x6E90;&#x64F4;&#x5C55;</p></li>
-<li><p>YmBeforeActionExt</p><p>Action &#x524D;&#x7F6E;&#x64F4;&#x5C55;, &#x7528;&#x65BC;&#x5728;&#x57F7;&#x884C; Action &#x524D;&#x57F7;&#x884C;&#x7684;&#x64CD;&#x4F5C;</p></li>
-<li><p>YmBootHookExt</p><p>&#x5553;&#x52D5;&#x9264;&#x5B50;, &#x6703;&#x5728; Yosart &#x5553;&#x52D5;&#x4E4B;&#x524D;&#x8ABF;&#x7528;&#x7684;&#x64F4;&#x5C55;</p></li>
-<li><p>YmExceptionExt</p><p>&#x7528;&#x65BC;&#x5728;&#x8ABF;&#x7528; Action &#x51FA;&#x73FE;&#x7570;&#x5E38;&#x7684;&#x60C5;&#x6CC1;&#x4E0B;&#x57F7;&#x884C;&#x7684;&#x64F4;&#x5C55;</p></li>
-<li><p>YmRenderExt</p><p>&#x6E32;&#x67D3;&#x64F4;&#x5C55;</p></li>
-<li><p>YmRouterExt</p><p>&#x8DEF;&#x7531;&#x64F4;&#x5C55;</p></li></ul>
-<p>&#x9700;&#x8981;&#x6CE8;&#x610F;&#x7684;&#x662F;, &#x9019;&#x88CF;&#x7406;&#x51FA;&#x7684;&#x64F4;&#x5C55;&#x4E26;&#x975E;&#x90FD;&#x662F; Yosart &#x76F4;&#x63A5;&#x652F;&#x6301;, Yosart &#x76F4;&#x63A5;&#x652F;&#x6301;&#x7684;&#x6709; <code>YmAssetsExt</code>, <code>YmRenderExt</code>, <code>YmBootHookExt</code> &#x4EE5;&#x53CA; <code>YmRouterExt</code>.</p><p><code>YmBeforeActionExt</code> &#x548C; <code>YmExceptionExt</code> &#x8996;&#x9078;&#x64C7;&#x7684; <code>YmRouterExt</code> &#x662F;&#x5426;&#x652F;&#x63F4;, Yosart &#x7121;&#x6CD5;&#x63A7;&#x5236;, &#x5982;&#x679C;&#x9078;&#x64C7;&#x7684;&#x8DEF;&#x7531;&#x64F4;&#x5C55;&#x4E0D;&#x652F;&#x6301; <code>YmBeforeActionExt</code> &#x548C; <code>YmExceptionExt</code> &#x5247;&#x7121;&#x6CD5;&#x4F7F;&#x7528;.</p><blockquote><p>&#x81EA;&#x5B9A;&#x7FA9;&#x64F4;&#x5C55;&#x9700;&#x8981;&#x6CE8;&#x610F; weight &#x65B9;&#x6CD5;, &#x8A72;&#x65B9;&#x6CD5;&#x7684;&#x542B;&#x7FA9;&#x662F;&#x6B64;&#x64F4;&#x5C55;&#x7684;&#x6B0A;&#x91CD;, &#x6B0A;&#x91CD;&#x5C07;&#x5F71;&#x97FF;&#x64F4;&#x5C55;&#x7684;&#x57F7;&#x884C;&#x9806;&#x5E8F;, &#x53EF;&#x53D6;&#x503C;&#x7BC4;&#x570D; 1-9 &#x4E4B;&#x9593;&#x6D6E;&#x9EDE;&#x6578;, 0-1 &#x4EE5;&#x53CA; 9-10 &#x7232; Yosart &#x4FDD;&#x7559;&#x6B0A;&#x91CD;. &#x9ED8;&#x8A8D;&#x6703;&#x96A8;&#x6A5F;&#x751F;&#x6210;, &#x7121;&#x9700;&#x95DC;&#x6CE8;.</p></blockquote><h2 id="&#x4F7F;&#x7528;">&#x4F7F;&#x7528;</h2><blockquote><p>Yosart &#x81EA;&#x5E36; EyRouterExt &#x8DEF;&#x7531;&#x64F4;&#x5C55;, &#x56E0;&#x6B64;&#x4E0B;&#x9762;&#x63CF;&#x8FF0;&#x7684;&#x4F7F;&#x7528;&#x65B9;&#x5F0F;&#x5747;&#x662F; EyRouterExt &#x6240;&#x652F;&#x6301;&#x7684;.</p></blockquote><p>&#x4E00;&#x500B;&#x7C21;&#x55AE;&#x7684; Yosart &#x4F7F;&#x7528;&#x6848;&#x4F8B;.</p><pre><code class="lang-java">Yosart.createServer()
+<li><p>OyResource</p>
+<p>Yosart &#x6240;&#x6709;&#x63A7;&#x5236;&#x5668;&#x5206;&#x6790;&#x5F8C;&#x7684;&#x8CC7;&#x6E90;, &#x5305;&#x62EC; <code>YoAction</code> &#x4EE5;&#x53CA; <code>YoControl</code></p>
+</li>
+<li><p>YoExt</p>
+<p>Yosart &#x64F4;&#x5C55;&#x63A5;&#x5165;&#x63A5;&#x53E3;</p>
+</li>
+<li><p>YoPlugin</p>
+<p>Yosart &#x63D2;&#x4EF6;&#x52A0;&#x5165;&#x63A5;&#x53E3;</p>
+</li>
+</ul>
+<h2 id="&#x6838;&#x5FC3;"><a name="&#x6838;&#x5FC3;" class="plugin-anchor" href="#&#x6838;&#x5FC3;"><i class="fa fa-link" aria-hidden="true"></i></a>&#x6838;&#x5FC3;</h2>
+<p>Yosart &#x6838;&#x5FC3;&#x90E8;&#x5206;&#x5747;&#x5728; <code>io.enoa.yosart.kernel</code> &#x5305;&#x4E0B;, kernel &#x4E0B;&#x7684;&#x6240;&#x6709;&#x5305;, &#x4EE5;&#x4E0B;&#x6838;&#x5FC3;&#x4FBF;&#x662F; Yosart &#x6240;&#x505A;&#x7684;&#x4E8B;, &#x62CB;&#x537B;&#x9019;&#x4E9B;&#x6838;&#x5FC3;, &#x5269;&#x4E0B;&#x7684;&#x5168;&#x90E8;&#x4EA4;&#x7D66; &#x63D2;&#x4EF6; &#x6216; &#x64F4;&#x5C55; &#x9032;&#x884C;&#x8655;&#x7406;.</p>
+<h3 id="anno"><a name="anno" class="plugin-anchor" href="#anno"><i class="fa fa-link" aria-hidden="true"></i></a>anno</h3>
+<p>&#x8A3B;&#x89E3;&#x5305;, Yosart &#x63D0;&#x4F9B;&#x7684;&#x8A3B;&#x89E3;, &#x50C5;&#x6709;&#x4E00;&#x500B; Action &#x8A3B;&#x89E3;, &#x8A72;&#x8A3B;&#x89E3;&#x7528;&#x65BC;&#x7533;&#x660E;&#x63A5;&#x53E3; uri &#x5730;&#x5740;, &#x4EE5;&#x53CA;&#x5141;&#x8A31;&#x7684; http method.</p>
+<h3 id="data"><a name="data" class="plugin-anchor" href="#data"><i class="fa fa-link" aria-hidden="true"></i></a>data</h3>
+<p>&#x6578;&#x64DA;&#x627F;&#x8F09;&#x5BE6;&#x9AD4;&#x985E;</p>
+<h3 id="ext"><a name="ext" class="plugin-anchor" href="#ext"><i class="fa fa-link" aria-hidden="true"></i></a>ext</h3>
+<p>&#x95DC;&#x65BC; Yosart &#x7684;&#x64F4;&#x5C55;, &#x9700;&#x8981;&#x660E;&#x767D;, &#x6240;&#x6709;&#x7684;&#x64F4;&#x5C55;&#x5747;&#x4F86;&#x81EA;&#x65BC; <code>YoExt</code>, &#x4E0D;&#x904E; <code>YoExt</code> &#x4E26;&#x4E0D;&#x662F;&#x88AB;&#x76F4;&#x63A5;&#x5BE6;&#x73FE;&#x7684;, &#x800C;&#x662F;&#x901A;&#x904E;&#x5177;&#x9AD4;&#x4E0D;&#x540C;&#x7684;&#x63A5;&#x53E3;&#x5BE6;&#x73FE;, &#x4F8B;&#x5982; &#x6E32;&#x67D3;&#x64F4;&#x5C55; (<code>YmRenderExt</code>) &#x8DEF;&#x7531;&#x64F4;&#x5C55; (<code>YoRouterExt</code>) &#x7B49;, &#x8A73;&#x7D30;&#x898B; <a href="#&#x64F4;&#x5C55;">&#x64F4;&#x5C55;</a></p>
+<h3 id="http"><a name="http" class="plugin-anchor" href="#http"><i class="fa fa-link" aria-hidden="true"></i></a>http</h3>
+<p>Yosart &#x57FA;&#x65BC; Repeater , &#x4F46;&#x662F; Repeater &#x7684; Request &#x50C5;&#x50C5;&#x662F;&#x7C21;&#x55AE;&#x7684; http &#x8ACB;&#x6C42;&#x4FE1;&#x606F;, &#x4F46;&#x662F;&#x5C0D;&#x65BC; Web &#x6846;&#x67B6;&#x800C;&#x8A00;&#x9019;&#x4E9B;&#x662F;&#x4E0D;&#x5920;&#x7684;, Yosart &#x652F;&#x6301; Restful &#x98A8;&#x683C;&#x7684; API, &#x9019;&#x4E9B; Repeater &#x4E26;&#x6C92;&#x6709;&#x505A;, &#x4E14; Repeater &#x4E5F;&#x672A;&#x63D0;&#x4F9B;&#x5C07;&#x8ACB;&#x6C42;&#x53C3;&#x6578;&#x8F49;&#x63DB;&#x7232;&#x5BE6;&#x9AD4;&#x7684;&#x65B9;&#x6CD5;, http &#x5305;&#x4E0B;&#x662F; Yosart &#x5C0D; Repeater &#x7684; Request &#x7684;&#x9AD8;&#x7D1A;&#x5C01;&#x88DD;.</p>
+<h3 id="mount"><a name="mount" class="plugin-anchor" href="#mount"><i class="fa fa-link" aria-hidden="true"></i></a>mount</h3>
+<p>mount &#x4E2D;&#x53EA;&#x6709;&#x4E00;&#x500B; <code>OyMountd</code> &#x985E;, &#x5728;&#x6B63;&#x5E38;&#x7684;&#x696D;&#x52D9;&#x908F;&#x8F2F;&#x958B;&#x767C;&#x4E2D;&#x662F;&#x7528;&#x4E0D;&#x5230;&#x7684;. Yosart &#x63D0;&#x4F9B;&#x4E00;&#x500B;&#x4FE1;&#x606F;&#x8F38;&#x51FA;&#x7684;&#x9801;&#x9762; (&#x5F8C;&#x7E8C;&#x6703;&#x8AAA;&#x9053;). &#x800C; <code>OyMountd</code> &#x662F;&#x5C07;&#x5176;&#x4ED6;&#x7D44;&#x4EF6;&#x7684;&#x4FE1;&#x606F;&#x639B;&#x8F09;&#x5230; Yosart &#x4E2D;.</p>
+<h3 id="render"><a name="render" class="plugin-anchor" href="#render"><i class="fa fa-link" aria-hidden="true"></i></a>render</h3>
+<p>&#x6240;&#x6709;&#x6E32;&#x67D3;&#x64F4;&#x5C55;&#x6700;&#x7D42;&#x6E32;&#x67D3;&#x7684;&#x8FD4;&#x56DE;&#x63A5;&#x53E3; <code>YoRender</code></p>
+<h3 id="resources"><a name="resources" class="plugin-anchor" href="#resources"><i class="fa fa-link" aria-hidden="true"></i></a>resources</h3>
+<p>Action &#x8CC7;&#x6E90;&#x5305;,  <code>YoAction</code> , <code>YoRouter</code> &#x4EE5;&#x53CA; <code>YoControl</code> &#x5747;&#x5B9A;&#x7FA9;&#x518D;&#x6B64;, &#x4E5F;&#x5305;&#x542B;&#x6240;&#x6709; Action &#x8CC7;&#x6E90;&#x7684;&#x5206;&#x6790;, &#x6700;&#x7D42;&#x8655;&#x7406;&#x6210; <code>OyResource</code></p>
+<h2 id="resp"><a name="resp" class="plugin-anchor" href="#resp"><i class="fa fa-link" aria-hidden="true"></i></a>Resp</h2>
+<p>Yosart &#x9664;&#x4E86;&#x6838;&#x5FC3;&#x5305;&#x4E4B;&#x5916;, &#x9084;&#x63D0;&#x4F9B;&#x4E86; Response &#x69CB;&#x9020;&#x5668;, <code>io.enoa.yosart.resp</code> &#x5305;&#x4E0B;, &#x5B58;&#x5728;&#x5169;&#x7A2E;&#x69CB;&#x9020;&#x5668;</p>
+<ul>
+<li>Resp</li>
+<li>Renderer</li>
+</ul>
+<p>&#x5340;&#x5225;&#x662F;, Renderer &#x6240;&#x69CB;&#x9020;&#x7684;&#x5167;&#x5BB9;&#x90FD;&#x662F;&#x901A;&#x904E;&#x6E32;&#x67D3;&#x64F4;&#x5C55;&#x9032;&#x884C;&#x6E32;&#x67D3;&#x7684;&#x5167;&#x5BB9;, &#x800C; Resp &#x53EF;&#x4EE5;&#x69CB;&#x9020;&#x6E32;&#x67D3;&#x5167;&#x5BB9;&#x4E4B;&#x5916;, &#x9084;&#x652F;&#x6301; Response &#x76F8;&#x95DC;&#x503C;&#x7684;&#x8A2D;&#x5B9A;, &#x5305;&#x62EC; Header Cookie &#x7B49;.</p>
+<h2 id="restful"><a name="restful" class="plugin-anchor" href="#restful"><i class="fa fa-link" aria-hidden="true"></i></a>Restful</h2>
+<p>Yosart &#x652F;&#x6301; Restful &#x98A8;&#x683C;&#x63A5;&#x53E3;, &#x63A5;&#x53E3; uri &#x5B9A;&#x7FA9;&#x9075;&#x5FAA;&#x4EE5; <code>:</code> &#x8868;&#x660E;&#x53C3;&#x6578;&#x540D;, &#x4F8B;&#x5982;&#x4EE5;&#x4E0B;&#x6848;&#x4F8B;</p>
+<pre><code class="lang-text">GET  /api/user/:id
+PUT  /api/user/:id
+</code></pre>
+<p>&#x5373;&#x53EF;&#x901A;&#x904E; Request &#x4E2D; <code>variable(&quot;id&quot;)</code> &#x7684;&#x65B9;&#x5F0F;&#x7372;&#x53D6;.</p>
+<h2 id="&#x63D2;&#x4EF6;--&#x64F4;&#x5C55;"><a name="&#x63D2;&#x4EF6;--&#x64F4;&#x5C55;" class="plugin-anchor" href="#&#x63D2;&#x4EF6;--&#x64F4;&#x5C55;"><i class="fa fa-link" aria-hidden="true"></i></a>&#x63D2;&#x4EF6; &amp; &#x64F4;&#x5C55;</h2>
+<p>&#x95DC;&#x65BC;&#x63D2;&#x4EF6;&#x548C;&#x64F4;&#x5C55;&#x7684;&#x5340;&#x5225;, &#x65E9;&#x4E9B;&#x5E74;&#x5728; firefox &#x8CBC;&#x5427;&#x4E2D;&#x6709;&#x4E00;&#x53E5;&#x8A71;&#x63CF;&#x8FF0;&#x7684;&#x5F88;&#x597D; <code>&#x6269;&#x5C55;&#x8D1F;&#x8D23;&#x6269;&#x5F00;&#x6765;, &#x63D2;&#x4EF6;&#x8D1F;&#x8D23;&#x63D2;&#x8FDB;&#x53BB;.</code></p>
+<h3 id="&#x63D2;&#x4EF6;"><a name="&#x63D2;&#x4EF6;" class="plugin-anchor" href="#&#x63D2;&#x4EF6;"><i class="fa fa-link" aria-hidden="true"></i></a>&#x63D2;&#x4EF6;</h3>
+<p>Yosart &#x63D2;&#x4EF6;, &#x53EA;&#x9700;&#x8981;&#x5BE6;&#x73FE; <code>YoPlugin</code> &#x63A5;&#x53E3;&#x5373;&#x53EF;, &#x5553;&#x52D5;&#x6642;, &#x52A0;&#x5165;&#x5230; Yosart &#x4E2D;.</p>
+<h3 id="&#x64F4;&#x5C55;"><a name="&#x64F4;&#x5C55;" class="plugin-anchor" href="#&#x64F4;&#x5C55;"><i class="fa fa-link" aria-hidden="true"></i></a>&#x64F4;&#x5C55;</h3>
+<p>Yosart &#x64F4;&#x5C55;&#x76EE;&#x524D;&#x652F;&#x6301;&#x7684;&#x6709;</p>
+<ul>
+<li><p>YmAssetsExt</p>
+<p>&#x975C;&#x614B;&#x8CC7;&#x6E90;&#x64F4;&#x5C55;</p>
+</li>
+<li><p>YmBeforeActionExt</p>
+<p>Action &#x524D;&#x7F6E;&#x64F4;&#x5C55;, &#x7528;&#x65BC;&#x5728;&#x57F7;&#x884C; Action &#x524D;&#x57F7;&#x884C;&#x7684;&#x64CD;&#x4F5C;</p>
+</li>
+<li><p>YmBootHookExt</p>
+<p>&#x5553;&#x52D5;&#x9264;&#x5B50;, &#x6703;&#x5728; Yosart &#x5553;&#x52D5;&#x4E4B;&#x524D;&#x8ABF;&#x7528;&#x7684;&#x64F4;&#x5C55;</p>
+</li>
+<li><p>YmExceptionExt</p>
+<p>&#x7528;&#x65BC;&#x5728;&#x8ABF;&#x7528; Action &#x51FA;&#x73FE;&#x7570;&#x5E38;&#x7684;&#x60C5;&#x6CC1;&#x4E0B;&#x57F7;&#x884C;&#x7684;&#x64F4;&#x5C55;</p>
+</li>
+<li><p>YmRenderExt</p>
+<p>&#x6E32;&#x67D3;&#x64F4;&#x5C55;</p>
+</li>
+<li><p>YmRouterExt</p>
+<p>&#x8DEF;&#x7531;&#x64F4;&#x5C55;</p>
+</li>
+</ul>
+<p>&#x9700;&#x8981;&#x6CE8;&#x610F;&#x7684;&#x662F;, &#x9019;&#x88CF;&#x7406;&#x51FA;&#x7684;&#x64F4;&#x5C55;&#x4E26;&#x975E;&#x90FD;&#x662F; Yosart &#x76F4;&#x63A5;&#x652F;&#x6301;, Yosart &#x76F4;&#x63A5;&#x652F;&#x6301;&#x7684;&#x6709; <code>YmAssetsExt</code>, <code>YmRenderExt</code>, <code>YmBootHookExt</code> &#x4EE5;&#x53CA; <code>YmRouterExt</code>.</p>
+<p><code>YmBeforeActionExt</code> &#x548C; <code>YmExceptionExt</code> &#x8996;&#x9078;&#x64C7;&#x7684; <code>YmRouterExt</code> &#x662F;&#x5426;&#x652F;&#x63F4;, Yosart &#x7121;&#x6CD5;&#x63A7;&#x5236;, &#x5982;&#x679C;&#x9078;&#x64C7;&#x7684;&#x8DEF;&#x7531;&#x64F4;&#x5C55;&#x4E0D;&#x652F;&#x6301; <code>YmBeforeActionExt</code> &#x548C; <code>YmExceptionExt</code> &#x5247;&#x7121;&#x6CD5;&#x4F7F;&#x7528;.</p>
+<blockquote>
+<p>&#x81EA;&#x5B9A;&#x7FA9;&#x64F4;&#x5C55;&#x9700;&#x8981;&#x6CE8;&#x610F; weight &#x65B9;&#x6CD5;, &#x8A72;&#x65B9;&#x6CD5;&#x7684;&#x542B;&#x7FA9;&#x662F;&#x6B64;&#x64F4;&#x5C55;&#x7684;&#x6B0A;&#x91CD;, &#x6B0A;&#x91CD;&#x5C07;&#x5F71;&#x97FF;&#x64F4;&#x5C55;&#x7684;&#x57F7;&#x884C;&#x9806;&#x5E8F;, &#x53EF;&#x53D6;&#x503C;&#x7BC4;&#x570D; 1-9 &#x4E4B;&#x9593;&#x6D6E;&#x9EDE;&#x6578;, 0-1 &#x4EE5;&#x53CA; 9-10 &#x7232; Yosart &#x4FDD;&#x7559;&#x6B0A;&#x91CD;. &#x9ED8;&#x8A8D;&#x6703;&#x96A8;&#x6A5F;&#x751F;&#x6210;, &#x7121;&#x9700;&#x95DC;&#x6CE8;.</p>
+</blockquote>
+<h2 id="&#x4F7F;&#x7528;"><a name="&#x4F7F;&#x7528;" class="plugin-anchor" href="#&#x4F7F;&#x7528;"><i class="fa fa-link" aria-hidden="true"></i></a>&#x4F7F;&#x7528;</h2>
+<blockquote>
+<p>Yosart &#x81EA;&#x5E36; EyRouterExt &#x8DEF;&#x7531;&#x64F4;&#x5C55;, &#x56E0;&#x6B64;&#x4E0B;&#x9762;&#x63CF;&#x8FF0;&#x7684;&#x4F7F;&#x7528;&#x65B9;&#x5F0F;&#x5747;&#x662F; EyRouterExt &#x6240;&#x652F;&#x6301;&#x7684;.</p>
+</blockquote>
+<p>&#x4E00;&#x500B;&#x7C21;&#x55AE;&#x7684; Yosart &#x4F7F;&#x7528;&#x6848;&#x4F8B;.</p>
+<pre><code class="lang-java">Yosart.createServer()
   .handle(Method.GET, <span class="hljs-string">&quot;/&quot;</span>, (req) -&gt; Resp.with(req).render(<span class="hljs-string">&quot;yosart&quot;</span>).end())
-  .listen();</code></pre>
-<p>Yosart &#x9ED8;&#x8A8D;&#x642D;&#x8F09;&#x7684; Web &#x670D;&#x52D9;&#x5668;&#x662F; NanoHttpd, &#x9ED8;&#x8A8D;&#x76E3;&#x807D;&#x7AEF;&#x53E3; 9102, &#x53EA;&#x9700;&#x5728;&#x5DE5;&#x7A0B;&#x4E2D;&#x5F15;&#x7528; Repeater &#x4EE5;&#x53CA; NanoHttpd &#x5373;&#x53EF;.</p><p>&#x662F;&#x7684;, &#x9019;&#x500B;&#x5F88;&#x7C21;&#x55AE;, &#x63A5;&#x4E0B;&#x4F86;&#x770B;&#x4E00;&#x500B;&#x5F88;&#x5B8C;&#x5584;&#x7684;&#x4F7F;&#x7528;&#x6848;&#x4F8B;</p><pre><code class="lang-java">Yosart.createServer()
+  .listen();
+</code></pre>
+<p>Yosart &#x9ED8;&#x8A8D;&#x642D;&#x8F09;&#x7684; Web &#x670D;&#x52D9;&#x5668;&#x662F; NanoHttpd, &#x9ED8;&#x8A8D;&#x76E3;&#x807D;&#x7AEF;&#x53E3; 9102, &#x53EA;&#x9700;&#x5728;&#x5DE5;&#x7A0B;&#x4E2D;&#x5F15;&#x7528; Repeater &#x4EE5;&#x53CA; NanoHttpd &#x5373;&#x53EF;.</p>
+<p>&#x662F;&#x7684;, &#x9019;&#x500B;&#x5F88;&#x7C21;&#x55AE;, &#x63A5;&#x4E0B;&#x4F86;&#x770B;&#x4E00;&#x500B;&#x5F88;&#x5B8C;&#x5584;&#x7684;&#x4F7F;&#x7528;&#x6848;&#x4F8B;</p>
+<pre><code class="lang-java">Yosart.createServer()
   .config(<span class="hljs-keyword">this</span>.config())
   .repeater(<span class="hljs-keyword">new</span> YasartRepeaterFactory())
   .provider(<span class="hljs-keyword">new</span> NanoHTTPDProvider())
@@ -563,20 +640,54 @@ PUT  /api/user/:id</code></pre>
       <span class="hljs-keyword">return</span> Resp.with(request).render(<span class="hljs-string">&quot;action anno&quot;</span>).end();
     }
   })
-  .listen(<span class="hljs-number">9102</span>);</code></pre>
-<blockquote><p>&#x6848;&#x4F8B;&#x4EE3;&#x78BC;&#x53EF;&#x901A;&#x904E;&#x6E90;&#x78BC; <code>/enoa-example/example-yosart</code> &#x7372;&#x53D6;</p></blockquote><p>&#x9019;&#x500B;&#x6848;&#x4F8B;&#x4E2D;&#x6D89;&#x53CA;&#x5230;&#x4E86;&#x5F88;&#x591A;, &#x63D2;&#x4EF6; &#x64F4;&#x5C55;, &#x9019;&#x4E9B;&#x4E0D;&#x5C6C;&#x65BC; Yosart &#x8981;&#x4ECB;&#x7D39;&#x7684;&#x90E8;&#x5206;, &#x53BB;&#x67E5;&#x95B1;&#x76F8;&#x95DC;&#x63D2;&#x4EF6;&#x6216;&#x64F4;&#x5C55;&#x7684;&#x6587;&#x6A94;. &#x9019;&#x88CF;&#x4E3B;&#x8981;&#x4ECB;&#x7D39;&#x8207; Yosart &#x5BE6;&#x73FE;&#x6709;&#x95DC;&#x7684;&#x90E8;&#x5206;.</p><p>&#x5728;&#x8AAA;&#x8DEF;&#x7531;&#x4E4B;&#x524D;, &#x5148;&#x770B;&#x4EE5;&#x4E0B; Yosart &#x5553;&#x52D5;&#x63A5;&#x53E3;, &#x8A72;&#x63A5;&#x53E3;&#x662F; Yosart &#x6700;&#x4E2D;&#x7684;&#x5730;&#x65B9;, &#x6240;&#x6709;&#x63D2;&#x4EF6;, &#x64F4;&#x5C55; &#x8DEF;&#x7531;&#x90FD;&#x662F;&#x5728;&#x9019;&#x88CF;&#x8A3B;&#x518A;. &#x4E0B;&#x9762;&#x5217;&#x51FA; Yosart &#x6240;&#x6709;&#x65B9;&#x6CD5;</p><ul><li><p>provider</p><p>&#x9078;&#x64C7; Web &#x670D;&#x52D9;&#x5668;&#x63D0;&#x4F9B;&#x8005;, &#x8996;&#x9700;&#x8981;&#x9078;&#x64C7;&#x4E00;&#x500B;&#x63D0;&#x4F9B;&#x8005;.</p></li>
-<li><p>repeater</p><p>Repeater &#x914D;&#x7F6E;&#x9805;, EoxAccessor &#x8A2A;&#x554F;&#x5668;&#x914D;&#x7F6E;&#x5C31;&#x5728;&#x6B64;&#x8655;, Yosart &#x63D0;&#x4F9B;&#x4E86;&#x4E00;&#x500B;&#x9ED8;&#x8A8D;&#x7684;&#x914D;&#x7F6E; <code>YasartRepeaterFactory</code>, &#x901A;&#x5E38;&#x9019;&#x500B;&#x662F;&#x4E0D;&#x9700;&#x8981;&#x9032;&#x884C;&#x914D;&#x7F6E;&#x7684;, &#x5982;&#x679C;&#x81EA;&#x5B9A;&#x7FA9;&#x4E86;&#x5176;&#x4E2D;&#x4E86; accessor &#x90A3;&#x9EBC;&#x4E5F;&#x5C31;&#x8868;&#x793A;&#x7740;&#x653E;&#x68C4;&#x4E86; Yosart &#x63D0;&#x4F9B;&#x7684;&#x8ACB;&#x6C42;&#x89E3;&#x6C7A;&#x65B9;&#x6848;, &#x90A3;&#x9EBC;&#x5C31;&#x53BB;&#x770B;&#x76F8;&#x61C9;&#x7684; accessor &#x662F;&#x5982;&#x4F55;&#x5DE5;&#x4F5C;&#x7684;.</p></li>
-<li><p>log</p><p>Yosart &#x65E5;&#x8A8C;&#x63D0;&#x4F9B;&#x8005;&#x9078;&#x64C7;</p></li>
-<li><p>plugin</p><p>&#x6DFB;&#x52A0;&#x63D2;&#x4EF6;, &#x63D2;&#x4EF6;&#x6DFB;&#x52A0;&#x5F8C;&#x6703;&#x99AC;&#x4E0A;&#x57F7;&#x884C;.</p></li>
-<li><p>ext</p><p>&#x6DFB;&#x52A0;&#x64F4;&#x5C55;, &#x64F4;&#x5C55;&#x5728;&#x670D;&#x52D9;&#x76E3;&#x807D;&#x524D;&#x4E00;&#x8D77;&#x57F7;&#x884C;</p></li>
-<li><p>ssl</p><p>&#x958B;&#x5553; ssl &#x670D;&#x52D9;</p></li>
-<li><p>handle</p><p>&#x8A3B;&#x518A;&#x8DEF;&#x7531;</p></li>
-<li><p>name</p><p>&#x61C9;&#x7528;&#x540D;&#x7A31;</p></li>
-<li><p>context</p><p>Http context</p></li>
-<li><p>config</p><p>Yosart &#x914D;&#x7F6E;&#x4FE1;&#x606F;</p></li>
-<li><p>assets</p><p>&#x975C;&#x614B;&#x8CC7;&#x6E90;&#x914D;&#x7F6E;</p></li>
-<li><p>listen</p><p>&#x670D;&#x52D9;&#x76E3;&#x807D;</p></li></ul>
-<p>&#x9019;&#x88CF;&#x4E3B;&#x8981;&#x8AAA;&#x4E0B; handle &#x4EE5;&#x53CA; assets &#x65B9;&#x6CD5;</p><p>handle &#x8DEF;&#x7531;&#x8A3B;&#x518A;, &#x4F9B;&#x63D0;&#x4F9B;&#x4E86;&#x4EE5;&#x4E0B;&#x5E7E;&#x7A2E;&#x65B9;&#x5F0F;</p><pre><code class="lang-java"><span class="hljs-function">Yosart <span class="hljs-title">handle</span><span class="hljs-params">(Method method, String uri, YoAction action)</span></span>;
+  .listen(<span class="hljs-number">9102</span>);
+</code></pre>
+<blockquote>
+<p>&#x6848;&#x4F8B;&#x4EE3;&#x78BC;&#x53EF;&#x901A;&#x904E;&#x6E90;&#x78BC; <code>/enoa-example/example-yosart</code> &#x7372;&#x53D6;</p>
+</blockquote>
+<p>&#x9019;&#x500B;&#x6848;&#x4F8B;&#x4E2D;&#x6D89;&#x53CA;&#x5230;&#x4E86;&#x5F88;&#x591A;, &#x63D2;&#x4EF6; &#x64F4;&#x5C55;, &#x9019;&#x4E9B;&#x4E0D;&#x5C6C;&#x65BC; Yosart &#x8981;&#x4ECB;&#x7D39;&#x7684;&#x90E8;&#x5206;, &#x53BB;&#x67E5;&#x95B1;&#x76F8;&#x95DC;&#x63D2;&#x4EF6;&#x6216;&#x64F4;&#x5C55;&#x7684;&#x6587;&#x6A94;. &#x9019;&#x88CF;&#x4E3B;&#x8981;&#x4ECB;&#x7D39;&#x8207; Yosart &#x5BE6;&#x73FE;&#x6709;&#x95DC;&#x7684;&#x90E8;&#x5206;.</p>
+<p>&#x5728;&#x8AAA;&#x8DEF;&#x7531;&#x4E4B;&#x524D;, &#x5148;&#x770B;&#x4EE5;&#x4E0B; Yosart &#x5553;&#x52D5;&#x63A5;&#x53E3;, &#x8A72;&#x63A5;&#x53E3;&#x662F; Yosart &#x6700;&#x4E2D;&#x7684;&#x5730;&#x65B9;, &#x6240;&#x6709;&#x63D2;&#x4EF6;, &#x64F4;&#x5C55; &#x8DEF;&#x7531;&#x90FD;&#x662F;&#x5728;&#x9019;&#x88CF;&#x8A3B;&#x518A;. &#x4E0B;&#x9762;&#x5217;&#x51FA; Yosart &#x6240;&#x6709;&#x65B9;&#x6CD5;</p>
+<ul>
+<li><p>provider</p>
+<p>&#x9078;&#x64C7; Web &#x670D;&#x52D9;&#x5668;&#x63D0;&#x4F9B;&#x8005;, &#x8996;&#x9700;&#x8981;&#x9078;&#x64C7;&#x4E00;&#x500B;&#x63D0;&#x4F9B;&#x8005;.</p>
+</li>
+<li><p>repeater</p>
+<p>Repeater &#x914D;&#x7F6E;&#x9805;, EoxAccessor &#x8A2A;&#x554F;&#x5668;&#x914D;&#x7F6E;&#x5C31;&#x5728;&#x6B64;&#x8655;, Yosart &#x63D0;&#x4F9B;&#x4E86;&#x4E00;&#x500B;&#x9ED8;&#x8A8D;&#x7684;&#x914D;&#x7F6E; <code>YasartRepeaterFactory</code>, &#x901A;&#x5E38;&#x9019;&#x500B;&#x662F;&#x4E0D;&#x9700;&#x8981;&#x9032;&#x884C;&#x914D;&#x7F6E;&#x7684;, &#x5982;&#x679C;&#x81EA;&#x5B9A;&#x7FA9;&#x4E86;&#x5176;&#x4E2D;&#x4E86; accessor &#x90A3;&#x9EBC;&#x4E5F;&#x5C31;&#x8868;&#x793A;&#x7740;&#x653E;&#x68C4;&#x4E86; Yosart &#x63D0;&#x4F9B;&#x7684;&#x8ACB;&#x6C42;&#x89E3;&#x6C7A;&#x65B9;&#x6848;, &#x90A3;&#x9EBC;&#x5C31;&#x53BB;&#x770B;&#x76F8;&#x61C9;&#x7684; accessor &#x662F;&#x5982;&#x4F55;&#x5DE5;&#x4F5C;&#x7684;.</p>
+</li>
+<li><p>log</p>
+<p>Yosart &#x65E5;&#x8A8C;&#x63D0;&#x4F9B;&#x8005;&#x9078;&#x64C7;</p>
+</li>
+<li><p>plugin</p>
+<p>&#x6DFB;&#x52A0;&#x63D2;&#x4EF6;, &#x63D2;&#x4EF6;&#x6DFB;&#x52A0;&#x5F8C;&#x6703;&#x99AC;&#x4E0A;&#x57F7;&#x884C;.</p>
+</li>
+<li><p>ext</p>
+<p>&#x6DFB;&#x52A0;&#x64F4;&#x5C55;, &#x64F4;&#x5C55;&#x5728;&#x670D;&#x52D9;&#x76E3;&#x807D;&#x524D;&#x4E00;&#x8D77;&#x57F7;&#x884C;</p>
+</li>
+<li><p>ssl</p>
+<p>&#x958B;&#x5553; ssl &#x670D;&#x52D9;</p>
+</li>
+<li><p>handle</p>
+<p>&#x8A3B;&#x518A;&#x8DEF;&#x7531;</p>
+</li>
+<li><p>name</p>
+<p>&#x61C9;&#x7528;&#x540D;&#x7A31;</p>
+</li>
+<li><p>context</p>
+<p>Http context</p>
+</li>
+<li><p>config</p>
+<p>Yosart &#x914D;&#x7F6E;&#x4FE1;&#x606F;</p>
+</li>
+<li><p>assets</p>
+<p>&#x975C;&#x614B;&#x8CC7;&#x6E90;&#x914D;&#x7F6E;</p>
+</li>
+<li><p>listen</p>
+<p>&#x670D;&#x52D9;&#x76E3;&#x807D;</p>
+</li>
+</ul>
+<p>&#x9019;&#x88CF;&#x4E3B;&#x8981;&#x8AAA;&#x4E0B; handle &#x4EE5;&#x53CA; assets &#x65B9;&#x6CD5;</p>
+<p>handle &#x8DEF;&#x7531;&#x8A3B;&#x518A;, &#x4F9B;&#x63D0;&#x4F9B;&#x4E86;&#x4EE5;&#x4E0B;&#x5E7E;&#x7A2E;&#x65B9;&#x5F0F;</p>
+<pre><code class="lang-java"><span class="hljs-function">Yosart <span class="hljs-title">handle</span><span class="hljs-params">(Method method, String uri, YoAction action)</span></span>;
 
 <span class="hljs-function">Yosart <span class="hljs-title">handle</span><span class="hljs-params">(String uri, YoAction action)</span></span>;
 
@@ -586,28 +697,49 @@ PUT  /api/user/:id</code></pre>
 
 <span class="hljs-function">Yosart <span class="hljs-title">handle</span><span class="hljs-params">(Class&lt;? extends YaControl&gt; control)</span></span>;
 
-<span class="hljs-function">Yosart <span class="hljs-title">handle</span><span class="hljs-params">(YoRouter router)</span></span>;</code></pre>
-<h3 id="yoaction">YoAction</h3><p>YoAction &#x63D0;&#x4F9B;&#x5169;&#x7A2E;&#x8A3B;&#x518A;&#x65B9;&#x5F0F;, &#x9650;&#x5B9A; Method &#x548C;&#x4E0D;&#x9650;&#x5B9A;, &#x7576;&#x7136;&#x9019;&#x500B;&#x5177;&#x9AD4;&#x662F;&#x4EC0;&#x9EBC;&#x542B;&#x7FA9;&#x8996;&#x8DEF;&#x7531;&#x64F4;&#x5C55;&#x5982;&#x4F55;&#x5B9A;&#x7FA9;, &#x9ED8;&#x8A8D;&#x7684;&#x8DEF;&#x7531;&#x64F4;&#x5C55;&#x4E2D;, &#x6C92;&#x6709; Method &#x5247;&#x8868;&#x660E;&#x5141;&#x8A31;&#x4EFB;&#x4F55; Method &#x8ACB;&#x6C42;, &#x9019;&#x500B;&#x6982;&#x5FF5;&#x5728; Control &#x4E2D;&#x4E5F;&#x9069;&#x7528;.</p><p>YoAction &#x5B9A;&#x7FA9;&#x65B9;&#x5F0F;</p><pre><code class="lang-java"><span class="hljs-keyword">new</span> YoAction() {
+<span class="hljs-function">Yosart <span class="hljs-title">handle</span><span class="hljs-params">(YoRouter router)</span></span>;
+</code></pre>
+<h3 id="yoaction"><a name="yoaction" class="plugin-anchor" href="#yoaction"><i class="fa fa-link" aria-hidden="true"></i></a>YoAction</h3>
+<p>YoAction &#x63D0;&#x4F9B;&#x5169;&#x7A2E;&#x8A3B;&#x518A;&#x65B9;&#x5F0F;, &#x9650;&#x5B9A; Method &#x548C;&#x4E0D;&#x9650;&#x5B9A;, &#x7576;&#x7136;&#x9019;&#x500B;&#x5177;&#x9AD4;&#x662F;&#x4EC0;&#x9EBC;&#x542B;&#x7FA9;&#x8996;&#x8DEF;&#x7531;&#x64F4;&#x5C55;&#x5982;&#x4F55;&#x5B9A;&#x7FA9;, &#x9ED8;&#x8A8D;&#x7684;&#x8DEF;&#x7531;&#x64F4;&#x5C55;&#x4E2D;, &#x6C92;&#x6709; Method &#x5247;&#x8868;&#x660E;&#x5141;&#x8A31;&#x4EFB;&#x4F55; Method &#x8ACB;&#x6C42;, &#x9019;&#x500B;&#x6982;&#x5FF5;&#x5728; Control &#x4E2D;&#x4E5F;&#x9069;&#x7528;.</p>
+<p>YoAction &#x5B9A;&#x7FA9;&#x65B9;&#x5F0F;</p>
+<pre><code class="lang-java"><span class="hljs-keyword">new</span> YoAction() {
   <span class="hljs-meta">@Override</span>
   <span class="hljs-function"><span class="hljs-keyword">public</span> Response <span class="hljs-title">handle</span><span class="hljs-params">(YoRequest request)</span> </span>{
     <span class="hljs-keyword">return</span> Resp.with(request).render(<span class="hljs-string">&quot;action&quot;</span>).end();
   }
-}</code></pre>
-<p>&#x4E5F;&#x53EF;&#x4EE5;&#x4F7F;&#x7528; Java 8 &#x63D0;&#x4F9B;&#x7684; lambda &#x8868;&#x9054;&#x5F0F;&#x65B9;&#x5F0F;</p><pre><code class="lang-java">(req) -&gt; Resp.with(req).render(<span class="hljs-string">&quot;action&quot;</span>).end()</code></pre>
-<h3 id="yocontrol">YoControl</h3><p>YoControl &#x8A3B;&#x518A;, &#x9700;&#x8981;&#x5C07;&#x8A3B;&#x518A;&#x7684;&#x63A7;&#x5236;&#x5668;&#x7E7C;&#x627F; YoControl/YeControl/ YaControl &#x985E;.</p><p>&#x4E4B;&#x6240;&#x4EE5;&#x63D0;&#x4F9B;&#x4E09;&#x7A2E;&#x4E0D;&#x540C; Control &#x662F;&#x7232;&#x4E86;&#x4E0D;&#x540C;&#x7684;&#x8DEF;&#x7531;&#x5BE6;&#x73FE;&#x8003;&#x616E;, &#x9019;&#x4E09;&#x7A2E;&#x4E0D;&#x540C;&#x7684; Control &#x7684;&#x5340;&#x5225;</p><table>
+}
+</code></pre>
+<p>&#x4E5F;&#x53EF;&#x4EE5;&#x4F7F;&#x7528; Java 8 &#x63D0;&#x4F9B;&#x7684; lambda &#x8868;&#x9054;&#x5F0F;&#x65B9;&#x5F0F;</p>
+<pre><code class="lang-java">(req) -&gt; Resp.with(req).render(<span class="hljs-string">&quot;action&quot;</span>).end()
+</code></pre>
+<h3 id="yocontrol"><a name="yocontrol" class="plugin-anchor" href="#yocontrol"><i class="fa fa-link" aria-hidden="true"></i></a>YoControl</h3>
+<p>YoControl &#x8A3B;&#x518A;, &#x9700;&#x8981;&#x5C07;&#x8A3B;&#x518A;&#x7684;&#x63A7;&#x5236;&#x5668;&#x7E7C;&#x627F; YoControl/YeControl/ YaControl &#x985E;.</p>
+<p>&#x4E4B;&#x6240;&#x4EE5;&#x63D0;&#x4F9B;&#x4E09;&#x7A2E;&#x4E0D;&#x540C; Control &#x662F;&#x7232;&#x4E86;&#x4E0D;&#x540C;&#x7684;&#x8DEF;&#x7531;&#x5BE6;&#x73FE;&#x8003;&#x616E;, &#x9019;&#x4E09;&#x7A2E;&#x4E0D;&#x540C;&#x7684; Control &#x7684;&#x5340;&#x5225;</p>
+<table>
 <thead>
-<tr><th> CONTROL </th>
-<th> DESCRIPTION </th>
-</tr></thead><tbody>
-<tr><td style="text-align:left"> YaControl </td>
-<td style="text-align:left"> &#x76F4;&#x63A5;&#x5BE6;&#x73FE;&#x81EA; YaResource &#x63A5;&#x53E3;, &#x5167;&#x90E8;&#x5B58;&#x5728; Request &#x4EE5;&#x53CA; Resp </td>
-</tr><tr><td style="text-align:left"> YeControl </td>
-<td style="text-align:left"> &#x7E7C;&#x627F;&#x81EA; YaControl, &#x63D0;&#x4F9B;&#x5C07; Request &#x76F8;&#x540C;&#x65B9;&#x6CD5;&#x800C;&#x4E0D;&#x9700;&#x8981;&#x7372;&#x53D6; Request &#x5F8C;&#x518D;&#x7372;&#x53D6;&#x53C3;&#x6578;&#x4FE1;&#x606F; </td>
-</tr><tr><td style="text-align:left"> YoControl </td>
-<td style="text-align:left"> &#x7E7C;&#x627F;&#x81EA; YoControl, &#x63D0;&#x4F9B; render &#x7CFB;&#x5217;&#x65B9;&#x6CD5;</td>
-</tr></tbody></table>
-
-<p>&#x61C9;&#x7528;&#x5834;&#x666F;&#x4E0D;&#x540C;, &#x4F8B;&#x5982;&#x9ED8;&#x8A8D;&#x7684;&#x8DEF;&#x7531;&#x5BE6;&#x73FE;, &#x56E0;&#x7232;&#x4E0D;&#x652F;&#x6301;&#x63A7;&#x5236;&#x5668;&#x65B9;&#x6CD5;&#x53C3;&#x6578;&#x89E3;&#x6790;&#x4EE5;&#x53CA;&#x65B9;&#x6CD5;&#x7684;&#x8FD4;&#x56DE;&#x503C;&#x89E3;&#x6790;, &#x90A3;&#x9EBC;&#x4F7F;&#x7528; YoControl &#x65B9;&#x6CD5;&#x6700;&#x5408;&#x9069;, render &#x7CFB;&#x5217;&#x65B9;&#x6CD5;&#x5247;&#x5B8C;&#x6210;&#x4E86;&#x6240;&#x6709;&#x6E32;&#x67D3;&#x529F;&#x80FD;, &#x800C;&#x4E0D;&#x7528;&#x95DC;&#x5FC3;&#x65B9;&#x6CD5;&#x7684;&#x53C3;&#x6578;&#x4EE5;&#x53CA;&#x8FD4;&#x56DE;&#x503C;; &#x53E6;&#x4E00;&#x500B;&#x8DEF;&#x7531; <code>yosart-ext-router-anost</code> &#x5247;&#x652F;&#x6301;&#x65B9;&#x6CD5;&#x53C3;&#x6578;&#x7684;&#x89E3;&#x6790;&#x4EE5;&#x53CA;&#x65B9;&#x6CD5;&#x8FD4;&#x56DE;&#x89E3;&#x6790;, &#x90A3;&#x9EBC; render &#x4EE5;&#x53CA; request &#x7684;&#x65B9;&#x6CD5;&#x5DF2;&#x7D93;&#x6C92;&#x4EC0;&#x9EBC;&#x5FC5;&#x8981;, &#x5B8C;&#x5168;&#x53EF;&#x4EE5;&#x901A;&#x904E;&#x65B9;&#x6CD5;&#x53C3;&#x6578;&#x7372;&#x53D6; request &#x53C3;&#x6578;, &#x56E0;&#x6B64;&#x53EF;&#x4EE5;&#x9078;&#x64C7;&#x7E7C;&#x627F; YaControl, &#x907F;&#x514D;&#x958B;&#x767C;&#x4E2D; control &#x7684;&#x65B9;&#x6CD5;&#x6C61;&#x67D3;. &#x9078;&#x64C7;&#x54EA;&#x500B;&#x53D6;&#x6C7A;&#x65BC;&#x6240;&#x4F7F;&#x7528;&#x7684;&#x8DEF;&#x7531;&#x64F4;&#x5C55;, &#x7576;&#x7136;&#x4E0D;&#x9078;&#x64C7;&#x5168;&#x90E8;&#x7528; YoControl &#x4E5F;&#x662F;&#x53EF;&#x884C;&#x7684;.</p><p>&#x4F7F;&#x7528;&#x65B9;&#x5F0F;</p><pre><code class="lang-java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">IndexControl</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">YoControl</span> </span>{
+<tr>
+<th>CONTROL</th>
+<th>DESCRIPTION</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>YaControl</td>
+<td>&#x76F4;&#x63A5;&#x5BE6;&#x73FE;&#x81EA; YaResource &#x63A5;&#x53E3;, &#x5167;&#x90E8;&#x5B58;&#x5728; Request &#x4EE5;&#x53CA; Resp</td>
+</tr>
+<tr>
+<td>YeControl</td>
+<td>&#x7E7C;&#x627F;&#x81EA; YaControl, &#x63D0;&#x4F9B;&#x5C07; Request &#x76F8;&#x540C;&#x65B9;&#x6CD5;&#x800C;&#x4E0D;&#x9700;&#x8981;&#x7372;&#x53D6; Request &#x5F8C;&#x518D;&#x7372;&#x53D6;&#x53C3;&#x6578;&#x4FE1;&#x606F;</td>
+</tr>
+<tr>
+<td>YoControl</td>
+<td>&#x7E7C;&#x627F;&#x81EA; YoControl, &#x63D0;&#x4F9B; render &#x7CFB;&#x5217;&#x65B9;&#x6CD5;</td>
+</tr>
+</tbody>
+</table>
+<p>&#x61C9;&#x7528;&#x5834;&#x666F;&#x4E0D;&#x540C;, &#x4F8B;&#x5982;&#x9ED8;&#x8A8D;&#x7684;&#x8DEF;&#x7531;&#x5BE6;&#x73FE;, &#x56E0;&#x7232;&#x4E0D;&#x652F;&#x6301;&#x63A7;&#x5236;&#x5668;&#x65B9;&#x6CD5;&#x53C3;&#x6578;&#x89E3;&#x6790;&#x4EE5;&#x53CA;&#x65B9;&#x6CD5;&#x7684;&#x8FD4;&#x56DE;&#x503C;&#x89E3;&#x6790;, &#x90A3;&#x9EBC;&#x4F7F;&#x7528; YoControl &#x65B9;&#x6CD5;&#x6700;&#x5408;&#x9069;, render &#x7CFB;&#x5217;&#x65B9;&#x6CD5;&#x5247;&#x5B8C;&#x6210;&#x4E86;&#x6240;&#x6709;&#x6E32;&#x67D3;&#x529F;&#x80FD;, &#x800C;&#x4E0D;&#x7528;&#x95DC;&#x5FC3;&#x65B9;&#x6CD5;&#x7684;&#x53C3;&#x6578;&#x4EE5;&#x53CA;&#x8FD4;&#x56DE;&#x503C;; &#x53E6;&#x4E00;&#x500B;&#x8DEF;&#x7531; <code>yosart-ext-router-anost</code> &#x5247;&#x652F;&#x6301;&#x65B9;&#x6CD5;&#x53C3;&#x6578;&#x7684;&#x89E3;&#x6790;&#x4EE5;&#x53CA;&#x65B9;&#x6CD5;&#x8FD4;&#x56DE;&#x89E3;&#x6790;, &#x90A3;&#x9EBC; render &#x4EE5;&#x53CA; request &#x7684;&#x65B9;&#x6CD5;&#x5DF2;&#x7D93;&#x6C92;&#x4EC0;&#x9EBC;&#x5FC5;&#x8981;, &#x5B8C;&#x5168;&#x53EF;&#x4EE5;&#x901A;&#x904E;&#x65B9;&#x6CD5;&#x53C3;&#x6578;&#x7372;&#x53D6; request &#x53C3;&#x6578;, &#x56E0;&#x6B64;&#x53EF;&#x4EE5;&#x9078;&#x64C7;&#x7E7C;&#x627F; YaControl, &#x907F;&#x514D;&#x958B;&#x767C;&#x4E2D; control &#x7684;&#x65B9;&#x6CD5;&#x6C61;&#x67D3;. &#x9078;&#x64C7;&#x54EA;&#x500B;&#x53D6;&#x6C7A;&#x65BC;&#x6240;&#x4F7F;&#x7528;&#x7684;&#x8DEF;&#x7531;&#x64F4;&#x5C55;, &#x7576;&#x7136;&#x4E0D;&#x9078;&#x64C7;&#x5168;&#x90E8;&#x7528; YoControl &#x4E5F;&#x662F;&#x53EF;&#x884C;&#x7684;.</p>
+<p>&#x4F7F;&#x7528;&#x65B9;&#x5F0F;</p>
+<pre><code class="lang-java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">IndexControl</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">YoControl</span> </span>{
   <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">index</span><span class="hljs-params">()</span> </span>{
     <span class="hljs-keyword">super</span>.render(<span class="hljs-string">&quot;index&quot;</span>);
   }
@@ -618,7 +750,10 @@ PUT  /api/user/:id</code></pre>
   }
 }
 </code></pre>
-<p>&#x9700;&#x8981;&#x6CE8;&#x610F;, &#x9ED8;&#x8A8D;&#x7684;&#x8DEF;&#x7531;&#x64F4;&#x5C55;&#x4E0D;&#x652F;&#x6301; Control &#x65B9;&#x6CD5;&#x53C3;&#x6578;&#x89E3;&#x6790;, &#x53E6;&#x4E5F;&#x7121;&#x6CD5;&#x89E3;&#x6790;&#x65B9;&#x6CD5;&#x7684;&#x8FD4;&#x56DE;&#x503C;, &#x7576;&#x7136;&#x5C31;&#x7B97;&#x5BEB;&#x4E0A;&#x4E5F;&#x4E0D;&#x6703;&#x5831;&#x932F;, &#x5C07;&#x6703;&#x6536;&#x5230;&#x8B66;&#x544A;&#x65E5;&#x8A8C;, &#x5982;&#x679C;&#x9700;&#x8981;&#x652F;&#x6301;&#x8ACB;&#x9078;&#x64C7;&#x5176;&#x4ED6;&#x8DEF;&#x7531;&#x5BE6;&#x73FE;&#x64F4;&#x5C55;. (&#x5B98;&#x65B9;&#x651C;&#x5E36;&#x7684; <code>yosart-ext-router-anost</code> &#x5C07;&#x6703;&#x652F;&#x6301;. &#x76EE;&#x524D;&#x5C1A;&#x672A;&#x65BD;&#x5DE5;&#x5B8C;&#x7562;.)</p><h3 id="yorouter">YoRouter</h3><p>&#x9084;&#x6709;&#x4E00;&#x7A2E;&#x8A3B;&#x518A;&#x65B9;&#x5F0F;&#x662F; YoRouter &#x8DEF;&#x7531;&#x8A3B;&#x518A;, &#x8A72;&#x8A3B;&#x518A;&#x65B9;&#x5F0F;&#x5340;&#x5225;&#x8207; YoAction &#x4EE5;&#x53CA; YoControl, Yosart &#x6703;&#x5728;&#x5553;&#x52D5;&#x6642;&#x5C07; YoRouter &#x5206;&#x6790;&#x6210;&#x63A7;&#x5236;&#x5668;&#x6216; Action. &#x95DC;&#x65BC; YoRouter &#x53EF;&#x4EE5;&#x770B;&#x4E0B;&#x4F7F;&#x7528;&#x65B9;&#x5F0F;</p><pre><code class="lang-java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">WorkRouter</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">YoRouter</span> </span>{
+<p>&#x9700;&#x8981;&#x6CE8;&#x610F;, &#x9ED8;&#x8A8D;&#x7684;&#x8DEF;&#x7531;&#x64F4;&#x5C55;&#x4E0D;&#x652F;&#x6301; Control &#x65B9;&#x6CD5;&#x53C3;&#x6578;&#x89E3;&#x6790;, &#x53E6;&#x4E5F;&#x7121;&#x6CD5;&#x89E3;&#x6790;&#x65B9;&#x6CD5;&#x7684;&#x8FD4;&#x56DE;&#x503C;, &#x7576;&#x7136;&#x5C31;&#x7B97;&#x5BEB;&#x4E0A;&#x4E5F;&#x4E0D;&#x6703;&#x5831;&#x932F;, &#x5C07;&#x6703;&#x6536;&#x5230;&#x8B66;&#x544A;&#x65E5;&#x8A8C;, &#x5982;&#x679C;&#x9700;&#x8981;&#x652F;&#x6301;&#x8ACB;&#x9078;&#x64C7;&#x5176;&#x4ED6;&#x8DEF;&#x7531;&#x5BE6;&#x73FE;&#x64F4;&#x5C55;. (&#x5B98;&#x65B9;&#x651C;&#x5E36;&#x7684; <code>yosart-ext-router-anost</code> &#x5C07;&#x6703;&#x652F;&#x6301;. &#x76EE;&#x524D;&#x5C1A;&#x672A;&#x65BD;&#x5DE5;&#x5B8C;&#x7562;.)</p>
+<h3 id="yorouter"><a name="yorouter" class="plugin-anchor" href="#yorouter"><i class="fa fa-link" aria-hidden="true"></i></a>YoRouter</h3>
+<p>&#x9084;&#x6709;&#x4E00;&#x7A2E;&#x8A3B;&#x518A;&#x65B9;&#x5F0F;&#x662F; YoRouter &#x8DEF;&#x7531;&#x8A3B;&#x518A;, &#x8A72;&#x8A3B;&#x518A;&#x65B9;&#x5F0F;&#x5340;&#x5225;&#x8207; YoAction &#x4EE5;&#x53CA; YoControl, Yosart &#x6703;&#x5728;&#x5553;&#x52D5;&#x6642;&#x5C07; YoRouter &#x5206;&#x6790;&#x6210;&#x63A7;&#x5236;&#x5668;&#x6216; Action. &#x95DC;&#x65BC; YoRouter &#x53EF;&#x4EE5;&#x770B;&#x4E0B;&#x4F7F;&#x7528;&#x65B9;&#x5F0F;</p>
+<pre><code class="lang-java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">WorkRouter</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">YoRouter</span> </span>{
   <span class="hljs-meta">@Override</span>
   <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">context</span><span class="hljs-params">()</span> </span>{
     <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;/work&quot;</span>;
@@ -632,18 +767,45 @@ PUT  /api/user/:id</code></pre>
       .add(<span class="hljs-string">&quot;/report&quot;</span>, <span class="hljs-keyword">new</span> ReportRouter())
       .add(<span class="hljs-string">&quot;/lazy&quot;</span>, (req) -&gt; <span class="hljs-keyword">null</span>);
   }
-}</code></pre>
-<p>&#x7576;&#x7E7C;&#x627F;&#x4E86; YoRouter &#x4E4B;&#x5F8C;, &#x5BE6;&#x73FE;&#x5169;&#x500B;&#x65B9;&#x6CD5;, context &#x4EE5;&#x53CA; register, context &#x7684;&#x610F;&#x601D;&#x662F;&#x8A72;&#x8DEF;&#x7531;&#x6240;&#x5728;&#x7684; context, &#x9019;&#x500B; context &#x9700;&#x8981;&#x77AD;&#x89E3;&#x7684;&#x662F;&#x524D;&#x5F8C;&#x6587;&#x7684; context.</p><p>&#x4F8B;&#x5982;</p><pre><code class="lang-java">.handle(<span class="hljs-string">&quot;/day&quot;</span>, <span class="hljs-keyword">new</span> WorkRouter())</code></pre>
-<p>&#x90A3;&#x9EBC;&#x8A3B;&#x518A;&#x7684;&#x8DEF;&#x7531;&#x5C31;&#x662F;</p><pre><code class="lang-text">/day/work/holiday
+}
+</code></pre>
+<p>&#x7576;&#x7E7C;&#x627F;&#x4E86; YoRouter &#x4E4B;&#x5F8C;, &#x5BE6;&#x73FE;&#x5169;&#x500B;&#x65B9;&#x6CD5;, context &#x4EE5;&#x53CA; register, context &#x7684;&#x610F;&#x601D;&#x662F;&#x8A72;&#x8DEF;&#x7531;&#x6240;&#x5728;&#x7684; context, &#x9019;&#x500B; context &#x9700;&#x8981;&#x77AD;&#x89E3;&#x7684;&#x662F;&#x524D;&#x5F8C;&#x6587;&#x7684; context.</p>
+<p>&#x4F8B;&#x5982;</p>
+<pre><code class="lang-java">.handle(<span class="hljs-string">&quot;/day&quot;</span>, <span class="hljs-keyword">new</span> WorkRouter())
+</code></pre>
+<p>&#x90A3;&#x9EBC;&#x8A3B;&#x518A;&#x7684;&#x8DEF;&#x7531;&#x5C31;&#x662F;</p>
+<pre><code class="lang-text">/day/work/holiday
 /day/work/working_day
-...</code></pre>
-<p>&#x5982;&#x679C;&#x4E0D;&#x9700;&#x8981;&#x8A72; context, &#x76F4;&#x63A5;&#x7559;&#x7A7A;&#x5373;&#x53EF;.</p><p>register &#x65B9;&#x5F0F;&#x7528;&#x65BC;&#x8A3B;&#x518A;&#x8A72;&#x8DEF;&#x7531;&#x4E0B;&#x7684;&#x63A7;&#x5236;&#x5668;, &#x540C;&#x6A23;&#x7684;&#x4E5F;&#x662F;&#x652F;&#x6301; <code>YoAction</code>, <code>YoControl</code> &#x4EE5;&#x53CA; <code>YoRouter</code></p><h3 id="assets">assets</h3><p>&#x53E6;&#x5916;&#x4E00;&#x500B;&#x8981;&#x8AAA;&#x7684;&#x662F; assets &#x65B9;&#x6CD5;, &#x8A72;&#x65B9;&#x6CD5;&#x7684;&#x4F5C;&#x7528;&#x662F;&#x5275;&#x5EFA;&#x4E00;&#x500B;&#x975C;&#x614B;&#x8CC7;&#x6E90;&#x8ACB;&#x6C42;&#x7684;&#x652F;&#x6301;.</p><pre><code class="lang-java"><span class="hljs-function">Yosart <span class="hljs-title">assets</span><span class="hljs-params">(String uri, Path path)</span></span>;
+...
+</code></pre>
+<p>&#x5982;&#x679C;&#x4E0D;&#x9700;&#x8981;&#x8A72; context, &#x76F4;&#x63A5;&#x7559;&#x7A7A;&#x5373;&#x53EF;.</p>
+<p>register &#x65B9;&#x5F0F;&#x7528;&#x65BC;&#x8A3B;&#x518A;&#x8A72;&#x8DEF;&#x7531;&#x4E0B;&#x7684;&#x63A7;&#x5236;&#x5668;, &#x540C;&#x6A23;&#x7684;&#x4E5F;&#x662F;&#x652F;&#x6301; <code>YoAction</code>, <code>YoControl</code> &#x4EE5;&#x53CA; <code>YoRouter</code></p>
+<h3 id="assets"><a name="assets" class="plugin-anchor" href="#assets"><i class="fa fa-link" aria-hidden="true"></i></a>assets</h3>
+<p>&#x53E6;&#x5916;&#x4E00;&#x500B;&#x8981;&#x8AAA;&#x7684;&#x662F; assets &#x65B9;&#x6CD5;, &#x8A72;&#x65B9;&#x6CD5;&#x7684;&#x4F5C;&#x7528;&#x662F;&#x5275;&#x5EFA;&#x4E00;&#x500B;&#x975C;&#x614B;&#x8CC7;&#x6E90;&#x8ACB;&#x6C42;&#x7684;&#x652F;&#x6301;.</p>
+<pre><code class="lang-java"><span class="hljs-function">Yosart <span class="hljs-title">assets</span><span class="hljs-params">(String uri, Path path)</span></span>;
 
-<span class="hljs-function">Yosart <span class="hljs-title">assets</span><span class="hljs-params">(String uri, Path path, <span class="hljs-keyword">boolean</span> showTree)</span></span>;</code></pre>
-<p>uri &#x7232;&#x975C;&#x614B;&#x8CC7;&#x6E90;&#x7684;&#x524D;&#x7DB4;, path &#x7232;&#x975C;&#x614B;&#x8CC7;&#x6E90;&#x8DEF;&#x5F91;, showTree, &#x8868;&#x793A;&#x5728;&#x8ACB;&#x6C42;&#x7684;&#x8DEF;&#x5F91;&#x662F;&#x76EE;&#x9304;&#x6642;&#x662F;&#x5426;&#x986F;&#x793A;&#x6587;&#x4EF6;&#x5217;&#x8868;. &#x975C;&#x614B;&#x8CC7;&#x6E90;&#x662F;&#x8D70;&#x64F4;&#x5C55;&#x5BE6;&#x73FE;&#x7684;, &#x9ED8;&#x8A8D;&#x5BE6;&#x73FE;&#x7232; <code>EyAssetsExt</code>, &#x5982;&#x679C;&#x60F3;&#x8981;&#x5176;&#x4ED6;&#x7684;&#x5BE6;&#x73FE;, &#x5BE6;&#x73FE; <code>YmAssetsExt</code> &#x63A5;&#x53E3;&#x52A0;&#x5165;&#x5230; yosart &#x5553;&#x52D5;&#x4E2D;&#x5373;&#x53EF;.</p><h3 id="yorequest">YoRequest</h3><p>YoRequest &#x5728; Repeater &#x7684;&#x57FA;&#x790E;&#x4E0A;&#x65B0;&#x589E; Restful &#x98A8;&#x683C;&#x63A5;&#x53E3; url &#x53C3;&#x6578;&#x89E3;&#x6790;, &#x4EE5;&#x53CA;&#x53C3;&#x6578;&#x8F49;&#x63DB; bean &#x65B9;&#x6CD5;.</p><ul><li><p>variableNames</p><p>&#x7372;&#x53D6;&#x6240;&#x6709; uri &#x53C3;&#x6578;&#x540D;</p></li>
-<li><p>variable</p><p>&#x7372;&#x53D6;&#x53C3;&#x6578;&#x503C;</p></li>
-<li><p>bean</p><p>&#x5C07; Request &#x53C3;&#x6578;&#x8F49;&#x5316;&#x7232;&#x5BE6;&#x9AD4;&#x985E;</p></li></ul>
-<h2 id="&#x5176;&#x4ED6;">&#x5176;&#x4ED6;</h2><h3 id="session">session</h3><p>&#x53EF;&#x80FD;&#x5728;&#x4F7F;&#x7528;&#x904E;&#x7A0B;&#x4E2D;&#x4F60;&#x6703;&#x767C;&#x73FE;, Yosart &#x4E26;&#x672A;&#x63D0;&#x4F9B; session &#x7684;&#x64CD;&#x4F5C;&#x529F;&#x80FD;, &#x53EF;&#x80FD;&#x7121;&#x6CD5;&#x7406;&#x89E3;, &#x5F88;&#x591A;&#x6846;&#x67B6;&#x90FD;&#x53EF;&#x4EE5;&#x9032;&#x884C; session &#x64CD;&#x4F5C;, &#x7232;&#x4EC0;&#x9EBC; Yosart &#x4E0D;&#x652F;&#x6301;?</p><p>&#x9996;&#x5148;, &#x8ACB;&#x7406;&#x89E3; session &#x7684;&#x672C;&#x8CEA;, session &#x5BE6;&#x969B;&#x4E0A;&#x662F;&#x901A;&#x904E; cookie &#x53BB;&#x5BE6;&#x73FE;&#x7684;, &#x5275;&#x5EFA;&#x4E00;&#x500B; session &#x5BE6;&#x969B;&#x4E0A;&#x662F;&#x63A8;&#x9001;&#x4E00;&#x500B; cookie &#x7D66;&#x524D;&#x7AEF;, &#x6BCF;&#x6B21;&#x8ACB;&#x6C42;&#x90FD;&#x6703;&#x5C07; cookie &#x5E36;&#x56DE;&#x4F86;, &#x670D;&#x52D9;&#x7AEF;&#x901A;&#x904E; cookie &#x53BB;&#x67E5;&#x627E;&#x4E4B;&#x524D;&#x8A2D;&#x7F6E;&#x7684; session &#x4FE1;&#x606F;.</p><p>&#x90A3;&#x9EBC;, &#x65E2;&#x7136; Yosart &#x652F;&#x6301; cookie &#x7372;&#x53D6;, session &#x5B8C;&#x5168;&#x53EF;&#x4EE5;&#x901A;&#x904E;&#x64F4;&#x5C55;&#x7684;&#x65B9;&#x5F0F;&#x5BE6;&#x73FE;. &#x800C;&#x4E0D;&#x5FC5;&#x96C6;&#x6210;&#x5728; Yosart &#x4E2D;.</p>
+<span class="hljs-function">Yosart <span class="hljs-title">assets</span><span class="hljs-params">(String uri, Path path, <span class="hljs-keyword">boolean</span> showTree)</span></span>;
+</code></pre>
+<p>uri &#x7232;&#x975C;&#x614B;&#x8CC7;&#x6E90;&#x7684;&#x524D;&#x7DB4;, path &#x7232;&#x975C;&#x614B;&#x8CC7;&#x6E90;&#x8DEF;&#x5F91;, showTree, &#x8868;&#x793A;&#x5728;&#x8ACB;&#x6C42;&#x7684;&#x8DEF;&#x5F91;&#x662F;&#x76EE;&#x9304;&#x6642;&#x662F;&#x5426;&#x986F;&#x793A;&#x6587;&#x4EF6;&#x5217;&#x8868;. &#x975C;&#x614B;&#x8CC7;&#x6E90;&#x662F;&#x8D70;&#x64F4;&#x5C55;&#x5BE6;&#x73FE;&#x7684;, &#x9ED8;&#x8A8D;&#x5BE6;&#x73FE;&#x7232; <code>EyAssetsExt</code>, &#x5982;&#x679C;&#x60F3;&#x8981;&#x5176;&#x4ED6;&#x7684;&#x5BE6;&#x73FE;, &#x5BE6;&#x73FE; <code>YmAssetsExt</code> &#x63A5;&#x53E3;&#x52A0;&#x5165;&#x5230; yosart &#x5553;&#x52D5;&#x4E2D;&#x5373;&#x53EF;.</p>
+<h3 id="yorequest"><a name="yorequest" class="plugin-anchor" href="#yorequest"><i class="fa fa-link" aria-hidden="true"></i></a>YoRequest</h3>
+<p>YoRequest &#x5728; Repeater &#x7684;&#x57FA;&#x790E;&#x4E0A;&#x65B0;&#x589E; Restful &#x98A8;&#x683C;&#x63A5;&#x53E3; url &#x53C3;&#x6578;&#x89E3;&#x6790;, &#x4EE5;&#x53CA;&#x53C3;&#x6578;&#x8F49;&#x63DB; bean &#x65B9;&#x6CD5;.</p>
+<ul>
+<li><p>variableNames</p>
+<p>&#x7372;&#x53D6;&#x6240;&#x6709; uri &#x53C3;&#x6578;&#x540D;</p>
+</li>
+<li><p>variable</p>
+<p>&#x7372;&#x53D6;&#x53C3;&#x6578;&#x503C;</p>
+</li>
+<li><p>bean</p>
+<p>&#x5C07; Request &#x53C3;&#x6578;&#x8F49;&#x5316;&#x7232;&#x5BE6;&#x9AD4;&#x985E;</p>
+</li>
+</ul>
+<h2 id="&#x5176;&#x4ED6;"><a name="&#x5176;&#x4ED6;" class="plugin-anchor" href="#&#x5176;&#x4ED6;"><i class="fa fa-link" aria-hidden="true"></i></a>&#x5176;&#x4ED6;</h2>
+<h3 id="session"><a name="session" class="plugin-anchor" href="#session"><i class="fa fa-link" aria-hidden="true"></i></a>session</h3>
+<p>&#x53EF;&#x80FD;&#x5728;&#x4F7F;&#x7528;&#x904E;&#x7A0B;&#x4E2D;&#x4F60;&#x6703;&#x767C;&#x73FE;, Yosart &#x4E26;&#x672A;&#x63D0;&#x4F9B; session &#x7684;&#x64CD;&#x4F5C;&#x529F;&#x80FD;, &#x53EF;&#x80FD;&#x7121;&#x6CD5;&#x7406;&#x89E3;, &#x5F88;&#x591A;&#x6846;&#x67B6;&#x90FD;&#x53EF;&#x4EE5;&#x9032;&#x884C; session &#x64CD;&#x4F5C;, &#x7232;&#x4EC0;&#x9EBC; Yosart &#x4E0D;&#x652F;&#x6301;?</p>
+<p>&#x9996;&#x5148;, &#x8ACB;&#x7406;&#x89E3; session &#x7684;&#x672C;&#x8CEA;, session &#x5BE6;&#x969B;&#x4E0A;&#x662F;&#x901A;&#x904E; cookie &#x53BB;&#x5BE6;&#x73FE;&#x7684;, &#x5275;&#x5EFA;&#x4E00;&#x500B; session &#x5BE6;&#x969B;&#x4E0A;&#x662F;&#x63A8;&#x9001;&#x4E00;&#x500B; cookie &#x7D66;&#x524D;&#x7AEF;, &#x6BCF;&#x6B21;&#x8ACB;&#x6C42;&#x90FD;&#x6703;&#x5C07; cookie &#x5E36;&#x56DE;&#x4F86;, &#x670D;&#x52D9;&#x7AEF;&#x901A;&#x904E; cookie &#x53BB;&#x67E5;&#x627E;&#x4E4B;&#x524D;&#x8A2D;&#x7F6E;&#x7684; session &#x4FE1;&#x606F;.</p>
+<p>&#x90A3;&#x9EBC;, &#x65E2;&#x7136; Yosart &#x652F;&#x6301; cookie &#x7372;&#x53D6;, session &#x5B8C;&#x5168;&#x53EF;&#x4EE5;&#x901A;&#x904E;&#x64F4;&#x5C55;&#x7684;&#x65B9;&#x5F0F;&#x5BE6;&#x73FE;. &#x800C;&#x4E0D;&#x5FC5;&#x96C6;&#x6210;&#x5728; Yosart &#x4E2D;.</p>
+
                                 
                                 </section>
                             
@@ -682,7 +844,7 @@ PUT  /api/user/:id</code></pre>
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Yosart","level":"1.4","depth":1,"next":{"title":"擴展","level":"1.4.1","depth":2,"ref":"","articles":[{"title":"拦截器","level":"1.4.1.1","depth":3,"path":"yosart/ext/ey_bea.md","ref":"yosart/ext/ey_bea.md","articles":[]},{"title":"路由","level":"1.4.1.2","depth":3,"path":"yosart/ext/ey_router.md","ref":"yosart/ext/ey_router.md","articles":[]},{"title":"渲染","level":"1.4.1.3","depth":3,"path":"yosart/ext/render.md","ref":"yosart/ext/render.md","articles":[]},{"title":"模板","level":"1.4.1.4","depth":3,"path":"yosart/ext/template_render.md","ref":"yosart/ext/template_render.md","articles":[]},{"title":"靜態資源","level":"1.4.1.5","depth":3,"path":"yosart/ext/assets.md","ref":"yosart/ext/assets.md","articles":[]},{"title":"Yosart 管理","level":"1.4.1.6","depth":3,"path":"yosart/ext/yemgr.md","ref":"yosart/ext/yemgr.md","articles":[]}]},"previous":{"title":"Repeater","level":"1.3","depth":1,"path":"repeater/README.md","ref":"repeater/README.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"yosart/README.md","mtime":"2018-01-23T03:12:09.955Z","type":"markdown"},"gitbook":{"version":"3.2.0","time":"2018-01-23T03:26:40.259Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Yosart","level":"1.4","depth":1,"next":{"title":"擴展","level":"1.4.1","depth":2,"ref":"","articles":[{"title":"拦截器","level":"1.4.1.1","depth":3,"path":"yosart/ext/ey_bea.md","ref":"yosart/ext/ey_bea.md","articles":[]},{"title":"路由","level":"1.4.1.2","depth":3,"path":"yosart/ext/ey_router.md","ref":"yosart/ext/ey_router.md","articles":[]},{"title":"渲染","level":"1.4.1.3","depth":3,"path":"yosart/ext/render.md","ref":"yosart/ext/render.md","articles":[]},{"title":"模板","level":"1.4.1.4","depth":3,"path":"yosart/ext/template_render.md","ref":"yosart/ext/template_render.md","articles":[]},{"title":"靜態資源","level":"1.4.1.5","depth":3,"path":"yosart/ext/assets.md","ref":"yosart/ext/assets.md","articles":[]},{"title":"Yosart 管理","level":"1.4.1.6","depth":3,"path":"yosart/ext/yemgr.md","ref":"yosart/ext/yemgr.md","articles":[]}]},"previous":{"title":"Repeater","level":"1.3","depth":1,"path":"repeater/README.md","ref":"repeater/README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["ga","anchors"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"ga":{"configuration":"auto","token":"UA-XXXX-Y"},"anchors":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"iaceob","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Enoa","language":"zh-tw","gitbook":"*","description":"Enoa 中文文檔"},"file":{"path":"yosart/README.md","mtime":"2018-01-23T03:12:09.955Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-01-23T05:47:53.452Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
@@ -690,6 +852,10 @@ PUT  /api/user/:id</code></pre>
         
     <script src="../gitbook/gitbook.js"></script>
     <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-ga/plugin.js"></script>
+        
     
         
         <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>

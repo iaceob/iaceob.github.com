@@ -1,20 +1,24 @@
 
 <!DOCTYPE HTML>
-<html lang="" >
+<html lang="zh-tw" >
     <head>
-        <title>JSON · GitBook</title>
         <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>JSON · Enoa</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
-        <meta name="generator" content="GitBook 3.2.0">
-        
+        <meta name="generator" content="GitBook 3.2.3">
+        <meta name="author" content="iaceob">
         
         
     
     <link rel="stylesheet" href="../gitbook/style.css">
 
     
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-anchors/plugin.css">
+                
             
                 
                 <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
@@ -71,7 +75,7 @@
         
             
 <div id="book-search-input" role="search">
-    <input type="text" placeholder="Type to search" />
+    <input type="text" placeholder="輸入並搜尋" />
 </div>
 
             
@@ -477,7 +481,7 @@
 
     <li>
         <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
-            Published with GitBook
+            本書使用 GitBook 釋出
         </a>
     </li>
 </ul>
@@ -515,26 +519,52 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="json">JSON</h1><p>Json &#x5305;&#x88DD;&#x5668;, &#x5C01;&#x88DD;&#x63D0;&#x4F9B;&#x4E86;&#x591A;&#x7A2E; Json &#x6846;&#x67B6;&#x8F38;&#x51FA;, &#x5305;&#x62EC;</p><ul><li>EnoaJson
-</li>
-<li><a href="https://github.com/alibaba/fastjson" target="_blank">FastJson</a>
-</li>
-<li><a href="https://github.com/google/gson" target="_blank">Gson</a>
-</li>
-<li><a href="https://github.com/FasterXML/jackson" target="_blank">Jackson</a>
-</li></ul>
-<p>&#x5176;&#x4E2D; <code>EnoaJson</code> &#x662F;&#x9ED8;&#x8A8D;&#x5BE6;&#x73FE;, &#x7121;&#x9700;&#x4EFB;&#x4F55;&#x4F9D;&#x8CF4;, &#x76F4;&#x63A5;&#x4F7F;&#x7528;.</p><h2 id="&#x63D0;&#x4F9B;&#x8005;">&#x63D0;&#x4F9B;&#x8005;</h2><h3 id="enoajson">EnoaJson</h3><p>&#x9ED8;&#x8A8D;&#x5BE6;&#x73FE;, &#x7121;&#x9700;&#x914D;&#x7F6E;, &#x652F;&#x6301; Json &#x5E8F;&#x5217;&#x5316;, &#x4F46;&#x7121;&#x6CD5;&#x9032;&#x884C;&#x53CD;&#x5E8F;&#x5217;&#x5316;&#x64CD;&#x4F5C;, &#x5982;&#x679C;&#x9700;&#x8981;&#x53CD;&#x5E8F;&#x5217;&#x5316;&#x64CD;&#x4F5C;&#x8ACB;&#x9078;&#x64C7;&#x5176;&#x4ED6;&#x5BE6;&#x73FE;.</p><pre><code class="lang-java">EnoaJsonMgr.me().defJsonFactory(<span class="hljs-keyword">new</span> EoJsonProvider());</code></pre>
-<blockquote><p>EnoaJson &#x89E3;&#x6790;&#x4F86;&#x81EA;&#x65BC; JFinal &#x5DE5;&#x7A0B;&#x4E2D;&#x7684; Json &#x5DE5;&#x5177;. &#x4E26;&#x5254;&#x9664;&#x4E86; JFinal &#x7684;&#x4E00;&#x4E9B;&#x4F9D;&#x8CF4;.</p></blockquote><h3 id="fastjson">FastJson</h3><pre><code class="lang-java">EnoaJsonMgr.me().defJsonFactory(<span class="hljs-keyword">new</span> FastjsonProvider());</code></pre>
-<h3 id="gson">Gson</h3><pre><code class="lang-java">EnoaJsonMgr.me().defJsonFactory(<span class="hljs-keyword">new</span> GsonProvider());</code></pre>
-<h3 id="jackson">Jackson</h3><pre><code class="lang-java">EnoaJsonMgr.me().defJsonFactory(<span class="hljs-keyword">new</span> JacksonProvider());</code></pre>
-<h2 id="&#x4F7F;&#x7528;">&#x4F7F;&#x7528;</h2><p>&#x901A;&#x5E38;&#x4E00;&#x500B;&#x5DE5;&#x7A0B;&#x4E2D;, &#x53EA;&#x6703;&#x4F7F;&#x7528;&#x4E00;&#x500B; Json &#x5DE5;&#x5177;, &#x56E0;&#x6B64;&#x5728; <code>EnoaJsonMgr</code> &#x4E2D;&#x672A;&#x63D0;&#x4F9B;&#x591A;&#x500B;&#x5BE6;&#x4F8B;&#x7684;&#x652F;&#x6301;, &#x4F46;&#x540C;&#x6A23;&#x7684;, &#x4E5F;&#x662F;&#x53EF;&#x4EE5;&#x5228;&#x9664; <code>EnoaJsonMgr</code> &#x76F4;&#x63A5;&#x8ABF;&#x7528;&#x63D0;&#x4F9B;&#x8005;&#x5373;&#x53EF;&#x652F;&#x6301;&#x4E0D;&#x540C;&#x7684;&#x5BE6;&#x4F8B;.</p><pre><code class="lang-java">EnoaJson jackson = <span class="hljs-keyword">new</span> JacksonProvider().json();
-String json = jackson.toJson(obj);</code></pre>
-<h3 id="jsonkit">JsonKit</h3><p>&#x95DC;&#x65BC; Json &#x7684;&#x4F7F;&#x7528;, &#x63D0;&#x4F9B;&#x4E86;&#x4E00;&#x500B;&#x5DE5;&#x5177;&#x985E; <code>io.enoa.json.kit.JsonKit</code> &#x8A72;&#x985E;&#x63D0;&#x4F9B; json &#x64CD;&#x4F5C;&#x7684;&#x975C;&#x614B;&#x65B9;&#x6CD5;, &#x8207; <code>EnoaJson</code> &#x4E00;&#x81F4;, <code>JsonKit</code> &#x9078;&#x64C7;&#x7684;&#x63D0;&#x4F9B;&#x8005;&#x5C31;&#x662F; <code>EnoaJsonMgr</code> &#x8A2D;&#x5B9A;&#x7684;&#x63D0;&#x4F9B;&#x8005;.</p><pre><code class="lang-java">String json = JsonKit.toJson(obj);</code></pre>
-<h2 id="&#x958B;&#x767C;">&#x958B;&#x767C;</h2><p>Json &#x6A21;&#x584A;&#x540C;&#x6A23;&#x652F;&#x6301;&#x81EA;&#x5B9A;&#x7FA9;&#x63D0;&#x4F9B;&#x8005;.</p><p>&#x8207; Json &#x63D0;&#x4F9B;&#x8005;&#x76F8;&#x95DC;&#x7684;&#x63A5;&#x53E3;</p><ul><li>EoJsonFactory
-</li>
-<li>EnoaJson
-</li></ul>
-<p>EoJsonFactory  json &#x7684;&#x63D0;&#x4F9B;&#x8005;, &#x8981;&#x6C42;&#x8FD4;&#x56DE; EnoaJson &#x8A72;&#x63D0;&#x4F9B;&#x8005;&#x7684;&#x5177;&#x9AD4;&#x5BE6;&#x73FE;.</p><p>&#x8ABF;&#x7528;&#x95DC;&#x4FC2;:</p><pre><code class="lang-text">EnoaJson = EoJsonFactory.json();</code></pre>
+                                <h1 id="json"><a name="json" class="plugin-anchor" href="#json"><i class="fa fa-link" aria-hidden="true"></i></a>JSON</h1>
+<p>Json &#x5305;&#x88DD;&#x5668;, &#x5C01;&#x88DD;&#x63D0;&#x4F9B;&#x4E86;&#x591A;&#x7A2E; Json &#x6846;&#x67B6;&#x8F38;&#x51FA;, &#x5305;&#x62EC;</p>
+<ul>
+<li>EnoaJson</li>
+<li><a href="https://github.com/alibaba/fastjson" target="_blank">FastJson</a></li>
+<li><a href="https://github.com/google/gson" target="_blank">Gson</a></li>
+<li><a href="https://github.com/FasterXML/jackson" target="_blank">Jackson</a></li>
+</ul>
+<p>&#x5176;&#x4E2D; <code>EnoaJson</code> &#x662F;&#x9ED8;&#x8A8D;&#x5BE6;&#x73FE;, &#x7121;&#x9700;&#x4EFB;&#x4F55;&#x4F9D;&#x8CF4;, &#x76F4;&#x63A5;&#x4F7F;&#x7528;.</p>
+<h2 id="&#x63D0;&#x4F9B;&#x8005;"><a name="&#x63D0;&#x4F9B;&#x8005;" class="plugin-anchor" href="#&#x63D0;&#x4F9B;&#x8005;"><i class="fa fa-link" aria-hidden="true"></i></a>&#x63D0;&#x4F9B;&#x8005;</h2>
+<h3 id="enoajson"><a name="enoajson" class="plugin-anchor" href="#enoajson"><i class="fa fa-link" aria-hidden="true"></i></a>EnoaJson</h3>
+<p>&#x9ED8;&#x8A8D;&#x5BE6;&#x73FE;, &#x7121;&#x9700;&#x914D;&#x7F6E;, &#x652F;&#x6301; Json &#x5E8F;&#x5217;&#x5316;, &#x4F46;&#x7121;&#x6CD5;&#x9032;&#x884C;&#x53CD;&#x5E8F;&#x5217;&#x5316;&#x64CD;&#x4F5C;, &#x5982;&#x679C;&#x9700;&#x8981;&#x53CD;&#x5E8F;&#x5217;&#x5316;&#x64CD;&#x4F5C;&#x8ACB;&#x9078;&#x64C7;&#x5176;&#x4ED6;&#x5BE6;&#x73FE;.</p>
+<pre><code class="lang-java">EnoaJsonMgr.me().defJsonFactory(<span class="hljs-keyword">new</span> EoJsonProvider());
+</code></pre>
+<blockquote>
+<p>EnoaJson &#x89E3;&#x6790;&#x4F86;&#x81EA;&#x65BC; JFinal &#x5DE5;&#x7A0B;&#x4E2D;&#x7684; Json &#x5DE5;&#x5177;. &#x4E26;&#x5254;&#x9664;&#x4E86; JFinal &#x7684;&#x4E00;&#x4E9B;&#x4F9D;&#x8CF4;.</p>
+</blockquote>
+<h3 id="fastjson"><a name="fastjson" class="plugin-anchor" href="#fastjson"><i class="fa fa-link" aria-hidden="true"></i></a>FastJson</h3>
+<pre><code class="lang-java">EnoaJsonMgr.me().defJsonFactory(<span class="hljs-keyword">new</span> FastjsonProvider());
+</code></pre>
+<h3 id="gson"><a name="gson" class="plugin-anchor" href="#gson"><i class="fa fa-link" aria-hidden="true"></i></a>Gson</h3>
+<pre><code class="lang-java">EnoaJsonMgr.me().defJsonFactory(<span class="hljs-keyword">new</span> GsonProvider());
+</code></pre>
+<h3 id="jackson"><a name="jackson" class="plugin-anchor" href="#jackson"><i class="fa fa-link" aria-hidden="true"></i></a>Jackson</h3>
+<pre><code class="lang-java">EnoaJsonMgr.me().defJsonFactory(<span class="hljs-keyword">new</span> JacksonProvider());
+</code></pre>
+<h2 id="&#x4F7F;&#x7528;"><a name="&#x4F7F;&#x7528;" class="plugin-anchor" href="#&#x4F7F;&#x7528;"><i class="fa fa-link" aria-hidden="true"></i></a>&#x4F7F;&#x7528;</h2>
+<p>&#x901A;&#x5E38;&#x4E00;&#x500B;&#x5DE5;&#x7A0B;&#x4E2D;, &#x53EA;&#x6703;&#x4F7F;&#x7528;&#x4E00;&#x500B; Json &#x5DE5;&#x5177;, &#x56E0;&#x6B64;&#x5728; <code>EnoaJsonMgr</code> &#x4E2D;&#x672A;&#x63D0;&#x4F9B;&#x591A;&#x500B;&#x5BE6;&#x4F8B;&#x7684;&#x652F;&#x6301;, &#x4F46;&#x540C;&#x6A23;&#x7684;, &#x4E5F;&#x662F;&#x53EF;&#x4EE5;&#x5228;&#x9664; <code>EnoaJsonMgr</code> &#x76F4;&#x63A5;&#x8ABF;&#x7528;&#x63D0;&#x4F9B;&#x8005;&#x5373;&#x53EF;&#x652F;&#x6301;&#x4E0D;&#x540C;&#x7684;&#x5BE6;&#x4F8B;.</p>
+<pre><code class="lang-java">EnoaJson jackson = <span class="hljs-keyword">new</span> JacksonProvider().json();
+String json = jackson.toJson(obj);
+</code></pre>
+<h3 id="jsonkit"><a name="jsonkit" class="plugin-anchor" href="#jsonkit"><i class="fa fa-link" aria-hidden="true"></i></a>JsonKit</h3>
+<p>&#x95DC;&#x65BC; Json &#x7684;&#x4F7F;&#x7528;, &#x63D0;&#x4F9B;&#x4E86;&#x4E00;&#x500B;&#x5DE5;&#x5177;&#x985E; <code>io.enoa.json.kit.JsonKit</code> &#x8A72;&#x985E;&#x63D0;&#x4F9B; json &#x64CD;&#x4F5C;&#x7684;&#x975C;&#x614B;&#x65B9;&#x6CD5;, &#x8207; <code>EnoaJson</code> &#x4E00;&#x81F4;, <code>JsonKit</code> &#x9078;&#x64C7;&#x7684;&#x63D0;&#x4F9B;&#x8005;&#x5C31;&#x662F; <code>EnoaJsonMgr</code> &#x8A2D;&#x5B9A;&#x7684;&#x63D0;&#x4F9B;&#x8005;.</p>
+<pre><code class="lang-java">String json = JsonKit.toJson(obj);
+</code></pre>
+<h2 id="&#x958B;&#x767C;"><a name="&#x958B;&#x767C;" class="plugin-anchor" href="#&#x958B;&#x767C;"><i class="fa fa-link" aria-hidden="true"></i></a>&#x958B;&#x767C;</h2>
+<p>Json &#x6A21;&#x584A;&#x540C;&#x6A23;&#x652F;&#x6301;&#x81EA;&#x5B9A;&#x7FA9;&#x63D0;&#x4F9B;&#x8005;.</p>
+<p>&#x8207; Json &#x63D0;&#x4F9B;&#x8005;&#x76F8;&#x95DC;&#x7684;&#x63A5;&#x53E3;</p>
+<ul>
+<li>EoJsonFactory</li>
+<li>EnoaJson</li>
+</ul>
+<p>EoJsonFactory  json &#x7684;&#x63D0;&#x4F9B;&#x8005;, &#x8981;&#x6C42;&#x8FD4;&#x56DE; EnoaJson &#x8A72;&#x63D0;&#x4F9B;&#x8005;&#x7684;&#x5177;&#x9AD4;&#x5BE6;&#x73FE;.</p>
+<p>&#x8ABF;&#x7528;&#x95DC;&#x4FC2;:</p>
+<pre><code class="lang-text">EnoaJson = EoJsonFactory.json();
+</code></pre>
 
                                 
                                 </section>
@@ -578,7 +608,7 @@ String json = jackson.toJson(obj);</code></pre>
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"JSON","level":"1.2.4","depth":2,"next":{"title":"日誌","level":"1.2.5","depth":2,"path":"wrapper/log.md","ref":"wrapper/log.md","articles":[]},"previous":{"title":"HTTP 客戶端","level":"1.2.3","depth":2,"path":"wrapper/http.md","ref":"wrapper/http.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"wrapper/json.md","mtime":"2018-01-23T03:12:09.955Z","type":"markdown"},"gitbook":{"version":"3.2.0","time":"2018-01-23T03:26:40.259Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"JSON","level":"1.2.4","depth":2,"next":{"title":"日誌","level":"1.2.5","depth":2,"path":"wrapper/log.md","ref":"wrapper/log.md","articles":[]},"previous":{"title":"HTTP 客戶端","level":"1.2.3","depth":2,"path":"wrapper/http.md","ref":"wrapper/http.md","articles":[]},"dir":"ltr"},"config":{"plugins":["ga","anchors"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"ga":{"configuration":"auto","token":"UA-XXXX-Y"},"anchors":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","author":"iaceob","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Enoa","language":"zh-tw","gitbook":"*","description":"Enoa 中文文檔"},"file":{"path":"wrapper/json.md","mtime":"2018-01-23T03:12:09.955Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-01-23T05:47:53.452Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
@@ -586,6 +616,10 @@ String json = jackson.toJson(obj);</code></pre>
         
     <script src="../gitbook/gitbook.js"></script>
     <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-ga/plugin.js"></script>
+        
     
         
         <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
