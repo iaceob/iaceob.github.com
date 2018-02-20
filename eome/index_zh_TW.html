@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="zh-hant">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="Introducing Lollipop, a sweet new take on Android.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <title>ENOA</title>
+
+  <!-- Page styles -->
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="assets/mdl/material.min.css">
+  <link rel="stylesheet" href="assets/prism/prism.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+
+  <div class="enoa-header mdl-layout__header mdl-layout__header--waterfall">
+    <div class="mdl-layout__header-row">
+      <span class="enoa-title mdl-layout-title mdl-typography--text-uppercase">
+        Enoa
+      </span>
+      <!-- Add spacer, to align navigation to the right in desktop -->
+      <div class="enoa-header-spacer mdl-layout-spacer"></div>
+
+      <!-- Navigation -->
+      <!--
+      <div class="enoa-navigation-container">
+        <nav class="enoa-navigation mdl-navigation">
+          <a class="mdl-navigation__link mdl-typography&#45;&#45;text-uppercase" href="#">使用指南</a>
+          <a class="mdl-navigation__link mdl-typography&#45;&#45;text-uppercase" href="#">開發指南</a>
+        </nav>
+      </div>
+      -->
+      <span class="enoa-mobile-title mdl-layout-title mdl-typography--text-uppercase">
+        Enoa
+      </span>
+      <!--
+      <button class="enoa-language-button mdl-button mdl-js-button mdl-button&#45;&#45;icon mdl-js-ripple-effect" id="more-button">
+        <i class="material-icons">translate</i>
+      </button>
+      <ul class="mdl-menu mdl-js-menu mdl-menu&#45;&#45;bottom-right mdl-js-ripple-effect" for="more-button">
+        <li disabled class="mdl-menu__item">English (US)</li>
+        <li class="mdl-menu__item">中文简体 (中国)</li>
+        <li class="mdl-menu__item">中文繁體 (臺灣)</li>
+      </ul>
+      -->
+      <a class="enoa-github-button mdl-button mdl-js-button mdl-button--icon" href="https://github.com/iaceob/enoa" id="github-button">
+        <img src="https://cdn.rawgit.com/iaceob/gallery/master/eome/github.svg" alt="Github">
+      </a>
+    </div>
+  </div>
+
+
+  <div class="enoa-drawer mdl-layout__drawer">
+    <p class="mdl-layout-title">
+      <span class="enoa-logo-image mdl-typography--text-uppercase">Enoa</span>
+    </p>
+    <nav class="mdl-navigation">
+      <a class="mdl-navigation__link" href="https://doc.enoa.io">使用指南</a>
+      <a class="mdl-navigation__link" href="https://doc.enoa.io">開發指南</a>
+      <div class="enoa-drawer-separator"></div>
+      <span class="mdl-navigation__link mdl-typography--text-uppercase">語言</span>
+      <a class="mdl-navigation__link" href="index.html">English (US)</a>
+      <a class="mdl-navigation__link" href="index_zh_CN.html">中文简体 (中国)</a>
+      <a class="mdl-navigation__link" href="index_zh_TW.html">中文繁體 (臺灣)</a>
+    </nav>
+  </div>
+
+  <div class="enoa-content mdl-layout__content">
+    <a name="top"></a>
+    <div class="enoa-be-together-section mdl-typography--text-center">
+      <div class="logo-font enoa-slogan">拋去繁文縟節 一切都很簡單</div>
+      <div class="logo-font enoa-sub-slogan">
+        ENOA 極致簡潔架構, 專心你的創作.
+      </div>
+      <div class="logo-font enoa-create-character mdl-typography--text-left">
+        <div class="enoa-demo show">
+        <pre><code class="language-java">Http.request(HttpMethod.POST, EoUrl.with("https://httpbin.org").subpath("post"))
+  .raw("{\"name\": \"yosart\"}", "application/json")
+  .para("arg0", 1)
+  .para("arg1", true)
+  .emit();</code></pre>
+        </div>
+        <div class="enoa-demo">
+        <pre><code class="language-java">Repeater.createServer(new NanoHTTPDProvider())
+  .listen(9100);</code></pre>
+        </div>
+        <div class="enoa-demo">
+        <pre><code class="language-java">Yosart.createServer()
+  .handle(Method.GET, "/", (req) -> Resp.with(req).render("Hello world").end())
+  .listen();</code></pre>
+        </div>
+      </div>
+
+      <a href="#screens">
+        <button class="enoa-fab mdl-button mdl-button--colored mdl-js-button mdl-button--fab mdl-js-ripple-effect">
+          <i class="material-icons">expand_more</i>
+        </button>
+      </a>
+    </div>
+
+    <div class="enoa-screen-section mdl-typography--text-center">
+      <a name="screens"></a>
+      <div class="enoa-screen-title mdl-typography--display-1-color-contrast">豐富組件支援</div>
+      <div class="enoa-screens">
+        <div class="enoa-mod enoa-screen">
+          <a class="enoa-image-link" href="http://nanohttpd.org">
+            <img class="enoa-screen-image" src="https://cdn.rawgit.com/iaceob/gallery/master/eome/nanohttpd.svg">
+          </a>
+          <a class="enoa-link mdl-typography--font-regular mdl-typography--text-uppercase" href="http://nanohttpd.org">NanoHttpd</a>
+        </div>
+        <div class="enoa-mod enoa-screen">
+          <a class="enoa-image-link" href="https://www.eclipse.org/jetty">
+            <img class="enoa-screen-image" src="https://cdn.rawgit.com/iaceob/gallery/master/eome/jetty.svg">
+          </a>
+          <a class="enoa-link mdl-typography--font-regular mdl-typography--text-uppercase"
+             href="https://www.eclipse.org/jetty">Jetty</a>
+        </div>
+        <div class="enoa-mod enoa-screen">
+          <a class="enoa-image-link" href="https://netty.io">
+            <img class="enoa-screen-image" src="https://cdn.rawgit.com/iaceob/gallery/master/eome/netty.svg">
+          </a>
+          <a class="enoa-link mdl-typography--font-regular mdl-typography--text-uppercase"
+             href="https://netty.io">Netty</a>
+        </div>
+        <div class="enoa-mod enoa-screen">
+          <a class="enoa-image-link" href="http://tomcat.apache.org">
+            <img class="enoa-screen-image" src="https://cdn.rawgit.com/iaceob/gallery/master/eome/tomcat.svg">
+          </a>
+          <a class="enoa-link mdl-typography--font-regular mdl-typography--text-uppercase"
+             href="http://tomcat.apache.org">Tomcat</a>
+        </div>
+        <div class="enoa-mod enoa-screen">
+          <a class="enoa-image-link" href="https://nginx.org/en">
+            <img class="enoa-screen-image" src="https://cdn.rawgit.com/iaceob/gallery/master/eome/nginx.svg">
+          </a>
+          <a class="enoa-link mdl-typography--font-regular mdl-typography--text-uppercase" href="https://nginx.org/en">Nginx</a>
+        </div>
+        <div class="enoa-mod enoa-screen">
+          <a class="enoa-image-link" href="https://redis.io">
+            <img class="enoa-screen-image" src="https://cdn.rawgit.com/iaceob/gallery/master/eome/redis.svg">
+          </a>
+          <a class="enoa-link mdl-typography--font-regular mdl-typography--text-uppercase" href="https://redis.io">Redis</a>
+        </div>
+      </div>
+      <div class="enoa-screen-title mdl-typography--display-1-color-contrast">以及</div>
+
+
+      <div class="mdl-mega-footer enoa-mod-list mdl-typography--text-left">
+        <div class="mdl-mega-footer--middle-section">
+          <div class="mdl-mega-footer--drop-down-section">
+            <h1 class="mdl-mega-footer--heading mdl-typography--text-uppercase">Database</h1>
+            <ul class="mdl-mega-footer--link-list">
+              <li class="enoa-mod-list-cut">Datasource</li>
+              <li><a href="http://www.mchange.com/projects/c3p0">C3P0</a></li>
+              <li><a href="https://github.com/alibaba/druid">Druid</a></li>
+              <li><a href="https://github.com/brettwooldridge/HikariCP">HikariCP</a></li>
+              <li class="enoa-mod-list-cut">Framework</li>
+              <li><a href="http://www.jfinal.com/doc/5-1">Activerecord</a></li>
+              <li><a href="http://ibeetl.com/guide/beetlsql.html">BeetlSQL</a></li>
+              <li><a href="http://www.mybatis.org/mybatis-3">MyBatis</a></li>
+            </ul>
+          </div>
+          <div class="mdl-mega-footer--drop-down-section">
+            <h1 class="mdl-mega-footer--heading mdl-typography--text-uppercase">Json</h1>
+            <ul class="mdl-mega-footer--link-list">
+              <li><a href="https://github.com/alibaba/fastjson">Fastjson</a></li>
+              <li><a href="https://github.com/google/gson">Gson</a></li>
+              <li><a href="https://github.com/FasterXML/jackson">Jackson</a></li>
+            </ul>
+          </div>
+          <div class="mdl-mega-footer--drop-down-section">
+            <h1 class="mdl-mega-footer--heading mdl-typography--text-uppercase">Logger</h1>
+            <ul class="mdl-mega-footer--link-list">
+              <li><a href="#">JDK</a></li>
+              <li><a href="http://logging.apache.org/log4j/1.2">Log4j</a></li>
+              <li><a href="https://logging.apache.org/log4j/2.x">Log4j2</a></li>
+              <li><a href="https://logback.qos.ch">Logback</a></li>
+              <li><a href="https://www.slf4j.org">Slf4j</a></li>
+            </ul>
+          </div>
+          <div class="mdl-mega-footer--drop-down-section">
+            <h1 class="mdl-mega-footer--heading mdl-typography--text-uppercase">Serialization</h1>
+            <ul class="mdl-mega-footer--link-list">
+              <li><a href="#">JDK</a></li>
+              <li><a href="https://github.com/RuedigerMoeller/fast-serialization">FST</a></li>
+              <li><a href="http://www.caucho.com/resin-3.1/examples/hessian-serialize/index.xtp">Hessian</a></li>
+              <li><a href="https://github.com/EsotericSoftware/kryo">Kryo</a></li>
+            </ul>
+          </div>
+          <div class="mdl-mega-footer--drop-down-section">
+            <h1 class="mdl-mega-footer--heading mdl-typography--text-uppercase">Template</h1>
+            <ul class="mdl-mega-footer--link-list">
+              <li><a href="http://ibeetl.com">Beetl</a></li>
+              <li><a href="http://www.jfinal.com/doc/6-1">Enjoy</a></li>
+              <li><a href="https://freemarker.apache.org">Freemarker</a></li>
+              <li><a href="http://velocity.apache.org">Velocity</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+    <div class="enoa-customized-section">
+      <div class="enoa-customized-section-text">
+        <div class="mdl-typography--font-light mdl-typography--display-1-color-contrast">
+          自由擴展, 任意搭配
+        </div>
+        <p class="mdl-typography--font-light">
+          ENOA 提供的的所有組件並不是全部, 完全可以依照你的愛好自由定製, 並且可以無縫接入到 ENOA 整個體系中, 配合所有組件任意搭配完成你的創作.
+          <br>
+          所有均由你來選擇.
+        </p>
+      </div>
+      <div class="enoa-customized-section-image"></div>
+    </div>
+
+    <div class="enoa-wear-section">
+      <div class="enoa-wear-band">
+        <div class="enoa-wear-band-text">
+          <div class="mdl-typography--display-2 mdl-typography--font-thin">
+            簡單高效完成創作
+          </div>
+          <p class="mdl-typography--headline mdl-typography--font-thin">
+            ENOA 特性使然, 使用 ENOA 可以你的應用擁有更高的可用性, 基於 ENOA 幾乎可以在現今出現的所有框架, 且適用與任何場景, 這都取決與如何去定位自身, 而進行選擇.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="enoa-more-section">
+      <div class="enoa-section-title mdl-typography--display-1-color-contrast">
+        加入 ENOA
+      </div>
+      <div class="enoa-card-container mdl-grid">
+        <div class="mdl-cell mdl-cell--12-col mdl-card mdl-shadow--3dp">
+          <!--<div class="mdl-card__media">
+            <img src="images/more-from-1.png">
+          </div>-->
+          <div class="mdl-card__title">
+            <h4 class="mdl-card__title-text">GitHub</h4>
+          </div>
+          <div class="mdl-card__supporting-text">
+            <span class="mdl-typography--font-light mdl-typography--subhead">
+              ENOA 所有代碼均託管與 GitHub, 並遵循 Apache license 2.0 開源協議發佈.
+            </span>
+          </div>
+          <div class="mdl-card__actions">
+            <a class="enoa-link mdl-button mdl-js-button mdl-typography--text-uppercase" href="https://github.com/iaceob/enoa">
+              ENOA 1.3-beta
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="enoa-footer mdl-mega-footer">
+      <div class="mdl-mega-footer--top-section">
+        <!--<div class="mdl-mega-footer&#45;&#45;left-section">
+          <button class="mdl-mega-footer&#45;&#45;social-btn"></button>
+          &nbsp;
+          <button class="mdl-mega-footer&#45;&#45;social-btn"></button>
+          &nbsp;
+          <button class="mdl-mega-footer&#45;&#45;social-btn"></button>
+        </div>-->
+        <div class="mdl-mega-footer--right-section">
+          <a class="mdl-typography--font-light" href="#top">
+            返回頂部
+            <i class="material-icons">expand_less</i>
+          </a>
+        </div>
+      </div>
+
+      <div class="mdl-mega-footer--middle-section">
+        <p class="mdl-typography--font-light">ENOA &copy; 2018</p>
+      </div>
+
+    </footer>
+  </div>
+</div>
+<script src="assets/mdl/material.min.js"></script>
+<script src="assets/prism/prism.js"></script>
+<script src="assets/js/eome.js"></script>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-112957311-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-112957311-2');
+</script>
+
+</body>
+</html>
