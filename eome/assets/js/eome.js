@@ -18,15 +18,15 @@
 
   var docslangs = [
     {
-      url: 'https://enoa.io',
+      url: 'https://enoa.io/index.html',
       lang: 'English'
     },
     {
-      url: 'https://enoa.io/zh-tw',
+      url: 'https://enoa.io/zh-tw/index.html',
       lang: '中文 (正體)'
     },
     {
-      url: 'https://enoa.io/zh-cn',
+      url: 'https://enoa.io/zh-cn/index.html',
       lang: '中文 (简体)'
     }
   ];
