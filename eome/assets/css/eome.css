@@ -1,0 +1,66 @@
+
+::-moz-selection {
+  background-color: #3d97ac;
+  color: #fff;
+}
+
+::selection {
+  background-color: #3d97ac;
+  color: #fff;
+}
+
+body {
+  font-family: Verdana, Arial, 'sans-serif', "cwTeXHei", "Open Sans";
+  padding-left: 8%;
+  padding-right: 8%;
+  padding-top: 2%;
+}
+
+.eome-header {
+  /*text-align: center;*/
+}
+
+.eome-main {
+  margin-top: 5%;
+  margin-bottom: 5%;
+}
+
+.eome-footer {
+  margin-top: 5%;
+  margin-bottom: 2%;
+}
+
+.eome-section {
+  margin-top: 3%;
+}
+
+.eome-3rd li {
+  list-style: none;
+}
+
+
+.eome-3rd li div.eome-3rd-title {
+  vertical-align: top;
+  width: 10%;
+}
+
+.eome-3rd li div.eome-3rd-title,
+.eome-3rd li div.eome-3rd-body {
+  display: inline-block;
+}
+
+.eome-3rd li div.eome-3rd-body a {
+
+}
+
+
+.eome-language {
+  display: block;
+  position: fixed;
+  top: 8%;
+  right: 3%;
+}
+
+.eome-language li {
+  list-style: none;
+}
