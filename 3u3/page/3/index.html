@@ -1,6 +1,106 @@
 <!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="alternative" href="/atom.xml" title="幾文山" type="application/atom+xml"><link rel="icon" href="/favicon.png"><title>幾文山</title>
 <link rel="stylesheet" href="/css/main.css">
-<!--[if lt IE 9]><script>(function(a,b){a="abbr article aside audio bdi canvas data datalist details dialog figcaption figure footer header hgroup main mark meter nav output progress section summary template time video".split(" ");for(b=a.length-1;b>=0;b--)document.createElement(a[b])})()</script><![endif]--><meta name="generator" content="Hexo 4.2.0"></head><body><header class="head"><h1 class="head-title u-fl"><a href="/">幾文山</a></h1><nav class="head-nav u-fr"><ul class="head-nav__list"><li class="head-nav__item"><a href="/" class="head-nav__link">Home</a></li><li class="head-nav__item"><a href="/archives" class="head-nav__link">Archives</a></li><li class="head-nav__item"><a href="https://iaceob.3u3.me" target="_blank" rel="noopener" class="head-nav__link">生物烯丙菊</a></li></ul></nav></header><main class="main"><article class="post"><header class="post__head"><time datetime="2016-11-05T17:09:06.000Z" class="post__time">November 5, 2016</time><h1 class="post__title"><a href="/post/remedy-chmod-777-root/">补救 chmod -R 777 /</a></h1></header><div class="post__main echo"><p>因某 xx 在服务器中执行了 <code>chmod -R 777 /</code> 命令, 遂就有了这篇文章.</p>
+<!--[if lt IE 9]><script>(function(a,b){a="abbr article aside audio bdi canvas data datalist details dialog figcaption figure footer header hgroup main mark meter nav output progress section summary template time video".split(" ");for(b=a.length-1;b>=0;b--)document.createElement(a[b])})()</script><![endif]--><meta name="generator" content="Hexo 4.2.0"></head><body><header class="head"><h1 class="head-title u-fl"><a href="/">幾文山</a></h1><nav class="head-nav u-fr"><ul class="head-nav__list"><li class="head-nav__item"><a href="/" class="head-nav__link">Home</a></li><li class="head-nav__item"><a href="/archives" class="head-nav__link">Archives</a></li><li class="head-nav__item"><a href="https://iaceob.3u3.me" target="_blank" rel="noopener" class="head-nav__link">生物烯丙菊</a></li></ul></nav></header><main class="main"><article class="post"><header class="post__head"><time datetime="2016-11-28T21:56:37.000Z" class="post__time">November 28, 2016</time><h1 class="post__title"><a href="/post/final-ng-II-part-1/">ng2 ngcli</a></h1></header><div class="post__main echo"><h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p>Angularjs 2 目前已经进入正式版, 相对的后续的变动已经不会有很大的变化, 相较于 Angularjs 1 已经是完全不同, 所以在学习 ng2 的时候完全抛弃掉 ng1 时的使用经验, 可以说完全没有任何帮助.</p>
+<blockquote>
+<p>插曲</p>
+<p>曾经有人在 <code>segmentfault</code> 问, <a href="https://segmentfault.com/q/1010000003885199" target="_blank" rel="noopener">angular2出来以后，angular1你还在用吗？</a><br>我也有去回复</p>
+<p><code>那我问你? jquery 2.x 都出来这么久了 jquery 1.x 已经死了吗?</code></p>
+<p>然而, 应该是不被大多数人去理解的.<br>不说为什么不被理解, 在这里只能说是 ng1 不会死, 至少短期内, 就像到现今仍然能够找到很多 1.x 的 jquery 一样, 甚至是版本非常低.<br>一个非常重要的原因就是, 老系统!<br>你确定你能够将一整个站从 ng1 升到 ng2 去???<br>当然, 这不是绝对的, 所以, ng1 仍然会有人去用, 而且不再少数.</p>
+</blockquote>
+<p>ng2 的发布带来了一个新东西, <a href="https://github.com/angular/angular-cli" target="_blank" rel="noopener">ngcli</a>, 这能极大的简化 ng2 在开发上的流程, 采用 <a href="http://coolshell.cn/articles/4535.html" target="_blank" rel="noopener">CoC(惯例优于配置原则)</a> 原则, 在开发过程中, 很多情况下无需去考虑很多繁杂的配置, 专注于工程编码即可.</p>
+<p>ng2 默认采用 TypeScript 作为工程编码脚本, 但是也可以切换为 Dart 或者仅是 JavaScript 开发. 但是官方目前建议的方式是 TypeScript, 且官网的案例大都是 TypeScript, 使用 TypeScript 开发可以使用 ES6/7 的最新语法, 而不必去关心浏览器支援问题, 在最终发布时可以通过 ngcli 来翻译为 ES5 语法供浏览器访问.</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><ol>
+<li>安装 <a href="https://nodejs.org/" target="_blank" rel="noopener">node/npm</a></li>
+</ol>
+<blockquote>
+<p>ngcli 要求<br>node &gt; 5.x.x<br>npm  &gt; 3.x.x</p>
+</blockquote>
+<ol start="2">
+<li>安装 ngcli</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g angular-cli</span><br></pre></td></tr></table></figure>
+
+<p>安装完成后可通过 <code>ng</code> 命令使用 ngcli.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ng -v</span><br><span class="line">angular-cli: 1.0.0-beta.20-4</span><br><span class="line">node: 6.9.1</span><br><span class="line">os: linux x64</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>建立 ng2 工程</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ng new project</span><br></pre></td></tr></table></figure>
+
+<p>这个过程比较慢, ng 在创建工程时候, 会去下载工程相关套件, 时间取决于网络环境速度.</p>
+<p>创建完成后, 就可以直接在这个工程中进行开发了.</p>
+<p>进入工程, 并启动工程</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> project</span><br><span class="line">ng server</span><br></pre></td></tr></table></figure>
+
+<p>此时进入浏览器访问 <code>localhost:4200</code> 即可访问刚创建的工程.</p>
+<h2 id="指令"><a href="#指令" class="headerlink" title="指令"></a>指令</h2><h3 id="ng-help"><a href="#ng-help" class="headerlink" title="ng help"></a>ng help</h3><p>查看 ng 帮助文档</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">ng build &lt;options...&gt;</span><br><span class="line">  Builds your app and places it into the output path (dist&#x2F; by default).</span><br><span class="line">  aliases: b</span><br><span class="line">  --target (String) (Default: development)</span><br><span class="line">    aliases: -t &lt;value&gt;, -dev (--target&#x3D;development), -prod (--target&#x3D;production)</span><br><span class="line">  --environment (String) (Default: )</span><br><span class="line">    aliases: -e &lt;value&gt;</span><br><span class="line">  --output-path (Path) (Default: null)</span><br><span class="line">    aliases: -o &lt;value&gt;</span><br><span class="line">  --watch (Boolean) (Default: false)</span><br><span class="line">    aliases: -w</span><br><span class="line">  --watcher (String)</span><br><span class="line">  --suppress-sizes (Boolean) (Default: false)</span><br><span class="line">  --base-href (String) (Default: null)</span><br><span class="line">    aliases: -bh &lt;value&gt;</span><br><span class="line">  --aot (Boolean) (Default: false)</span><br><span class="line"></span><br><span class="line">ng completion</span><br><span class="line">  Adds autocomplete functionality to &#96;ng&#96; commands and subcommands</span><br><span class="line">....</span><br></pre></td></tr></table></figure>
+
+<h3 id="ng-new"><a href="#ng-new" class="headerlink" title="ng new"></a>ng new</h3><p>创建新的工程, 创建工程时会建立好整个工程结构的目录, 且将所有用到的组件放入在 <code>package.json</code> 文件中, 然后会去下载这些组件; 此外还会建立一个初始的工程运行环境, 包括单元测试等.</p>
+<h3 id="ng-generate-g"><a href="#ng-generate-g" class="headerlink" title="ng generate(g)"></a>ng generate(g)</h3><p>用来创建在 ng2 中开发的 组件(component), 服务(service) 等模板. generate 指令可以通过 g 别名的方式执行, 具体可参考 <code>ng help</code> 的文档.</p>
+<p>例如, 如果需要创建一个组件可以通过 <code>ng g component</code> 来生成, component 也可以通过其别名 <code>c</code> 来替代, 此指令可简化为 <code>ng g c</code>.</p>
+<p>更多的组件以及其别名方式.</p>
+<table>
+<thead>
+<tr>
+<th>Scaffold</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Component</td>
+<td><code>ng g component my-new-component</code></td>
+</tr>
+<tr>
+<td>Directive</td>
+<td><code>ng g directive my-new-directive</code></td>
+</tr>
+<tr>
+<td>Pipe</td>
+<td><code>ng g pipe my-new-pipe</code></td>
+</tr>
+<tr>
+<td>Service</td>
+<td><code>ng g service my-new-service</code></td>
+</tr>
+<tr>
+<td>Class</td>
+<td><code>ng g class my-new-class</code></td>
+</tr>
+<tr>
+<td>Interface</td>
+<td><code>ng g interface my-new-interface</code></td>
+</tr>
+<tr>
+<td>Enum</td>
+<td><code>ng g enum my-new-enum</code></td>
+</tr>
+<tr>
+<td>Module</td>
+<td><code>ng g module my-module</code></td>
+</tr>
+</tbody></table>
+<p>ng g 产生的代码会存在在预设的目录下, 若要指定目录可通过创建时指定相对路径设定, 例如, <code>ng g c test</code> 存放在 <code>src/app/test</code> 目录下, 若要指定目录, 可通过 <code>ng g c admin/test</code>, 这样生成的代码将在 <code>src/app/admin/test</code> 中.</p>
+<h3 id="ng-build"><a href="#ng-build" class="headerlink" title="ng build"></a>ng build</h3><p>此指令就是将使用 TypeScript 编写的工程转换为最终部署的代码, 最终将转换的代码放入 <code>dist</code> 目录中, 这样 <code>dist</code> 目录中的代码就可以作为最终部署的代码. 如果是正式的部署环境中此处构建还可以使用 <code>ng build --prod</code> 指令来将最终打包的 js 代码进行压缩.</p>
+<h3 id="ng-server"><a href="#ng-server" class="headerlink" title="ng server"></a>ng server</h3><p>在开发过程中可通过此命令来实时看到代码修改的结果, 并且此服务会自动代码改动后自动重新编译以及自动刷新浏览器, 因此保存代码后将无需刷新浏览器即可预览代码修改的结果.</p>
+<h3 id="更多"><a href="#更多" class="headerlink" title="更多"></a>更多</h3><p>更多实用的可通过 ngcli <a href="https://github.com/angular/angular-cli" target="_blank" rel="noopener">文档</a>或者 <code>ng help</code> 查阅.</p>
+<h2 id="ngcli-工程结构"><a href="#ngcli-工程结构" class="headerlink" title="ngcli 工程结构"></a>ngcli 工程结构</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── angular-cli.json</span><br><span class="line">├── e2e</span><br><span class="line">│   ├── app.e2e-spec.ts</span><br><span class="line">│   ├── app.po.ts</span><br><span class="line">│   └── tsconfig.json</span><br><span class="line">├── karma.conf.js</span><br><span class="line">├── node_modules</span><br><span class="line">│   ├── ...</span><br><span class="line">│   └── ...</span><br><span class="line">├── package.json</span><br><span class="line">├── protractor.conf.js</span><br><span class="line">├── README.md</span><br><span class="line">├── src</span><br><span class="line">│   ├── app</span><br><span class="line">│   │   ├── app.component.css</span><br><span class="line">│   │   ├── app.component.html</span><br><span class="line">│   │   ├── app.component.spec.ts</span><br><span class="line">│   │   ├── app.component.ts</span><br><span class="line">│   │   ├── app.module.ts</span><br><span class="line">│   │   └── index.ts</span><br><span class="line">│   ├── assets</span><br><span class="line">│   ├── environments</span><br><span class="line">│   │   ├── environment.prod.ts</span><br><span class="line">│   │   └── environment.ts</span><br><span class="line">│   ├── favicon.ico</span><br><span class="line">│   ├── index.html</span><br><span class="line">│   ├── main.ts</span><br><span class="line">│   ├── polyfills.ts</span><br><span class="line">│   ├── styles.css</span><br><span class="line">│   ├── test.ts</span><br><span class="line">│   ├── tsconfig.json</span><br><span class="line">│   └── typings.d.ts</span><br><span class="line">└── tslint.json</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>protractor.conf.js 于 e2e<br>e2e(end to end) 测试, ngcli 产生的工程会使用 <a href="http://www.protractortest.org/" target="_blank" rel="noopener">protractor</a> 来进行 e2e 测试, 测试的相关配置存放在 <code>protractor.conf.js</code> 文件中.</p>
+</li>
+<li><p>node_modules<br>工程依赖</p>
+</li>
+<li><p>src<br>工程代码目录</p>
+</li>
+<li><p>.editorconfig<br>一个给 IDE 识别的编码风格文件, 关于 editorconfig 配置可至 <a href="http://editorconfig.org/" target="_blank" rel="noopener">editorconfig</a> 查看.</p>
+</li>
+<li><p>angular-cli.json<br>ngcli 工程识别配置文件, 配置工程信息, 以及打包等相关设定.</p>
+</li>
+<li><p>karma.conf.js<br>ngcli 工程使用 <a href="https://karma-runner.github.io/1.0/index.html" target="_blank" rel="noopener">karma</a> 进行单元测试, 此为 karma 相关配置, 可使用 <code>ng test</code> 进行测试.</p>
+</li>
+<li><p>tslint.json<br>可以通过 <a href="https://palantir.github.io/tslint/" target="_blank" rel="noopener">tslint</a> 进行 TypeScript 编码风格校验, 可通过指令 <code>ng lint</code> 执行.</p>
+</li>
+</ul>
+</div><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a href="/tags/ng2/" class="post__tag__link">ng2</a></li><li class="post__tag__item"><a href="/tags/angularjs/" class="post__tag__link">angularjs</a></li></ul><a href="/post/final-ng-II-part-1/#disqus_thread" class="post__foot-link u-fr"></a></footer></article><article class="post"><header class="post__head"><time datetime="2016-11-05T17:09:06.000Z" class="post__time">November 5, 2016</time><h1 class="post__title"><a href="/post/remedy-chmod-777-root/">补救 chmod -R 777 /</a></h1></header><div class="post__main echo"><p>因某 xx 在服务器中执行了 <code>chmod -R 777 /</code> 命令, 遂就有了这篇文章.</p>
 <p>补救前提: 你至少要有一种方式能进入到系统中, 或者执行 <code>chmod -R 777 /</code> 没有退出该命令窗口.<br>如果做不到这个前提, 那么只能 gg.</p>
 <p><code>chmod</code> 命令是用来赋权的, <code>777</code> 权限是 用户/组/其他人 都有 读/写/执行 权限, 但是在 Linux 中一些文件的所属人是特有的, 不可更改.</p>
 <p>执行这个命令后会发现 <code>ssh</code> 无法连接进入, 其原因则是 ssh 的相关文件权限被更改了, 那么将权限还原成初始状态即可恢复.</p>
@@ -234,10 +334,4 @@
 </ul>
 <p>Apache 基本都是在生产重量级的产品, 当然也就意味着去实现的是更高级的层面, 但是, Apache 的某些设计方式绝不是良性的, 应该更简化一些操作方式, 将复杂的事情简单化, 而不是说设计一个功能很牛逼的项目但是却提供了屎一样的 API.</p>
 <p>改天就来说说 spring, spring mvc, mybatis</p>
-</div><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a href="/tags/nonsense/" class="post__tag__link">nonsense</a></li></ul><a href="/post/nonsense-part-1/#disqus_thread" class="post__foot-link u-fr"></a></footer></article><article class="post"><header class="post__head"><time datetime="2016-05-10T19:25:41.000Z" class="post__time">May 10, 2016</time><h1 class="post__title"><a href="/post/someone-will-always-make-things-you-can-not-understand/">总是会有人做出你无法理解的事情</a></h1></header><div class="post__main echo"><p>知道吗?<br>每当做出一个选择的时候, 也就意味着将会失去不做这个选择时而有的所有.</p>
-<p>但是说回来, 又有什么了?</p>
-<p>我们每个人都是拿自己的想法, 自己的看法来看待所有事情, 说站在别人的视野来看待问题那都是骗人的, 那叫妥协亦或是那是自己也成了那个别人.</p>
-<p>那么, 现在我成了这个别人了?</p>
-<p>然而实际上, 可能连做出这个想法的人自己都不知道自己到底做了什么, 不是吗?</p>
-<p>我到底都在做什么啊 …</p>
-</div><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a href="/tags/undefined/" class="post__tag__link">undefined</a></li></ul><a href="/post/someone-will-always-make-things-you-can-not-understand/#disqus_thread" class="post__foot-link u-fr"></a></footer></article></main><footer class="foot"><div class="foot-copy u-fl">&copy; 2020 iaceob</div><menu class="page-menu u-fr"><li class="page-menu__item"><a title="Previous" href="/page/2/" class="page-menu__link icon-arrow-left"></a></li><li class="page-menu__item"><a title="Next" href="/page/4/" class="page-menu__link icon-arrow-right"></a></li></menu></footer></body></html>
+</div><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a href="/tags/nonsense/" class="post__tag__link">nonsense</a></li></ul><a href="/post/nonsense-part-1/#disqus_thread" class="post__foot-link u-fr"></a></footer></article></main><footer class="foot"><div class="foot-copy u-fl">&copy; 2020 iaceob</div><menu class="page-menu u-fr"><li class="page-menu__item"><a title="Previous" href="/page/2/" class="page-menu__link icon-arrow-left"></a></li><li class="page-menu__item"><a title="Next" href="/page/4/" class="page-menu__link icon-arrow-right"></a></li></menu></footer></body></html>
