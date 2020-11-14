@@ -2,7 +2,17 @@
 <link rel="stylesheet" href="/css/main.css">
 <!--[if lt IE 9]><script>(function(a,b){a="abbr article aside audio bdi canvas data datalist details dialog figcaption figure footer header hgroup main mark meter nav output progress section summary template time video".split(" ");for(b=a.length-1;b>=0;b--)document.createElement(a[b])})()</script><![endif]--><meta name="generator" content="Hexo 4.2.1"><link rel="stylesheet" href="/assets/css/APlayer.min.css" class="aplayer-style-marker">
 <script src="/assets/js/APlayer.min.js" class="aplayer-script-marker"></script>
-</head><body><header class="head"><h1 class="head-title u-fl"><a href="/">幾文山</a></h1><nav class="head-nav u-fr"><ul class="head-nav__list"><li class="head-nav__item"><a href="/" class="head-nav__link">Home</a></li><li class="head-nav__item"><a href="/archives" class="head-nav__link">Archives</a></li><li class="head-nav__item"><a href="https://iaceob.3u3.me" target="_blank" rel="noopener" class="head-nav__link">生物烯丙菊</a></li></ul></nav></header><main class="main"><article class="post"><header class="post__head"><time datetime="2020-01-04T21:05:26.000Z" class="post__time">January 4, 2020</time><h1 class="post__title"><a href="/post/websocket-protocol/">WebSocket 协议</a></h1></header><div class="post__main echo"><p>WebSocket 是 HTMl5 所引入的协议, 使得浏览器具备了实时双向通信的能力. 这里将详细介绍 WebSocket 协议实现. 在网路中已有不少文章介绍此协议, 但是并没有很详细的展开说明, 本文将完整的描述此协议, 并且给出案例数据做详细说明.</p>
+</head><body><header class="head"><h1 class="head-title u-fl"><a href="/">幾文山</a></h1><nav class="head-nav u-fr"><ul class="head-nav__list"><li class="head-nav__item"><a href="/" class="head-nav__link">Home</a></li><li class="head-nav__item"><a href="/archives" class="head-nav__link">Archives</a></li><li class="head-nav__item"><a href="/interesting" class="head-nav__link">Interesting</a></li></ul></nav></header><main class="main"><article class="post"><header class="post__head"><time datetime="2020-11-14T22:48:40.000Z" class="post__time">November 14, 2020</time><h1 class="post__title"><a href="/post/dispersed/">走散了</a></h1></header><div class="post__main echo"><p>還是走散了.</p>
+
+        <div id="aplayer-OfMuLNED" class="aplayer aplayer-tag-marker" style="margin-bottom: 20px;"></div>
+			  <script>
+				  var options = {"narrow":false,"autoplay":true,"showlrc":3,"mode":"order","mutex":true,"theme":"#e6d0b2","preload":"auto","listmaxheight":"513px","music":[{"title":"Always","author":"瀧川ありさ","url":"https://mio.0u0.me/music/Always%20-%20%E7%80%A7%E5%B7%9D%E3%81%82%E3%82%8A%E3%81%95.m4a","pic":"http://p1.music.126.net/hm82nYiAhA-ZglW5T8_8rA==/109951163886169752.jpg?param=500y500","lrc":"https://mio.0u0.me/music/Always%20-%20%E7%80%A7%E5%B7%9D%E3%81%82%E3%82%8A%E3%81%95.lrc.txt"},{"title":"Always (Instrumental)","author":"瀧川ありさ","url":"https://mio.0u0.me/music/Always%20(Instrumental)%20-%20%E7%80%A7%E5%B7%9D%E3%81%82%E3%82%8A%E3%81%95.mp3","pic":"http://p1.music.126.net/hm82nYiAhA-ZglW5T8_8rA==/109951163886169752.jpg?param=500y500"}]};
+				  options.element = document.getElementById("aplayer-OfMuLNED");
+				  var ap = new APlayer(options);
+			    window.aplayers || (window.aplayers = []);
+				  window.aplayers.push(ap);
+			  </script>
+</div><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a href="/tags/dispersed/" class="post__tag__link">dispersed</a></li></ul><a href="/post/dispersed/#disqus_thread" class="post__foot-link u-fr"></a></footer></article><article class="post"><header class="post__head"><time datetime="2020-01-04T21:05:26.000Z" class="post__time">January 4, 2020</time><h1 class="post__title"><a href="/post/websocket-protocol/">WebSocket 协议</a></h1></header><div class="post__main echo"><p>WebSocket 是 HTMl5 所引入的协议, 使得浏览器具备了实时双向通信的能力. 这里将详细介绍 WebSocket 协议实现. 在网路中已有不少文章介绍此协议, 但是并没有很详细的展开说明, 本文将完整的描述此协议, 并且给出案例数据做详细说明.</p>
 <p>WebSocket 协议总共分为两个部分, 第一部分透过 HTTP 协议, 进行协议升级到 WebSocket, 这一部分本文将不会做叙述 (详细见后续 HTTP 协议相关文章), 第二部分则是 WebSocket 帧数据传输协议, 也就是 WebSocket 协议重要的部分.</p>
 <h2 id="数据帧"><a href="#数据帧" class="headerlink" title="数据帧"></a>数据帧</h2><p>在开始进行详细说明之前, 来看一下经过处理的 (需开启 Javascript) <a href="https://tools.ietf.org/html/rfc6455#section-5.2" target="_blank" rel="noopener">rfc</a> 给出的图示.</p>
 <template>
@@ -447,7 +457,7 @@ cond(yes)->opcode_other</textarea><textarea id="flowchart-0-options" style="disp
 <p>又停下来了.</p>
 <p>说不上的感觉.</p>
 <p>就这样.</p>
-<div id="aplayer-XpTTGFno" class="aplayer aplayer-tag-marker" style="margin-bottom: 20px;">
+<div id="aplayer-xZqrmEYq" class="aplayer aplayer-tag-marker" style="margin-bottom: 20px;">
 				<pre class="aplayer-lrc-content">[00:19.71]君に見せたいものがあるんだ
 [00:25.40]孤独な夜にもきっと
 [00:29.32]遠くで輝き続ける
@@ -495,7 +505,7 @@ cond(yes)->opcode_other</textarea><textarea id="flowchart-0-options" style="disp
 			</div>
 			<script>
 				var ap = new APlayer({
-					element: document.getElementById("aplayer-XpTTGFno"),
+					element: document.getElementById("aplayer-xZqrmEYq"),
 					narrow: false,
 					autoplay: false,
 					showlrc: 2,
@@ -595,19 +605,4 @@ cond(yes)->opcode_other</textarea><textarea id="flowchart-0-options" style="disp
 </li>
 </ol>
 <p>基本就这样.</p>
-</div><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a href="/tags/jfinal/" class="post__tag__link">jfinal</a></li><li class="post__tag__item"><a href="/tags/restful/" class="post__tag__link">restful</a></li></ul><a href="/post/jfinal-restful/#disqus_thread" class="post__foot-link u-fr"></a></footer></article><article class="post"><header class="post__head"><time datetime="2017-03-03T22:23:18.000Z" class="post__time">March 3, 2017</time><h1 class="post__title"><a href="/post/moan-part-4/">不间断呻吟</a></h1></header><div class="post__main echo"><p>首先, 不要太相信文章的时间, 今天是 2017.03.03, 前一篇早在上个月就已经建好了, 可是一直没有写. 也就是该文创建的前一天, 读完了《甲骨文》, 就我看过之后的感觉还不错, 扒出很多被遗忘的事情, 就是前不久火的《返校》里说的一样, 「是真的忘记了, 还是不愿意想起来」.</p>
-<p>该书是何伟著的关于中国三部曲之一, 还有一本《寻路中国》, 已经不打算看了, 就已经拜读的两本书来看, 大致能够明白作者想要表达的事情以及观点, 就事实而言, 现今能有很详细描述近代这些事情的人是很了不起的, 至少如果在我们真的忘记了之后还能有人告诉我们有这些事情发生过.</p>
-<p>谈谈最近的事情吧.</p>
-<p>算是摆脱了毫无规划的工作上, 但是才刚摆脱又感觉像是踩到了屎堆里. 至少在我来这里之前从未想到会是现在的这种情况, 同期一起的另外一人很萧然的第二天就离去了, 他看出来了这些问题, 在这里对自己的提升是非常有限的, 奈何, 我却无法做出这样的决定, 最大的问题其实还是来自自己, 并没有在早期很好的武装自己, 这也是无奈的选择, 期盼至少不坑.</p>
-<p>暂时还没有置办网络, 导致的后果是看书的频率以及耐心远远高出以往.</p>
-<p>仍然与以前的自己一样, 无法或者说不能在其他人面前表述自己, 仍然想要营造自己的舒适圈, 弄巧成拙.</p>
-<p>一些事情只想自己闷在心里, 细细品味一番, 还真是了不得了, 都已经坚持这么久了.</p>
-<p>孤单的最后结果就是 忘记 不想 和其他人接触.</p>
-<p>无法对其他人敞开心扉.</p>
-<p>永远不能展示最真实的自己.</p>
-<p>好吧. 就这样吧, 还能怎么样了? 连自己都无法战胜的人, 如何去战胜其他人. 到底还是要抛弃自己?</p>
-<p>记得曾经我说过, 「没有想与不想, 只有愿意与不愿意.」</p>
-<blockquote>
-<p>「我个人相信他可以撑到世界末日.」 福特说.<br>「是喔.」 亚瑟说. 「那是多久?」<br>「大概十二分钟以后.」福特说. 「来吧, 我得喝一杯.」</p>
-</blockquote>
-</div><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a href="/tags/moan/" class="post__tag__link">moan</a></li></ul><a href="/post/moan-part-4/#disqus_thread" class="post__foot-link u-fr"></a></footer></article></main><footer class="foot"><div class="foot-copy u-fl">&copy; 2020 iaceob</div><menu class="page-menu u-fr"><li class="page-menu__item"><span title="Previous" class="page-menu__link icon-arrow-left page-menu__link--disabled"></span></li><li class="page-menu__item"><a title="Next" href="/page/2/" class="page-menu__link icon-arrow-right"></a></li></menu></footer></body></html>
+</div><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a href="/tags/jfinal/" class="post__tag__link">jfinal</a></li><li class="post__tag__item"><a href="/tags/restful/" class="post__tag__link">restful</a></li></ul><a href="/post/jfinal-restful/#disqus_thread" class="post__foot-link u-fr"></a></footer></article></main><footer class="foot"><div class="foot-copy u-fl">&copy; 2020 iaceob</div><menu class="page-menu u-fr"><li class="page-menu__item"><span title="Previous" class="page-menu__link icon-arrow-left page-menu__link--disabled"></span></li><li class="page-menu__item"><a title="Next" href="/page/2/" class="page-menu__link icon-arrow-right"></a></li></menu></footer></body></html>
